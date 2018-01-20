@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [ {
+      "source": "/send_status_update", "function": "sendStatusUpdate"
+    }, {
+      "source": "/add_user", "function": "addUser"
+    } ]
+
+  }
+}

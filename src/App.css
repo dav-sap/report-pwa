@@ -1,0 +1,109 @@
+@import '~antd/dist/antd.css';
+.App {
+  text-align: center;
+    height: 100%;
+    min-height: 40rem;
+    position: relative;
+    -webkit-transition: opacity 1.5s linear;
+    -moz-transition: opacity 1.5s linear;
+    transition: opacity 1.5s linear;
+    z-index: 5;
+
+}
+.no-status-background {
+    background: linear-gradient(black, black);
+    height: 100%;
+    z-index: 1;
+}
+.ooo-background {
+    background-image: linear-gradient(350deg, rgba(245, 173, 97, 1) 0%, rgba(245, 173, 97, 1) 0%, rgba(228, 109, 111, 1) 51%, rgba(193, 34, 92, 1) 100%, rgba(193, 34, 92, 1) 100%);
+    opacity: 0;
+    height: 100%;
+    z-index: -1;
+}
+.wfh-background {
+    background-image: linear-gradient(100deg, rgba(165, 78, 138, 1) 0%, rgba(165, 78, 138, 1) 0%, rgba(128, 78, 147, 1) 53%, rgba(96, 73, 145, 1) 100%, rgba(96, 73, 145, 1) 100%);
+    opacity: 0;
+    height: 100%;
+    z-index: -1;
+}
+.sick-background {
+    background-image: linear-gradient(100deg, rgba(53, 97, 134, 1) 0%, rgba(53, 97, 134, 1) 0%, rgba(65, 127, 148, 1) 51%, rgba(106, 191, 188, 1) 100%, rgba(106, 191, 188, 1) 100%);
+    opacity: 0;
+    height: 100%;
+    z-index: -1;
+}
+.ant-carousel{
+    text-align: center;
+    overflow: hidden;
+    height: 80%;
+}
+.slick-slider {
+    height: 100%;
+}
+.slick-list {
+    height: 100%;
+}
+.slick-slide {
+    text-align: center;
+    /*display: table;*/
+}
+.slick-track {
+    height: 100%;
+}
+.ant-carousel .slick-slide h3 {
+    color: #fff;
+}
+.input-step {
+
+}
+.time-picker {
+    color: white;
+}
+#root {
+    height: 100%;
+}
+hr {
+    margin: 10px 10px 10px 10px;
+}
+
+.slick-dots-manual {
+    position: absolute;
+    bottom: 12px;
+    list-style: none;
+    display: block;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 3px;
+}
+.slick-dots-manual li {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    margin: 0 2px;
+    padding: 0;
+}
+.slick-dots-manual li div {
+    border: 0;
+    background: #fff;
+    opacity: 0.3;
+    display: block;
+    width: 16px;
+    height: 3px;
+    border-radius: 1px;
+    outline: none;
+    font-size: 0;
+    color: transparent;
+    -webkit-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
+    padding: 0;
+}
+.slick-dots-manual li.slick-active div {
+    background: #fff;
+    opacity: 1;
+    width: 24px;
+}

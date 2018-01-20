@@ -1,0 +1,22 @@
+.prev-button {
+    color: white;
+    font-size: 2rem;
+    font-weight: 800;
+
+}
+.prev-img {
+    transform: rotate(180deg);
+    padding-right: 10px;
+    padding-bottom: 10px;
+    position: absolute;
+}
+.header {
+    display: -webkit-box;
+    height: 10%;
+}
+.title-font-style {
+    font-size: 4vh;
+    font-weight: 900;
+    color: white;
+    margin: auto;
+}

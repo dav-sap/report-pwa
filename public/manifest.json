@@ -1,0 +1,28 @@
+{
+  "short_name": "PWA Test",
+  "name": "My first PWA",
+  "icons": [
+    {
+      "src": "xhdpi.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "GooglePlayStore.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "xxhdpi.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "gcm_sender_id": "332446971218"
+
+}
