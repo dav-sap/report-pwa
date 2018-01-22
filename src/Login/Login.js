@@ -13,14 +13,20 @@ export default class Login extends Component {
     render() {
         return (
             <div className="login">
-                <div className="login-text">But Wait, <br/> who AM I ?!</div>
+                {!this.props.waitAuth ?
+                    <div>
+                        <div className="login-text">But Wait, <br/> who AM I ?!</div>
+                        <fieldset className="field-set-input">
+                            <input type="text" placeholder="Full Name" className="text-fullname" onChange={this.handleFullNameChange}/>
+                        </fieldset>
+                        <fieldset className="field-set-input">
+                            <input type="text" placeholder="Email" className="text-email" onChange={this.handleEmailChange}/>
+                        </fieldset>
+                    </div> :
+                    <div className="auth-text">
+                        Waiting Authorization...
+                    </div>}
 
-                <fieldset className="field-set-input">
-                    <input type="text" placeholder="Full Name" className="text-fullname" onChange={this.handleFullNameChange}/>
-                </fieldset>
-                <fieldset className="field-set-input">
-                    <input type="text" placeholder="Email" className="text-email" onChange={this.handleEmailChange}/>
-                </fieldset>
             </div>
         );
     }

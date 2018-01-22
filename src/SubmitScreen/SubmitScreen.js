@@ -11,6 +11,7 @@ export default class SubmitScreen extends Component {
 
     };
     noteInput = null;
+
     handleChange = (event) => {
         this.props.changeNoteFunc(event.target.value);
     };

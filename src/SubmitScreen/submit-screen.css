@@ -33,6 +33,14 @@
 .add-note:focus {
     width: 80%;
 }
+.unsubscribe-button {
+    color:white;
+    font-size: 2rem;
+    cursor: pointer;
+    position: absolute;
+    right: 7px;
+    top: 7px;
+}
 input {
     background-color: transparent;
     width:100%;

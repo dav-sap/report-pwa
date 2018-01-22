@@ -71,7 +71,7 @@ function createUser(jsonData, e) {
                 client.focus();
             } else {
                 console.log('All Clients are not visible!!!');
-                clients.openWindow("http://localhost:3210/");
+                // clients.openWindow("http://localhost:3210/");
 
             }
 
@@ -124,6 +124,7 @@ self.addEventListener('push', function(e) {
             createAdminNoti(jsonData, e);
         } else if (jsonData.approved){
             idbKeyval.set('user', jsonData.name);
+            idbKeyval.set('waitAuth', false);
             createUser(jsonData, e);
         }
     } else {

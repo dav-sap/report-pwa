@@ -17,6 +17,7 @@
     width: 80%;
     margin-right: auto;
     margin-left: auto;
+    max-width: 33rem;
 
 }
 ::-webkit-input-placeholder { /* Chrome */
@@ -32,4 +33,12 @@
 :-moz-placeholder { /* Firefox 4 - 18 */
     color: lightpink;
     opacity: 1;
+}
+.auth-text {
+    color:white;
+    margin: auto;
+    height: 3.7rem;
+    font-size: 2rem;
+    font-weight: 800;
+    max-width: 33rem;
 }
