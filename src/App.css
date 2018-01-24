@@ -2,13 +2,18 @@
 .App {
   text-align: center;
     height: 100%;
-    min-height: 40rem;
+    min-height: 35rem;
     position: relative;
+    z-index: 5;
+
+}
+.App-wrapper {
+    height: 100%;
     -webkit-transition: opacity 0.7s linear;
     -moz-transition: opacity 0.7s linear;
     transition: opacity 0.7s linear;
-    z-index: 5;
-
+    min-height: 35rem;
+    overflow: hidden;
 }
 .ant-carousel{
     text-align: center;

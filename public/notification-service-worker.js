@@ -1,18 +1,7 @@
+// const SERVER_URL = "https://flex-server.herokuapp.com";
+const SERVER_URL = "http://localhost:3141";
+const SITE_URL = "https://pwa-first-71a09.firebaseapp.com";
 'use strict';
-// function createDB() {
-//     idb.open('info', 1, function(upgradeDB) {
-//
-//     });
-// }
-// function updateUserDB(name) {
-//     idb.open('info', 1, function(upgradeDB) {
-//         let info = upgradeDB.createObjectStore('user', {
-//             keyPath: 'id'
-//         });
-//     });
-//     info.put({id: 1, name: name});
-// }
-// const IdbKeyval = require('idb-keyval');
 
 function createAdminNoti(jsonData, e) {
     let options = {
@@ -43,28 +32,8 @@ function createUser(jsonData, e) {
     clients.matchAll().then(function(clis) {
 
         if (clis.length === 0) {
-            let options = {
-                body: jsonData.body,
-                icon: 'mdpi.png',
-                vibrate: [100, 50, 100],
-                data: {
-                    dateOfArrival: Date.now(),
-                    name: jsonData.name,
-                    email: jsonData.email,
-                },
-                actions: [
-                    {
-                        action: 'Go to App', title: 'Go to App',
-                        icon: 'images/checkmark.png'
-                    },
-                ]
-            };
-            e.waitUntil(
-                self.registration.showNotification(jsonData.title, options)
-            );
-        } else {
             console.log('Application is already open!');
-            let client = clis.find( c => {
+            let client = clis.find(c => {
                 c.visibilityState === 'visible';
             });
             if (client !== undefined) {
@@ -74,9 +43,28 @@ function createUser(jsonData, e) {
                 // clients.openWindow("http://localhost:3210/");
 
             }
-
         }
 
+
+        let options = {
+            body: jsonData.body,
+            icon: 'mdpi.png',
+            vibrate: [100, 50, 100],
+            data: {
+                dateOfArrival: Date.now(),
+                name: jsonData.name,
+                email: jsonData.email,
+            },
+            actions: [
+                    {
+                    action: 'Go to App', title: 'Go to App',
+                    icon: 'images/checkmark.png'
+                },
+            ]
+        };
+        e.waitUntil(
+            self.registration.showNotification(jsonData.title, options)
+        );
     });
 
 
@@ -100,19 +88,19 @@ self.addEventListener('notificationclick', function(e) {
         })
     };
     if (action === 'Deny') {
-        fetch("/deny_user", reqProps)
+        fetch(SERVER_URL + "/deny_user", reqProps)
             .then(res => {
                 console.log('res from add user: ', res);
             });
         notification.close();
     } else if (action === 'Accept'){
-        fetch("/add_user", reqProps)
+        fetch(SERVER_URL + "/add_user", reqProps)
             .then(res => {
                 console.log('res from add user: ', res);
             });
         notification.close();
     }else if (action === 'Go to App'){
-        clients.openWindow("http://localhost:3210/");
+        clients.openWindow(SITE_URL);
         notification.close();
     }
 }) ,
@@ -123,7 +111,7 @@ self.addEventListener('push', function(e) {
         if (jsonData.admin) {
             createAdminNoti(jsonData, e);
         } else if (jsonData.approved){
-            idbKeyval.set('user', jsonData.name);
+            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, sub: JSON.parse(jsonData.sub)});
             idbKeyval.set('waitAuth', false);
             createUser(jsonData, e);
         }

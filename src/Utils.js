@@ -1,7 +1,4 @@
-import React from 'react';
-
 export const applicationServerPublicKey = 'BCKvDKBurBXsf-WJ4r8Sn-qEzMMN6Ntsw8VFvxnM1XS-pYVj4cVbFgM__I8wbes4au2C3pzU8e9hcsp_i7y87Ww';
-
 
 export function urlB64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);

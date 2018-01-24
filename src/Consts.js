@@ -48,5 +48,7 @@ const IMAGE_MAP = (title, cn) => {
     return mp[title];
 
 };
-export {STATUS, COLOR_MAP, CAPTION_MAP, IMAGE_MAP, changeScreen, backgroundStyles}
+// const SERVER_URL = "https://flex-server.herokuapp.com";
+const SERVER_URL = "http://localhost:3141";
+export {STATUS, COLOR_MAP, CAPTION_MAP, IMAGE_MAP, changeScreen, backgroundStyles, SERVER_URL}
 

@@ -1,0 +1,96 @@
+.flex-row{
+    display: flex;
+    flex-direction: row;
+}
+.date-time-picker-wrapper {
+    position: relative;
+    max-width: 33rem;
+    margin: auto;
+}
+.time-picker-wrapper {
+    width: 60%;
+    margin: 0 20% 0 20%;
+    max-width: 20rem
+}
+.DayPicker {
+    width: 100%;
+    margin: auto;
+}
+.Selectable .DayPicker-Day--selected:not(.DayPicker-Day--start):not(.DayPicker-Day--end):not(.DayPicker-Day--outside) {
+    background-color: lightblue !important;
+}
+.Selectable .DayPicker-Day {
+    border-radius: 0 !important;
+}
+.Selectable .DayPicker-Day--start {
+    -webkit-clip-path: polygon(25% 0%, 100% 1%, 100% 100%, 25% 100%, 0% 50%);
+    clip-path: polygon(25% 0%, 100% 1%, 100% 100%, 25% 100%, 0% 50%);
+
+}
+.Selectable .DayPicker-Day--end {
+    -webkit-clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+    clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+}
+.Selectable .DayPicker-Day--start.DayPicker-Day--end {
+    -webkit-clip-path: polygon(20% 0, 80% 0, 100% 55%, 80% 100%, 20% 100%, 0 52%);
+    clip-path: polygon(20% 0, 80% 0, 100% 55%, 80% 100%, 20% 100%, 0 52%);
+}
+
+.DayPicker-Body {
+    background-color: white;
+}
+.DayPicker-Month {
+    /*width: 91%;*/
+    border: 2px solid;
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 95%;
+}
+
+.DayPicker-Day {
+    padding: 0.8rem;
+    font-weight: 800;
+}
+.DayPicker-Caption {
+    display: table-caption;
+    text-align: left;
+    padding: 6px 0 6px 15px;
+    width: 100%;
+    border-top: 2px solid;
+    border-left: 2px solid;
+    border-right: 2px solid;
+    background-color: white;
+    margin-bottom: 0;
+}
+.DayPicker-Caption > div {
+    font-size: 1.15rem;
+    font-weight: 800;
+
+}
+.DayPicker-Weekday {
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-right: 2px solid black;
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+}
+.DayPicker-NavButton {
+    top: 0.7rem;
+    margin-left: 2rem;
+}
+.date-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    background-color: black;
+    text-align: center;
+    width: 95%;
+    padding:0.7rem 1rem 0.7rem 1rem;
+    margin: auto;
+}
+.date-img {
+    float: left;
+}
