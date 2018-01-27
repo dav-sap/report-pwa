@@ -35,9 +35,10 @@ export default function register() {
             let swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
             if (isLocalhost) {
                 swUrl = `${process.env.PUBLIC_URL}/notification-service-worker.js`;
-                registerValidSW(swUrl);
+                checkValidServiceWorker(swUrl);
+                // registerValidSW(swUrl);
                 // This is running on localhost. Lets check if a service worker still exists or not.
-                // checkValidServiceWorker(swUrl);
+
             } else {
                 // Is not local host. Just register service worker
                 registerValidSW(swUrl);
@@ -119,11 +120,9 @@ function checkValidServiceWorker(swUrl) {
 
 
 export function unregister() {
-    console.log("unregistering1...");
-
+    console.log("unregistering service worker");
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
-            console.log("unregistering2...");
             registration.unregister();
         });
     }

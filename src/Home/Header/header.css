@@ -9,6 +9,9 @@
     padding-right: 10px;
     padding-bottom: 10px;
     position: absolute;
+    z-index: 5;
+    width: 40px;
+    height: 40px;
 }
 .header {
     display: -webkit-box;
@@ -27,4 +30,5 @@
     position: absolute;
     right: 7px;
     top: 7px;
+    z-index: 11;
 }

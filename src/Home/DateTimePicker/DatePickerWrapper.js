@@ -24,7 +24,7 @@ export default class DatePickerWrapper extends React.Component {
             <div className="RangeExample">
                 <div>
                     <div className="date-title">
-                        <img alt="" className="date-img" src={process.env.PUBLIC_URL + "/dates.png"}/>
+                        <img alt="" className="date-img" src="/images/dates.png"/>
                             SELECT A DATE
                     </div>
                 </div>

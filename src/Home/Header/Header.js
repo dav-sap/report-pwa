@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import './header.css'
 import {STATUS} from './../../Consts';
-import {Icon, Popconfirm} from 'antd';
+import {Icon} from 'antd';
 import {Link } from 'react-router';
 
 
 export default class Header extends Component {
-    logout = () => {
-        this.props.unsubscribeUser();
-
-    };
 
     getTitle() {
         let titleStr;
@@ -47,10 +43,10 @@ export default class Header extends Component {
         return (
             <div className="header">
                 <Link to="/settings"><Icon className="user-settings-button" type="user" /></Link>
-                {this.props.slideNumber !== 0  ? <img className="prev-img" alt="Go back" onClick={() => this.props.prevFunc(this.props.slideNumber -1 )} src={process.env.PUBLIC_URL + "/next-button.png"}/>: ""}
+                {this.props.slideNumber !== 0  ? <img className="prev-img" alt="Go back" onClick={() => this.props.prevFunc(this.props.slideNumber -1 )} src="/images/next-button.png"/>: ""}
                 <div className="title-font-style">{this.getTitle()}</div>
             </div>
-        );;
+        );
     }
 }
 

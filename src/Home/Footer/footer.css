@@ -1,18 +1,15 @@
 .footer {
-    /*display: -webkit-box;*/
-
     height: 10%;
-    position: relative;
-    bottom: 20px
 }
 .next-button {
     color:white;
     margin: auto;
     width: 60%;
     border-color: white;
+    position: relative;
 }
 .bottom-button {
-    height: 3.7rem;
+    height: 60px;
     width: 60%;
     font-size: 2rem;
     font-weight: 800;
@@ -20,4 +17,20 @@
     border-style: solid;
     max-width: 33rem;
     cursor: pointer;
+}
+.next-button span {
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    top: 50%;
+    left: 50%;
+    /*border-radius: 50%;*/
+    /*background-color: #624670;*/
+    background-color: ghostwhite;
+    -webkit-transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    z-index: -1;
 }

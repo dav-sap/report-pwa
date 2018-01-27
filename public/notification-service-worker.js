@@ -46,26 +46,27 @@ function createUser(jsonData, e) {
         }
 
 
-        let options = {
-            body: jsonData.body,
-            icon: 'mdpi.png',
-            vibrate: [100, 50, 100],
-            data: {
-                dateOfArrival: Date.now(),
-                name: jsonData.name,
-                email: jsonData.email,
-            },
-            actions: [
-                    {
-                    action: 'Go to App', title: 'Go to App',
-                    icon: 'images/checkmark.png'
-                },
-            ]
-        };
-        e.waitUntil(
-            self.registration.showNotification(jsonData.title, options)
-        );
+
     });
+    let options = {
+        body: jsonData.body,
+        icon: 'mdpi.png',
+        vibrate: [100, 50, 100],
+        data: {
+            dateOfArrival: Date.now(),
+            name: jsonData.name,
+            email: jsonData.email,
+        },
+        actions: [
+            {
+                action: 'Go to App', title: 'Go to App',
+                icon: 'images/checkmark.png'
+            },
+        ]
+    };
+    e.waitUntil(
+        self.registration.showNotification(jsonData.title, options)
+    );
 
 
 }
@@ -111,7 +112,7 @@ self.addEventListener('push', function(e) {
         if (jsonData.admin) {
             createAdminNoti(jsonData, e);
         } else if (jsonData.approved){
-            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, sub: JSON.parse(jsonData.sub)});
+            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, subscription: jsonData.sub});
             idbKeyval.set('waitAuth', false);
             createUser(jsonData, e);
         }

@@ -41,8 +41,6 @@ export default class SubmitScreen extends Component {
     getValue = () => {
         if (!this.state.startedNote) {
             return "Add Note";
-        } else if (this.state.startedNote && this.state.finishedNote) {
-            return "Note Saved";
         }else {
             return this.props.note;
         }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './login.css'
+import {Link } from 'react-router';
 
 export default class Login extends Component {
 
@@ -13,6 +14,7 @@ export default class Login extends Component {
     render() {
         return (
             <div className="login">
+                <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
                 <div className="login-text">But Wait, <br/> who AM I ?!</div>
                     <div className="login-body">
                     <fieldset className="field-set-input">

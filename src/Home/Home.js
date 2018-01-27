@@ -3,11 +3,12 @@ import { Carousel} from 'antd';
 import StatusScreen from './StatusScreen/StatusScreen'
 import DateTimePicker from './DateTimePicker/DateTimePicker';
 import { COLOR_MAP, STATUS, SERVER_URL} from './../Consts';
-import {Icon, notification} from 'antd';
+import {notification, Icon} from 'antd';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
 import SubmitScreen from './SubmitScreen/SubmitScreen'
-// import WhereInfo from './WhereInfo/WhereInfo';
+import './home.css';
+import './point-to-login.css'
 
 const IdbKeyval = require('idb-keyval');
 
@@ -22,31 +23,38 @@ export default class Home extends Component {
         time: {from: this.getNewTime(8), to:this.getNewTime(17)},
         waitAuth: false,
         key: 0,
+        pointToLogin: false,
 
     };
     user = {};
 
     sendReport = () => {
+        if (this.state.login) {
+            this.setState({pointToLogin: true});
+            return;
+        }
+        this.setState({loading: true});
         let startDate = new Date(this.state.dates.from.getFullYear(), this.state.dates.from.getMonth(), this.state.dates.from.getDate(), this.state.time.from.getHours(), this.state.time.from.getMinutes());
         let endDate = new Date(this.state.dates.to.getFullYear(), this.state.dates.to.getMonth(), this.state.dates.to.getDate(), this.state.time.to.getHours(), this.state.time.to.getMinutes());
         let reqProps = {
             method: 'POST',
             headers: new Headers({
-                name: this.user,
+                name: this.user.name,
+                email: this.user.email,
+                sub: this.user.subscription,
                 startDate: startDate,
                 endDate: endDate,
                 status: this.state.status,
                 note: this.state.note,
-
             })
         };
         fetch(SERVER_URL +"/add_report", reqProps)
             .then(res => {
                 if (res.status !== 200) {
-                    throw {msg: "Error Connecting"};
+                    throw new Error("Error Connecting");
                 } else {
                     this.setState({loading: false});
-                    this.next({note:this.state.note});
+                    this.next();
                 }
             })
             .catch(err => {
@@ -61,16 +69,12 @@ export default class Home extends Component {
 
     };
 
-    next = (json) => {
-        if (this.state.slideNumber === 0) {
-            this.setState({slideNumber: 1, status: json.status}, () =>this.refs.carousel.next());
-        } else if (this.state.slideNumber === 1) {
-            this.setState({slideNumber: 2, dates: json.dates, time: json.time}, () =>this.refs.carousel.next());
-        } else if (this.state.slideNumber === 2) {
-            this.setState({
-                note: json.note, slideNumber: 3, completed: true,
-            }, () => this.refs.carousel.next());
-        }else this.refs.carousel.next();
+    next = () => {
+        this.setState(prevState => {
+            let nextSlideNum = prevState.slideNumber + 1;
+            if (nextSlideNum === 2) nextSlideNum =0;
+            return {slideNumber: nextSlideNum}
+        }, () => this.refs.carousel.next())
     };
 
     onChange = (slide) => {
@@ -150,12 +154,6 @@ export default class Home extends Component {
         return now;
     }
 
-    updateUserStatus = () => {
-        this.setState({
-            login: true,
-        });
-    };
-
     componentDidMount() {
         if (!("Notification" in window)) {
             console.log("This browser does not support desktop notification");
@@ -172,30 +170,34 @@ export default class Home extends Component {
         }
         IdbKeyval.get('user').then(val => {
             this.user = val;
-            if (val.name && val.email && val.sub) {
+
+            if (val && val.name && val.email && val.subscription) {
                 let reqProps = {
                     method: 'POST',
                     headers: new Headers({
                         name: val.name,
                         email: val.email,
-                        sub: val.sub,
+                        sub: JSON.stringify(val.subscription),
                     })
                 };
                 fetch(SERVER_URL + "/verify_user", reqProps)
                     .then(res => {
-                        if (res.status !== 200) {
-                            throw {msg: "Connection Error. "};
-                        } else {
-                            IdbKeyval.set('user', res.member);
+                        if (res.status === 202 || res.status === 200) {
+                            this.setState({login: false});
+                        } else if (res.status === 401) {
+                            IdbKeyval.set('user', null).then(() =>{
+                                this.setState({login: true});
+                            });
                         }
                     })
                     .catch(err => {
-                        throw err
+                        console.log("Verify Failed: No server connection");
                     })
+            } else {
+                IdbKeyval.set('user', null).then(() =>{
+                    this.setState({login: true});
+                });
             }
-            this.setState({
-                login: val === (null || undefined),
-            });
         });
 
 
@@ -210,40 +212,38 @@ export default class Home extends Component {
     }
 
     componentWillReceiveProps() {
-        IdbKeyval.get('waitAuth').then(val => {
-            // console.log("UPDATING Auth: "+ val);
-            this.setState({
-                waitAuth: val,
-            });
-        });
-        IdbKeyval.get('user').then(val => {
-            // console.log("UPDATING User: "+ val);
-            this.setState({
-                user: val,
-            });
-        });
+        // IdbKeyval.get('waitAuth').then(val => {
+        //     this.setState({
+        //         waitAuth: val,
+        //     });
+        // });
+        // IdbKeyval.get('user').then(val => {
+        //     this.user = val;
+        //     this.setState({
+        //         login: (val === null) || (val === undefined),
+        //     });
+        // });
     }
-
 
 
     render() {
         return (
-            <div className="App-wrapper" style={{opacity: this.state.loading ? 0.7 : 1, background: this.state.slideNumber !== 3 ? COLOR_MAP[this.state.status] : "#635656"}}>
-                <div className="App">
-                    {this.state.loading ? <Icon className="loading-icon" type="loading" spin={true}/>: ""}
-                    <Header prevFunc={this.prev} status={this.state.status} updateUserStatus={this.updateUserStatus} unsubscribeUser={this.unsubscribeUser} slideNumber={this.state.slideNumber} dates={this.state.dates} time={this.state.time}/>
+            <div className="App-wrapper" style={{opacity: this.state.loading ? 0.7 : 1,
+                background: COLOR_MAP[this.state.status]}}>
+
+                <div className="App" style={{width: "100%", maxWidth: "40rem", position: "relative", margin: "auto"}}>
+                    {this.state.pointToLogin ? <div className="cover-div"/> : ""}
+                    {this.state.pointToLogin ? <Icon type="arrow-up" className="arrow-bounce bounce"/> : ""}
+                    <Header prevFunc={this.prev} status={this.state.status} slideNumber={this.state.slideNumber} dates={this.state.dates} time={this.state.time}/>
                     <Carousel ref="carousel" dots={false} swipe={false} afterChange={this.onChange}>
                         <div>
-                            <StatusScreen nextFunc={this.next} prevFunc={this.prev}/>
+                            <StatusScreen nextFunc={(status) => setTimeout((status) =>  { this.setState({status: status}); this.next();}, 450, status) } prevFunc={this.prev}/>
                         </div>
                         <div>
                             <DateTimePicker updateDates={this.updateDates} timeChanged={this.timeChanged} time={this.state.time} status={this.state.status} dates={this.state.dates} nextFunc={this.next} prevFunc={this.prev}/>
                         </div>
-                        {/*{this.state.login ? <div>*/}
-                            {/*<Login waitAuth={this.state.waitAuth} status={this.state.status} dates={this.state.dates} nextFunc={this.next} prevFunc={this.prev} changeFullName={this.changeFullName} changeEmail={this.changeEmail} />*/}
-                        {/*</div> : ""}*/}
                         <div>
-                            <SubmitScreen changeNoteFunc={this.changeNote} status={this.state.status} note={this.state.note} prevFunc={this.prev} />
+                            <SubmitScreen changeNoteFunc={this.changeNote} status={this.state.status} note={this.state.note} login={this.state.login} prevFunc={this.prev} />
                         </div>
                         {/*<div>*/}
                             {/*<WhereInfo />*/}
@@ -251,9 +251,8 @@ export default class Home extends Component {
 
                     </Carousel>
 
-                    {this.state.slideNumber === 1 ? <Footer text="Save" nextFunc={() => this.next({dates: this.state.dates, time: this.state.time})} />: ""}
-                    {this.state.slideNumber === 2 && !this.state.login? <Footer text="Save" nextFunc={() =>{ this.setState({loading: true});this.sendReport()}} />: ""}
-                    {this.state.slideNumber === 2 && this.state.login ? <Footer text="Register" nextFunc={() => {this.setState({loading: true});this.subscribeUser(this.tempUserName, this.tempEmailName);}} />: ""}
+                    {this.state.slideNumber === 1 ? <Footer text="Save" nextFunc={() =>setTimeout(() => this.next(), 500)} />: ""}
+                    {this.state.slideNumber === 2  ? <Footer text="Submit" nextFunc={() =>{ this.sendReport()}} />: ""}
                     <ul className="slick-dots-manual">
                         <li className={this.state.slideNumber === 0 ? "slick-active": ""}><div>1</div></li>
                         <li className={this.state.slideNumber === 1 ? "slick-active": ""}><div>2</div></li>
