@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './login.css'
-import {Link } from 'react-router';
+import {Link } from 'react-router-dom';
 
 export default class Login extends Component {
 

@@ -4,7 +4,7 @@
     left: 50%;
     color: white;
     transform: translate(-50%,-50%);
-    font-size: 5vh;
+    font-size: 27px;
     font-weight: 900;
     width: 100%;
 }
@@ -13,7 +13,7 @@
     top: 75%;
     left: 50%;
     transform: translate(-50%,-50%);
-    font-size: 10vh;
+    font-size: 43px;
     color: white;
 }
 .submit-screen {

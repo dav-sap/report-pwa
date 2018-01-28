@@ -15,8 +15,8 @@
     /*border-radius: 50%;*/
     /*background-color: #624670;*/
     background-color: white;
-    -webkit-transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
-    transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
+    -webkit-transition: width 0.3s linear, height 0.3s linear;
+    transition: width 0.3s linear, height 0.3s linear;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     z-index: -1;
@@ -58,7 +58,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    font-size: 30px;
+    font-size: 27px;
     font-weight: 800;
     color: white;
 }

@@ -35,13 +35,13 @@ export default class Settings extends Component {
     parseReports = (splitJson) => {
         let reports = [];
         splitJson.OOO.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'OOO'})
+            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'OOO', _id: report._id})
         });
         splitJson.SICK.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'SICK'})
+            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'SICK', _id: report._id})
         });
         splitJson.WFH.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'WFH'})
+            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'WFH', _id: report._id})
         });
         this.setState({
             reports: reports.sort((a, b) => {
@@ -49,29 +49,33 @@ export default class Settings extends Component {
             })
         }, () => {IdbKeyval.set('userReports',this.state.reports)})
     };
+    async fetchReports(val) {
+        let reqProps = {
+            method: 'GET',
+            headers: new Headers({
+                name: val.name,
+                email: val.email,
+            })
+        };
+        let res = await fetch(SERVER_URL + "/get_user_reports", reqProps);
+
+        if (res.status === 200) {
+            res.json().then(json => {
+                this.parseReports(json);
+            })
+        } else {
+            throw new ServerBadResponseException("Can't get updated user reports", res.status);
+
+        }
+    }
     async startUpData() {
         let val = await IdbKeyval.get('user');
         let reports = await IdbKeyval.get('userReports');
         await this.setState({reports: reports, user: val});
         if (val && val.name && val.email && val.subscription) {
             try {
-                let reqProps = {
-                    method: 'GET',
-                    headers: new Headers({
-                        name: val.name,
-                        email: val.email,
-                    })
-                };
-                let res = await fetch(SERVER_URL + "/get_user_reports", reqProps);
-
-                if (res.status === 200) {
-                    res.json().then(json => {
-                        this.parseReports(json);
-                    })
-                } else {
-                    throw new ServerBadResponseException("Can't get updated user reports", res.status);
-
-                }
+                this.setState({waitAuth: false, login: false});
+                this.fetchReports(val);
             } catch(e) {
                 notification['error']({
                     message: 'Connection Error',
@@ -120,10 +124,10 @@ export default class Settings extends Component {
         });
         this.setState({
             login: true,
-        })
-        if ('serviceWorker' in navigator) {
-            try {
+        });
 
+        try {
+            if ('serviceWorker' in navigator) {
                 let reg = await navigator.serviceWorker.ready;
                 let sub = await reg.pushManager.getSubscription();
                 if (sub) {
@@ -132,91 +136,93 @@ export default class Settings extends Component {
                 } else {
                     console.log("User is already unsubscribed")
                 }
-                let reqProps = {
-                    method: 'POST',
-                    headers: new Headers({
-                        name: this.state.user.name,
-                        email: this.state.user.email,
-                    })
-                };
+            } else console.error("No Service worker!");
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    name: this.state.user.name,
+                    email: this.state.user.email,
+                })
+            };
 
-                let response = await fetch(SERVER_URL + "/logout", reqProps);
-                if (response.status === 500) {
-                    throw new ServerBadResponseException("Can't unsubscribe in server", response.status);
-                }
-
-            } catch(e) {
-                console.error("Error while unsubscribing");
+            let response = await fetch(SERVER_URL + "/logout", reqProps);
+            if (response.status === 500) {
+                throw new ServerBadResponseException("Can't unsubscribe in server", response.status);
             }
-        } else console.error("No Service worker!");
 
+        } catch(e) {
+            console.error("Error while unsubscribing");
+        }
     };
 
     async subscribeUser (name, email, url, location){
         this.setState({loading: true});
-        const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-        if ('serviceWorker' in navigator) {
-            try {
+        try {
+            let subJson = {};
+            if ('serviceWorker' in navigator) {
+                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
                 let reg = await navigator.serviceWorker.ready;
-                let sub = await reg.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: applicationServerKey
-                });
-                let subJson = JSON.stringify(sub);
-                // console.log(subJson);
-                let reqProps = {
-                    method: 'POST',
-                    headers: new Headers({
-                        name: name,
-                        email: email,
-                        sub: subJson,
-                        loc: location
-                    })
-                };
-
-                let response = await fetch(SERVER_URL + url, reqProps);
-
-                if (response.status === 500) {
-                    throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
-                } else if (response.status === 202) {
-                    IdbKeyval.set('waitAuth', true).then(() => {
-                        this.setState({waitAuth: true, login: false});
-                    });
-                    IdbKeyval.set('waitingUser', {name:name, email:email}).then(() => {
-                        this.setState({waitingUser: {name:name, email:email}});
-                    });
-                    notification['info']({
-                        message: 'Awaiting Approval',
-                        description: "An admin will review your details",
-                    });
-                } else if (response.status === 200){
-                    // let text = await response.text();
-                    let json = await response.json();
-
-                    notification['success']({
-                        message: 'Approved',
-                        description: json.info,
-                    });
-                    IdbKeyval.set('user', json.member).then(() => {
-                        this.setState({login: false, user:json.member});
-                    });
-                } else {
-                    let text = await response.text();
-                    throw new ServerBadResponseException(text, response.status);
-                }
-                this.setState({loading: false});
-            } catch (e) {
-                let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-                notification['error']({
-                    message: 'Connection Error',
-                    description: description,
-                });
-                this.setState({loading: false});
-                IdbKeyval.set('waitAuth', false).then(() => {
-                    this.setState({waitAuth: false});
-                });
+                let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
+                subJson = JSON.stringify(sub);
             }
-        } else console.error("No Service worker!")
+            else {
+                console.error("No Service worker!");
+            }
+
+            console.log(subJson);
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    name: name,
+                    email: email,
+                    sub: subJson,
+                    loc: location
+                })
+            };
+
+            let response = await fetch(SERVER_URL + url, reqProps);
+
+            if (response.status === 500) {
+                throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
+            } else if (response.status === 202) {
+                IdbKeyval.set('waitAuth', true).then(() => {
+                    this.setState({waitAuth: true, login: false});
+                });
+                IdbKeyval.set('waitingUser', {name:name, email:email}).then(() => {
+                    this.setState({waitingUser: {name:name, email:email}});
+                });
+                notification['info']({
+                    message: 'Awaiting Approval',
+                    description: "An admin will review your details",
+                });
+            } else if (response.status === 200){
+                // let text = await response.text();
+                let json = await response.json();
+
+                notification['success']({
+                    message: 'Approved',
+                    description: json.info,
+                });
+                IdbKeyval.set('user', json.member).then(() => {
+                    this.setState({login: false, user:json.member});
+                });
+                this.fetchReports(json.member);
+            } else {
+                let text = await response.text();
+                throw new ServerBadResponseException(text, response.status);
+            }
+            this.setState({loading: false});
+        } catch (e) {
+            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
+            notification['error']({
+                message: 'Connection Error',
+                description: description,
+            });
+            this.setState({loading: false});
+            IdbKeyval.set('waitAuth', false).then(() => {
+                this.setState({waitAuth: false});
+            });
+        }
     };
 
     login = () => {
@@ -239,10 +245,9 @@ export default class Settings extends Component {
                 let cursorLoc = (email + "@intel.com").indexOf("@intel.com");
                 document.getElementById("email-input").setSelectionRange(cursorLoc,cursorLoc)
             })
-
         }
-
     };
+
     async cancelRequest() {
         await this.setState({loading: true});
         try {
@@ -286,8 +291,9 @@ export default class Settings extends Component {
                     <Login nameValue={this.state.nameValue} emailValue={this.state.emailValue}
                            changeLoc={this.changeLoc} changeEmail={this.changeEmail} changeFullName={this.changeFullName}
                            login={this.login} signup={this.signup} chosenLoc={this.state.location}/>
-                    : this.state.waitAuth ? <WaitAuthScreen user={this.state.waitingUser} cancelRequest={this.cancelRequest}/> : <UserHome user={this.state.user} reports={this.state.reports} logout={this.unsubscribeUser}
-                    />}
+                    : this.state.waitAuth ? <WaitAuthScreen user={this.state.waitingUser} cancelRequest={this.cancelRequest}/>
+                        : <UserHome user={this.state.user} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)} />
+                }
             </div>
         );
     }

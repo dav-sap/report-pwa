@@ -35,8 +35,8 @@ export default function register() {
             let swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
             if (isLocalhost) {
                 swUrl = `${process.env.PUBLIC_URL}/notification-service-worker.js`;
-                checkValidServiceWorker(swUrl);
-                // registerValidSW(swUrl);
+                // checkValidServiceWorker(swUrl);
+                registerValidSW(swUrl);
                 // This is running on localhost. Lets check if a service worker still exists or not.
 
             } else {

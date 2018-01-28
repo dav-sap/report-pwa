@@ -9,11 +9,12 @@ import Footer from './Footer/Footer';
 import SubmitScreen from './SubmitScreen/SubmitScreen'
 import './home.css';
 import './point-to-login.css'
+import { withRouter } from 'react-router-dom'
 
 const IdbKeyval = require('idb-keyval');
 
 
-export default class Home extends Component {
+class Home extends Component {
     state = {
         status: STATUS.NO_STATUS,
         login: true,
@@ -55,6 +56,7 @@ export default class Home extends Component {
                 } else {
                     this.setState({loading: false});
                     this.next();
+                    this.props.history.push('/settings');
                 }
             })
             .catch(err => {
@@ -171,13 +173,13 @@ export default class Home extends Component {
         IdbKeyval.get('user').then(val => {
             this.user = val;
 
-            if (val && val.name && val.email && val.subscription) {
+            if (val && val.name && val.email) {
                 let reqProps = {
                     method: 'POST',
                     headers: new Headers({
                         name: val.name,
                         email: val.email,
-                        sub: JSON.stringify(val.subscription),
+                        sub: val.subscription ? JSON.stringify(val.subscription) : {},
                     })
                 };
                 fetch(SERVER_URL + "/verify_user", reqProps)
@@ -211,27 +213,13 @@ export default class Home extends Component {
 
     }
 
-    componentWillReceiveProps() {
-        // IdbKeyval.get('waitAuth').then(val => {
-        //     this.setState({
-        //         waitAuth: val,
-        //     });
-        // });
-        // IdbKeyval.get('user').then(val => {
-        //     this.user = val;
-        //     this.setState({
-        //         login: (val === null) || (val === undefined),
-        //     });
-        // });
-    }
-
 
     render() {
         return (
             <div className="App-wrapper" style={{opacity: this.state.loading ? 0.7 : 1,
                 background: COLOR_MAP[this.state.status]}}>
 
-                <div className="App" style={{width: "100%", maxWidth: "40rem", position: "relative", margin: "auto"}}>
+                <div className="App" style={{width: "100%", maxWidth: "40rem", position: "relative", margin: "auto", maxHeight: "70rem"}}>
                     {this.state.pointToLogin ? <div className="cover-div"/> : ""}
                     {this.state.pointToLogin ? <Icon type="arrow-up" className="arrow-bounce bounce"/> : ""}
                     <Header prevFunc={this.prev} status={this.state.status} slideNumber={this.state.slideNumber} dates={this.state.dates} time={this.state.time}/>
@@ -264,4 +252,4 @@ export default class Home extends Component {
         );
     }
 }
-
+export default withRouter(Home);
