@@ -16,6 +16,7 @@
 .header {
     display: -webkit-box;
     height: 10%;
+    position: relative;
 }
 .title-font-style {
     font-size: 27px;

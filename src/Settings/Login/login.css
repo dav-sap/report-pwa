@@ -26,18 +26,18 @@
 .login-body {
     height: 60%;
 }
-::-webkit-input-placeholder { /* Chrome */
-    color: lightpink;
+::-webkit-input-placeholder {
+    color: grey;
 }
-:-ms-input-placeholder { /* IE 10+ */
-    color: lightpink;
+:-ms-input-placeholder {
+    color: grey;
 }
-::-moz-placeholder { /* Firefox 19+ */
-    color: lightpink;
+::-moz-placeholder {
+    color: grey;
     opacity: 1;
 }
-:-moz-placeholder { /* Firefox 4 - 18 */
-    color: lightpink;
+:-moz-placeholder {
+    color: grey;
     opacity: 1;
 }
 .auth-text {

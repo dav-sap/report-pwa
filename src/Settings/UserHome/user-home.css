@@ -9,14 +9,21 @@
 .full-name {
     color: white;
     text-align: center;
-    font-size: 35px;
+    font-size: 30px;
     font-weight: 800;
+    text-overflow: ellipsis;
+    display: block;
+    overflow: hidden;
+    padding-top: 45px;
 }
 .email {
     color: white;
     text-align: center;
-    font-size: 35px;
+    font-size: 30px;
     font-weight: 800;
+    text-overflow: ellipsis;
+    display: block;
+    overflow: hidden
 }
 .location {
     color: grey;
@@ -96,6 +103,6 @@
 }
 
 .table-wrapper {
-    padding-top: 230px;
+    padding-top: 248px;
     background: rgba(33, 33, 33, 0.95);
 }

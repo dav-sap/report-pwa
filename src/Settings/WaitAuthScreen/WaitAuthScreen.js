@@ -18,7 +18,7 @@ export default class WaitAuthScreen extends Component {
                     </div>
                 </div>
                 <div className="wait-text">
-                    <p>Waiting for <br/> approval</p>
+                    Waiting for  approval<span>.</span><span>.</span><span>.</span>
                 </div>
                 <div className="wait-img-wrapper">
                 <img src="/images/waitAuth.png" alt="waiting approval" className="wait-auth-img"/>

@@ -185,10 +185,18 @@ class Home extends Component {
                 fetch(SERVER_URL + "/verify_user", reqProps)
                     .then(res => {
                         if (res.status === 202 || res.status === 200) {
-                            this.setState({login: false});
+                            IdbKeyval.set('waitAuth', false).then(() => {
+                                this.setState({
+                                    waitAuth: false,login: false
+                                });
+                            });
                         } else if (res.status === 401) {
                             IdbKeyval.set('user', null).then(() =>{
-                                this.setState({login: true});
+                                IdbKeyval.set('waitAuth', false).then(() => {
+                                    this.setState({
+                                        waitAuth: false,login: true
+                                    });
+                                });
                             });
                         }
                     })

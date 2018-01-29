@@ -234,16 +234,16 @@ export default class Settings extends Component {
 
 
     changeEmail = (email) => {
-        if (email.includes("@intel.com")) {
-            this.setState({
-                emailValue: email
-            })
-        } else {
+        if (email.length === 1) {
             this.setState({
                 emailValue: email + "@intel.com"
             }, () => {
                 let cursorLoc = (email + "@intel.com").indexOf("@intel.com");
                 document.getElementById("email-input").setSelectionRange(cursorLoc,cursorLoc)
+            });
+        } else {
+            this.setState({
+                emailValue: email
             })
         }
     };
