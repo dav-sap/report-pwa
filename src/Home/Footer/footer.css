@@ -4,18 +4,19 @@
 .next-button {
     color:white;
     margin: auto;
-    width: 60%;
     border-color: white;
     position: relative;
 }
 .bottom-button {
-    height: 50px;
-    width: 60%;
-    font-size: 27px;
+
+    width: fit-content;
+    padding: 2px 25px 2px 25px;
+    text-align: center;
+    font-size: 25px;
     font-weight: 800;
     border-width: 3px;
     border-style: solid;
-    max-width: 33rem;
+    /*max-width: 80%;*/
     cursor: pointer;
 }
 .next-button span {
@@ -33,4 +34,8 @@
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     z-index: -1;
+}
+.footer-img {
+    position: relative;
+    left: 10px;
 }

@@ -10,9 +10,11 @@ export default class Status extends Component {
                     {this.props.title}
                     <span className="span-img">{IMAGE_MAP(this.props.title, "status-where-img")}</span>
                 </div>
-                <div className="people-wrapper" style={{right: this.props.right}}>
-                    {this.props.people.map((name, index) => {
-                        return <li key={index} className="name">{name}</li>;
+                <div className="people-wrapper">
+                    {this.props.people.map((member, index) => {
+                        let note = member.note ? " - " + member.note : "";
+                        let text = member.name + note;
+                        return <p key={index} className="name">{text} </p>;
                     })}
                 </div>
             </div>

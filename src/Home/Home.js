@@ -241,12 +241,8 @@ class Home extends Component {
                         <div>
                             <SubmitScreen changeNoteFunc={this.changeNote} status={this.state.status} note={this.state.note} login={this.state.login} prevFunc={this.prev} />
                         </div>
-                        {/*<div>*/}
-                            {/*<WhereInfo />*/}
-                        {/*</div>*/}
-
                     </Carousel>
-
+                    {this.state.slideNumber === 0 ? <Footer text="Where is Everyone?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />: ""}
                     {this.state.slideNumber === 1 ? <Footer text="Save" nextFunc={() =>setTimeout(() => this.next(), 500)} />: ""}
                     {this.state.slideNumber === 2  ? <Footer text="Submit" nextFunc={() =>{ this.sendReport()}} />: ""}
                     <ul className="slick-dots-manual">
