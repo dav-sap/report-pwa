@@ -1,1 +1,33 @@
+.who-r-u-text {
+    color: white;
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 30px;
+    font-weight: 800;
+    z-index: 50;
+}
+.notification-css {
+    background-color: #31312d;
 
+    font-weight: 700;
+    color:white;
+    padding: 3px 3px 21px 10px;
+    /*margin-left: 15px;*/
+}
+.notification-text {
+    text-align: center;
+}
+.ant-notification-notice-with-icon .ant-notification-notice-description {
+    margin-left: 20px !important;
+    font-size: 12px !important;
+}
+.ant-notification {
+    /* left: 0px; */
+
+    position: absolute !important;
+    left: 50% !important;
+    transform: translate(-50%) !important;
+    margin: 0 !important;
+}

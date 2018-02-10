@@ -74,7 +74,7 @@ export default class UserHome extends Component {
                         {this.props.user.email}
                     </div>
                     <div className="location">
-                        <Icon type="environment" />
+                        <img src="/images/loc.png" />
                         {this.props.user.loc}
                     </div>
                 </div>

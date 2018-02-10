@@ -15,8 +15,8 @@
     /*border-radius: 50%;*/
     /*background-color: #624670;*/
     background-color: white;
-    -webkit-transition: width 0.3s linear, height 0.3s linear;
-    transition: width 0.3s linear, height 0.3s linear;
+    -webkit-transition: width 0.2s linear, height 0.2s linear;
+    transition: width 0.2s linear, height 0.2s linear;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     z-index: -1;

@@ -14,12 +14,12 @@ export default class WhereInfo extends Component {
     state = {
         today: {
             ooo: [],
-            wfh: [],
+            wf: [],
             sick: [],
         },
         tomorrow: {
             ooo: [],
-            wfh: [],
+            wf: [],
             sick: [],
         },
         day: TODAY,
@@ -35,12 +35,12 @@ export default class WhereInfo extends Component {
                 if (response.status === 200) {
                     response.json().then((json) => {
                         if (stateToUpdate === TODAY) {
-                            this.setState({today : {ooo: json.OOO, sick: json.SICK, wfh: json.WFH}});
-                            IdbKeyval.set(TODAY, {ooo: json.OOO, sick: json.SICK, wfh: json.WFH})
+                            this.setState({today : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
+                            IdbKeyval.set(TODAY, {ooo: json.OOO, sick: json.SICK, wf: json.WF})
                         }
                         if (stateToUpdate === TOMORROW) {
-                            this.setState({tomorrow : {ooo: json.OOO, sick: json.SICK, wfh: json.WFH}});
-                            IdbKeyval.set(TOMORROW, {ooo: json.OOO, sick: json.SICK, wfh: json.WFH})
+                            this.setState({tomorrow : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
+                            IdbKeyval.set(TOMORROW, {ooo: json.OOO, sick: json.SICK, wf: json.WF})
                         }
                     })
                 } else throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
@@ -79,21 +79,23 @@ export default class WhereInfo extends Component {
     render() {
 
         return (
-            <div className="where-info">
-                <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
-                    <div className="title-where-text">Where is<br/> Everyone?</div>
-                    <Status key={0} title={STATUS.OOO} people={this.state[this.state.day].ooo}/>
-                    <Status key={1} title={STATUS.WFH} people={this.state[this.state.day].wfh} />
-                    <Status key={2} title={STATUS.SICK} people={this.state[this.state.day].sick} />
-                    <div className="flex-row">
-                    <div className="day-button" onClick={ () => {this.setState({day: TODAY});}} >
-                        Today
-                    </div>
-                    <div className="day-button" onClick={ () => {this.setState({day: TOMORROW});}} >
-                        Tomorrow
-                    </div>
-                    </div>
+            <div className="where-wrapper">
+                <div className="where-info">
+                    <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
+                        <div className="title-where-text">Where is Everyone?</div>
+                        <Status key={0} title={STATUS.OOO} people={this.state[this.state.day].ooo}/>
+                        <Status key={1} title={STATUS.WF} people={this.state[this.state.day].wf} />
+                        <Status key={2} title={STATUS.SICK} people={this.state[this.state.day].sick} />
+                        <div className="flex-row bottom-button-wrapper">
+                            <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TODAY});}} >
+                                Today
+                            </div>
+                            <div className={this.state.day === TOMORROW ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TOMORROW});}} >
+                                Tomorrow
+                            </div>
+                        </div>
 
+                </div>
             </div>
         );
     }

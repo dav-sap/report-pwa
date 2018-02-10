@@ -40,8 +40,8 @@ export default class Settings extends Component {
         splitJson.SICK.forEach(report => {
             reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'SICK', _id: report._id})
         });
-        splitJson.WFH.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'WFH', _id: report._id})
+        splitJson.WF.forEach(report => {
+            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'WF', _id: report._id})
         });
         this.setState({
             reports: reports.sort((a, b) => {
@@ -240,7 +240,8 @@ export default class Settings extends Component {
             }, () => {
                 let cursorLoc = (email + "@intel.com").indexOf("@intel.com");
                 document.getElementById("email-input").setSelectionRange(cursorLoc,cursorLoc)
-            });
+            })
+
         } else {
             this.setState({
                 emailValue: email

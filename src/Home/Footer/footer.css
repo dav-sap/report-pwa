@@ -16,6 +16,7 @@
     font-weight: 800;
     border-width: 3px;
     border-style: solid;
+    min-width: 60%;
     /*max-width: 80%;*/
     cursor: pointer;
 }
@@ -29,8 +30,8 @@
     /*border-radius: 50%;*/
     /*background-color: #624670;*/
     background-color: ghostwhite;
-    -webkit-transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
-    transition: width 0.4s ease-in-out, height 0.4s ease-in-out;
+    -webkit-transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
+    transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     z-index: -1;

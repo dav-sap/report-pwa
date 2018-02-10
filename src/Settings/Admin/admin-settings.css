@@ -1,0 +1,86 @@
+.admin-title {
+    color: rgb(153, 153, 153);
+    width: fit-content;
+    margin: auto;
+    padding-top: 10px;
+    padding-bottom: 3px;
+    margin-bottom: 30px;
+    font-size: 18px;
+    font-weight: 700;
+    border-bottom: 1px solid;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+.sub-admin-title {
+    color: rgb(153, 153, 153);
+    width: fit-content;
+    padding-top: 10px;
+    padding-bottom: 3px;
+    font-size: 13px;
+    font-weight: 700;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+.admin-title > .admin-settings-img {
+    margin-left: 10px;
+}
+.admin-settings {
+    background-color: #404040;
+    height: 100%;
+    min-height: 630px;
+    /*min-width: 330px;*/
+}
+.contents-wrapper {
+    margin: auto;
+    position: relative;
+    max-width: 40rem;
+    /*min-width: 340px;*/
+    width:95%;
+}
+.member-row {
+    font-size: 11px;
+    color: white;
+}
+.members-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-y: auto;
+}
+.member-row > th {
+    padding-top:5px;
+    padding-bottom:5px;
+    /*border-bottom: 2px solid white;*/
+    text-overflow: ellipsis;
+}
+.member-table-cell {
+    max-height: 25px;
+    /*min-width: 80px;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.member-table-cell-images {
+    margin: auto;
+    width: fit-content;
+}
+.add-member-button {
+    margin-right: 10px;
+    cursor: pointer;
+}
+.remove-member-button {
+    /*margin-left: 3px;*/
+    cursor: pointer;
+    width: fit-content;
+    margin: auto;
+}
+.member-table-cell-remove-button {
+    border: 1px white solid;
+    color: white;
+    background-color: red;
+    font-size: 13px;
+    font-weight: 700;
+    width: fit-content;
+    padding: 2px 10px 2px 10px
+}
+.last-cell-row {
+    width:77px;
+}

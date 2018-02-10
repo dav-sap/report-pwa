@@ -29,7 +29,7 @@
     color: grey;
     text-align: center;
     padding-top: 15px;
-    font-size: 25px;
+    font-size: 18px;
     font-weight: 800;
 }
 .user-option {
@@ -98,11 +98,16 @@
     transform: translate(50%);
     width: 95%;
     z-index: 2;
-    background: rgba(36, 36, 36, 1);
+    /*background: rgba(36, 36, 36, 1);*/
     max-width: 40rem;
 }
 
 .table-wrapper {
     padding-top: 248px;
-    background: rgba(33, 33, 33, 0.95);
+    /*background: rgba(33, 33, 33, 0.95);*/
+}
+.location > img {
+    position: relative;
+    left: -4px;
+    top: -4px;
 }

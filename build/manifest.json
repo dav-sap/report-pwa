@@ -1,5 +1,5 @@
 {
-  "short_name": "Status Reporter",
+  "short_name": "FlexBoard Status",
   "name": "FlexBoard Status Reporter",
   "icons": [
     {
@@ -24,7 +24,7 @@
     },
     {
       "src": "/images/icon-144x144.png",
-      "sizes": "96x96",
+      "sizes": "144x144",
       "type": "image/png"
     },
     {

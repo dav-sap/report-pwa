@@ -1,6 +1,6 @@
 .caption {
     position: absolute;
-    top: 40%;
+    top: 55%;
     left: 50%;
     color: white;
     transform: translate(-50%,-50%);
@@ -10,7 +10,7 @@
 }
 .caption-img {
     position: absolute;
-    top: 75%;
+    top: 78%;
     left: 50%;
     transform: translate(-50%,-50%);
     font-size: 43px;
@@ -43,4 +43,26 @@ input {
 }
 input:focus {
     outline-width: 0;
+}
+.wf-option-wrapper {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.wf-option {
+    color: white;
+    border: white 3px solid;
+    font-size: 22px;
+    font-weight: 800;
+    width: 100px;
+    margin: 5px;
+
+}
+.button-row {
+    margin: auto;
+}
+.wf-option-clicked {
+    background-color: white;
+    color: rgba(165, 78, 138, 1);
 }
