@@ -86,6 +86,30 @@ export default class AdminSettings extends Component {
             });
         }
     };
+    async removeExistingUser(member){
+        try {
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    name: member.name,
+                    email: member.email,
+                })
+            };
+            let res = await fetch(SERVER_URL + "/remove_member", reqProps);
+
+            if (res.status === 200) {
+                this.fetchMembers("/get_all_members", 'members');
+            } else {
+                throw new ServerBadResponseException("Can't get updated user reports", res.status);
+
+            }
+        } catch(e) {
+            notification['error']({
+                message: 'Connection Error',
+                description: "Can't add user",
+            });
+        }
+    };
 
     render() {
         return (
@@ -121,8 +145,11 @@ export default class AdminSettings extends Component {
                             <tr key={index} className="member-row">
                                 <th><div className="member-table-cell">{member.name}</div></th>
                                 <th><div className="member-table-cell">{member.email}</div></th>
-                                <th className="last-cell-row"><div className="member-table-cell-remove-button">Remove
-                                </div></th>
+                                <th className="last-cell-row">
+                                    <div className="member-table-cell-remove-button" onClick={this.removeExistingUser.bind(this, member)}>
+                                        Remove
+                                    </div>
+                                </th>
                             </tr>)
                     })}
                     </tbody>

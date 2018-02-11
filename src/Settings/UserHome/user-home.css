@@ -42,6 +42,7 @@
     color:red;
     position: absolute;
     right: 0;
+    top: 0;
     font-size: 18px;
     width: 100px;
     padding: 2px 5px 2px 5px;
@@ -110,4 +111,14 @@
     position: relative;
     left: -4px;
     top: -4px;
+}
+.notification-updater {
+    color: white;
+    position: absolute;
+    left: 0;
+    top: 0;
+    /*transform: translate(50%, 50%);*/
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
 }

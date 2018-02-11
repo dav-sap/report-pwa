@@ -4,12 +4,16 @@ import {Icon, notification} from 'antd'
 import {Link } from 'react-router-dom';
 import { SERVER_URL} from './../../Consts';
 import {ServerBadResponseException} from './../../Utils';
+import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 
 export default class UserHome extends Component {
     constructor(props) {
         super(props);
 
         this.removeReport = this.removeReport.bind(this);
+    }
+    state = {
+        notificationStatus: true,
     }
     async removeReport(status, report_id) {
         try {
@@ -59,8 +63,146 @@ export default class UserHome extends Component {
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
     };
+    componentDidMount() {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+            this.setState({
+                notificationStatus: false
+            })
+        }
+        else if (Notification.permission !== "granted") {
+            this.setState({
+                notificationStatus: false
+            })
+        } else {
+            try {
+                let reqProps = {
+                    method: 'POST',
+                    headers: new Headers({
+                        name: this.props.user.name,
+                        email: this.props.user.email,
+                    })
+                };
+
+                fetch(SERVER_URL + "/check_subscription", reqProps).then((response) => {
+                    if (response.status === 500) {
+                        throw new ServerBadResponseException("Can't remove notification, internet connection, or server error", response.status);
+                    }
+                    else if (response.status === 200) {
+                        this.setState({
+                            notificationStatus: true
+                        })
+                    }
+                    else if (response.status !== 200) {
+                        this.setState({
+                            notificationStatus: false
+                        })
+                    }
+                })
+
+            }catch (e) {
+                let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
+                notification['error']({
+                    message: 'Connection Error',
+                    description: description,
+                });
+            }
+        }
+
+    }
+    addSubscription = async (sub) => {
+        try {
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    name: this.props.user.name,
+                    email: this.props.user.email,
+                    sub: sub
+                })
+            };
+
+            let response = await fetch(SERVER_URL + "/add_subscription", reqProps);
+            if (response.status === 500) {
+                throw new ServerBadResponseException("Can't remove notification, internet connection, or server error", response.status);
+            }
+            else if (response.status === 200) {
+                this.setState({
+                    notificationStatus: true
+                })
+            }
+        }catch (e) {
+            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
+            notification['error']({
+                message: 'Connection Error',
+                description: description,
+            });
+            this.setState({
+                notificationStatus: false
+            })
+        }
+    };
+    removeSubsciption = async () => {
+        try {
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    name: this.props.user.name,
+                    email: this.props.user.email,
+                })
+            };
+
+            let response = await fetch(SERVER_URL + "/remove_subscription", reqProps);
+            if (response.status === 500) {
+                throw new ServerBadResponseException("Can't remove notification, internet connection, or server error", response.status);
+            }
+            else if (response.status === 200) {
+                this.setState({
+                    notificationStatus: false
+                })
+            }
+        }catch (e) {
+            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
+            notification['error']({
+                message: 'Connection Error',
+                description: description,
+            });
+        }
+    };
+    changeNotificationStatus =  async () => {
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+            this.setState({
+                notificationStatus: false
+            })
+        }
+        else if (Notification.permission !== "granted") {
+            let permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                console.log("Granted permission for notifications!");
+                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+                let reg = await navigator.serviceWorker.ready;
+                let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
+                let subJson = JSON.stringify(sub);
+                this.addSubscription(subJson);
+            } else {
+                this.setState({
+                    notificationStatus: false
+                })
+            }
+        } else {
+            if (this.state.notificationStatus) {
+                this.removeSubsciption();
+            } else {
+                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+                let reg = await navigator.serviceWorker.ready;
+                let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
+                let subJson = JSON.stringify(sub);
+                this.addSubscription(subJson);
+            }
 
 
+        }
+    };
     render() {
         return (
             <div className="user-home">
@@ -79,13 +221,14 @@ export default class UserHome extends Component {
                     </div>
                 </div>
                 <div className="user-option">
-                    <div className="go-to-admin">
-                        <div className="admin-wrapper">
-                            Admin
-                            <img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>
-                        </div>
+                    {/*<div className="go-to-admin">*/}
+                        {/*<div className="admin-wrapper">*/}
+                            {/*Admin*/}
+                            {/*<img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>*/}
+                        {/*</div>*/}
 
-                    </div>
+                    {/*</div>*/}
+                    <img src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
                     <div className="logout-button" onClick={this.props.logout}>
                         Logout
                         <Icon type="user-delete" className="logout-img"/>

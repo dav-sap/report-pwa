@@ -41,6 +41,9 @@ class Home extends Component {
         let reqProps = {
             method: 'POST',
             headers: new Headers({
+                'content-type': 'application/json'
+            }),
+            body: JSON.stringify({
                 name: this.user.name,
                 email: this.user.email,
                 sub: this.user.subscription,
@@ -142,19 +145,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        if (!("Notification" in window)) {
-            console.log("This browser does not support desktop notification");
-        }
-        else if (Notification.permission === "granted") {
-            console.log("This site already granted Notifications!");
-        }
-        else if (Notification.permission !== 'denied' || Notification.permission === "default") {
-            Notification.requestPermission(function (permission) {
-                if (permission === "granted") {
-                    console.log("Granted permission for notifications!");
-                }
-            })
-        }
+
 
         window['isUpdateAvailable']
             .then(isAvailable => {
@@ -181,6 +172,9 @@ class Home extends Component {
                 let reqProps = {
                     method: 'POST',
                     headers: new Headers({
+                        'content-type': 'application/json'
+                    }),
+                    body: JSON.stringify({
                         name: val.name,
                         email: val.email,
                         sub: val.subscription ? JSON.stringify(val.subscription) : {},

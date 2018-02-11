@@ -69,6 +69,7 @@ export default class Settings extends Component {
         }
     }
     async startUpData() {
+
         let val = await IdbKeyval.get('user');
         let reports = await IdbKeyval.get('userReports');
         await this.setState({reports: reports, user: val});
@@ -160,6 +161,19 @@ export default class Settings extends Component {
         try {
             let subJson = {};
             if ('serviceWorker' in navigator) {
+                if (!("Notification" in window)) {
+                    console.log("This browser does not support desktop notification");
+                }
+                else if (Notification.permission === "granted") {
+                    console.log("This site already granted Notifications!");
+                }
+                else if (Notification.permission !== 'denied' || Notification.permission === "default") {
+                    Notification.requestPermission(function (permission) {
+                        if (permission === "granted") {
+                            console.log("Granted permission for notifications!");
+                        }
+                    })
+                }
                 const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
                 let reg = await navigator.serviceWorker.ready;
                 let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
