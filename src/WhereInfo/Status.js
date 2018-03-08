@@ -8,6 +8,7 @@ export default class Status extends Component {
             <div className="status-where">
                 <div className="status-where-title" style={{background: COLOR_MAP[this.props.title]}}>
                     {this.props.title + " - " + this.props.people.length}
+                    {this.props.loading ? <div className="loader"/> : ""}
                     <span className="span-img">{IMAGE_MAP(this.props.title, "status-where-img")}</span>
                 </div>
                 <div className="people-wrapper">

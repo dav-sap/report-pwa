@@ -22,6 +22,7 @@ export default class WhereInfo extends Component {
             sick: [],
         },
         day: TODAY,
+        loading: false,
     };
     fetchMembers = (stateToUpdate, date) => {
         let today = date;
@@ -34,7 +35,8 @@ export default class WhereInfo extends Component {
                 if (response.status === 200) {
                     response.json().then((json) => {
                         if (stateToUpdate === TODAY) {
-                            this.setState({today : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
+                            this.setState({today : {ooo: json.OOO, sick: json.SICK, wf: json.WF}, loading: false});
+
                         }
                         if (stateToUpdate === TOMORROW) {
                             this.setState({tomorrow : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
@@ -51,6 +53,7 @@ export default class WhereInfo extends Component {
             });
     };
     updateDates = () => {
+        this.setState({loading: true});
         let today = new Date();
 
         this.fetchMembers(TODAY, today.toDateString());
@@ -69,9 +72,9 @@ export default class WhereInfo extends Component {
                 <div className="where-info">
                     <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
                         <div className="title-where-text">Where is Everyone?</div>
-                        <Status key={0} title={STATUS.OOO} people={this.state[this.state.day].ooo}/>
-                        <Status key={1} title={STATUS.WF} people={this.state[this.state.day].wf} />
-                        <Status key={2} title={STATUS.SICK} people={this.state[this.state.day].sick} />
+                        <Status key={0} title={STATUS.OOO} loading={this.state.loading} people={this.state[this.state.day].ooo}/>
+                        <Status key={1} title={STATUS.WF} loading={this.state.loading} people={this.state[this.state.day].wf} />
+                        <Status key={2} title={STATUS.SICK} loading={this.state.loading} people={this.state[this.state.day].sick} />
                         <div className="flex-row bottom-button-wrapper">
                             <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TODAY});}} >
                                 Today

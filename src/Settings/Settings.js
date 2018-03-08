@@ -3,13 +3,12 @@ import './settings.css';
 import Login from './Login/Login'
 import UserHome from './UserHome/UserHome'
 import WaitAuthScreen from './WaitAuthScreen/WaitAuthScreen'
+import LoadingCircle from './../LoadingCircle'
 import {urlB64ToUint8Array, applicationServerPublicKey, ServerBadResponseException} from './../Utils';
 import { SERVER_URL} from './../Consts';
-import {Icon, notification} from 'antd';
+import {notification} from 'antd';
 
 const IdbKeyval = require('idb-keyval');
-
-
 
 export default class Settings extends Component {
     constructor(props) {
@@ -298,9 +297,9 @@ export default class Settings extends Component {
     }
     render() {
         return (
-            <div className="settings" style={{opacity: this.state.loading ? 0.7 : 1}}>
-
-                {this.state.loading ? <Icon className="loading-icon" type="loading" spin={true}/>: ""}
+            <div className="settings">
+                {this.state.loading ? <LoadingCircle/>: ""}
+                <div  style={{opacity: this.state.loading ? 0.3 : 1}}>
                 {this.state.login === null ? "" : this.state.login ?
                     <Login nameValue={this.state.nameValue} emailValue={this.state.emailValue}
                            changeLoc={this.changeLoc} changeEmail={this.changeEmail} changeFullName={this.changeFullName}
@@ -308,6 +307,7 @@ export default class Settings extends Component {
                     : this.state.waitAuth ? <WaitAuthScreen user={this.state.waitingUser} cancelRequest={this.cancelRequest}/>
                         : <UserHome user={this.state.user} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)} />
                 }
+                </div>
             </div>
         );
     }

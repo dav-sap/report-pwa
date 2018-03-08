@@ -9,7 +9,6 @@ import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 export default class UserHome extends Component {
     constructor(props) {
         super(props);
-
         this.removeReport = this.removeReport.bind(this);
     }
     state = {

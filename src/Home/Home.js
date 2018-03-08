@@ -9,7 +9,9 @@ import Footer from './Footer/Footer';
 import SubmitScreen from './SubmitScreen/SubmitScreen'
 import './home.css';
 import './point-to-login.css'
+import './../loading.css';
 import { withRouter } from 'react-router-dom'
+import LoadingCircle from "../LoadingCircle";
 
 const IdbKeyval = require('idb-keyval');
 
@@ -159,11 +161,10 @@ class Home extends Component {
             let res = await fetch(SERVER_URL + "/verify_user", reqProps);
             if (res.status === 202 || res.status === 200) {
                 let json = await res.json();
-                console.log(json);
                 await IdbKeyval.set('waitAuth', false);
                 await this.setState({waitAuth: false, login: false});
                 await IdbKeyval.set('user', JSON.parse(json.member));
-                this.user = json.member;
+                this.user = JSON.parse(json.member);
                 await this.setState({user:  JSON.parse(json.member)});
 
             } else if (res.status === 401) {
@@ -245,17 +246,15 @@ class Home extends Component {
                 waitAuth: val,
             });
         });
-
-
     }
 
 
     render() {
         return (
-            <div className="App-wrapper" style={{opacity: this.state.loading ? 0.7 : 1,
-                background: COLOR_MAP[this.state.status]}}>
-
-                <div className="App" style={{width: "100%", maxWidth: "40rem", position: "relative", margin: "auto", maxHeight: "70rem"}}>
+            <div className="App-wrapper" style={{background: COLOR_MAP[this.state.status]}}>
+                {this.state.loading ? <LoadingCircle/>: ""}
+                <div className="App" style={{width: "100%", maxWidth: "40rem", position: "relative", margin: "auto",
+                    maxHeight: "70rem", opacity: this.state.loading ? 0.2 : 1}}>
                     {this.state.pointToLogin ? <div className="cover-div"/> : ""}
                     {this.state.pointToLogin ? <Icon type="arrow-up" className="arrow-bounce bounce"/> : ""}
                     {this.state.pointToLogin ? <div className="who-r-u-text">Who Are You!?</div> : ""}
