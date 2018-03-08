@@ -73,7 +73,7 @@ export default class Settings extends Component {
         let val = await IdbKeyval.get('user');
         let reports = await IdbKeyval.get('userReports');
         await this.setState({reports: reports, user: val});
-        if (val && val.name && val.email && val.subscription) {
+        if (val && val.name && val.email && val.subscription !== undefined) {
             try {
                 this.setState({waitAuth: false, login: false});
                 this.fetchReports(val);
@@ -168,16 +168,15 @@ export default class Settings extends Component {
                     console.log("This site already granted Notifications!");
                 }
                 else if (Notification.permission !== 'denied' || Notification.permission === "default") {
-                    Notification.requestPermission(function (permission) {
-                        if (permission === "granted") {
-                            console.log("Granted permission for notifications!");
-                        }
-                    })
+                    let permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        console.log("Granted permission for notifications!");
+                        const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+                        let reg = await navigator.serviceWorker.ready;
+                        let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
+                        subJson = sub;
+                    }
                 }
-                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-                let reg = await navigator.serviceWorker.ready;
-                let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
-                subJson = JSON.stringify(sub);
             }
             else {
                 console.error("No Service worker!");
@@ -189,7 +188,7 @@ export default class Settings extends Component {
                 headers: new Headers({
                     name: name,
                     email: email,
-                    sub: subJson,
+                    sub: JSON.stringify(subJson),
                     loc: location
                 })
             };

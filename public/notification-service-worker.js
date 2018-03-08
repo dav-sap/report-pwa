@@ -1,5 +1,5 @@
-const SERVER_URL = "https://flex-server.herokuapp.com";
-// const SERVER_URL = "http://localhost:3141";
+// const SERVER_URL = "https://flex-server.herokuapp.com";
+const SERVER_URL = "http://localhost:3141";
 const SITE_URL = "https://pwa-first-71a09.firebaseapp.com";
 'use strict';
 
@@ -133,7 +133,7 @@ self.importScripts("/idb-keyval-min.js"),
             clients.openWindow(SITE_URL + "/where-is-everyone");
             notification.close();
         }
-        else {
+        else if (action === 'Deny') {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
@@ -141,19 +141,28 @@ self.importScripts("/idb-keyval-min.js"),
                     email: notification.data.email,
                 })
             };
-            if (action === 'Deny') {
-                fetch(SERVER_URL + "/deny_user", reqProps)
-                    .then(res => {
-                        console.log('res from add user: ', res);
-                    });
-                notification.close();
-            } else if (action === 'Accept') {
-                fetch(SERVER_URL + "/add_user", reqProps)
-                    .then(res => {
-                        console.log('res from add user: ', res);
-                    });
-                notification.close();
-            }
+            fetch(SERVER_URL + "/deny_user", reqProps)
+                .then(res => {
+                    console.log('res from add user: ', res);
+                });
+            notification.close();
+        } else if (action === 'Accept') {
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    name: notification.data.name,
+                    email: notification.data.email,
+                })
+            };
+            fetch(SERVER_URL + "/add_user", reqProps)
+                .then(res => {
+                    console.log('res from add user: ', res);
+                });
+            notification.close();
+        }
+        else {
+            clients.openWindow(SITE_URL);
+            notification.close();
         }
     }),
     self.addEventListener('push', function(e) {

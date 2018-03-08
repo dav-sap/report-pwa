@@ -6,7 +6,6 @@ import {ServerBadResponseException} from '../Utils'
 import './where-info.css';
 import {Link } from 'react-router-dom';
 
-const IdbKeyval = require('idb-keyval');
 const TODAY = "today";
 const TOMORROW = "tomorrow";
 
@@ -36,11 +35,9 @@ export default class WhereInfo extends Component {
                     response.json().then((json) => {
                         if (stateToUpdate === TODAY) {
                             this.setState({today : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
-                            IdbKeyval.set(TODAY, {ooo: json.OOO, sick: json.SICK, wf: json.WF})
                         }
                         if (stateToUpdate === TOMORROW) {
                             this.setState({tomorrow : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
-                            IdbKeyval.set(TOMORROW, {ooo: json.OOO, sick: json.SICK, wf: json.WF})
                         }
                     })
                 } else throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
@@ -62,18 +59,7 @@ export default class WhereInfo extends Component {
         this.fetchMembers(TOMORROW, tomorrow.toDateString());
     }
     componentDidMount() {
-        IdbKeyval.get(TODAY).then((val) => {
-            if (val !== undefined) {
-                this.setState({today: val})
-            }
-        });
-        IdbKeyval.get(TOMORROW).then((val) => {
-            if (val !== undefined) {
-                this.setState({tomorrow: val})
-            }
-        });
         this.updateDates();
-
     }
 
     render() {

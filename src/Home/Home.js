@@ -143,7 +143,60 @@ class Home extends Component {
         now.setMinutes(0);
         return now;
     }
+    verifyUser = async (user) => {
+        let reqProps = {
+            method: 'POST',
+            headers: new Headers({
+                'content-type': 'application/json'
+            }),
+            body: JSON.stringify({
+                name: user.name,
+                email: user.email,
+                sub: user.subscription ? JSON.stringify(user.subscription) : {},
+            })
+        };
+        try {
+            let res = await fetch(SERVER_URL + "/verify_user", reqProps);
+            if (res.status === 202 || res.status === 200) {
+                let json = await res.json();
+                console.log(json);
+                await IdbKeyval.set('waitAuth', false);
+                await this.setState({waitAuth: false, login: false});
+                await IdbKeyval.set('user', JSON.parse(json.member));
+                this.user = json.member;
+                await this.setState({user:  JSON.parse(json.member)});
 
+            } else if (res.status === 401) {
+                IdbKeyval.set('user', null).then(() => {
+                    IdbKeyval.set('waitAuth', false).then(() => {
+                        this.setState({
+                            waitAuth: false, login: true
+                        });
+                    });
+                });
+            } else {
+                console.log("verify user unknown error");
+                this.setState({login: false});
+                const key = `open${Date.now()}`;
+                notification.open({
+                    message: '',
+                    description: <p className="notification-text">Server Connection Failed</p>,
+                    className: "notification-css",
+                    key,
+                });
+            }
+        } catch(err) {
+            console.log("Verify Failed: No server connection");
+            this.setState({login: false});
+            const key = `open${Date.now()}`;
+            notification.open({
+                message: '',
+                description: <p className="notification-text">Server Connection Failed</p>,
+                className: "notification-css",
+                key,
+            });
+        }
+    }
     componentDidMount() {
 
 
@@ -166,45 +219,22 @@ class Home extends Component {
                 }
             });
         IdbKeyval.get('user').then(val => {
-            this.user = val;
-
+            this.user = null;
             if (val && val.name && val.email) {
-                let reqProps = {
-                    method: 'POST',
-                    headers: new Headers({
-                        'content-type': 'application/json'
-                    }),
-                    body: JSON.stringify({
-                        name: val.name,
-                        email: val.email,
-                        sub: val.subscription ? JSON.stringify(val.subscription) : {},
-                    })
-                };
-                fetch(SERVER_URL + "/verify_user", reqProps)
-                    .then(res => {
-                        if (res.status === 202 || res.status === 200) {
-                            IdbKeyval.set('waitAuth', false).then(() => {
-                                this.setState({
-                                    waitAuth: false,login: false
-                                });
-                            });
-                        } else if (res.status === 401) {
-                            IdbKeyval.set('user', null).then(() =>{
-                                IdbKeyval.set('waitAuth', false).then(() => {
-                                    this.setState({
-                                        waitAuth: false,login: true
-                                    });
-                                });
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.log("Verify Failed: No server connection");
-                    })
+                this.user = val;
+                this.verifyUser(val);
             } else {
-                IdbKeyval.set('user', null).then(() =>{
-                    this.setState({login: true});
-                });
+                IdbKeyval.get('waitingUser').then((val) => {
+                    console.log(val);
+                    if (val && val.name && val.email) {
+                        this.user = val;
+                        this.verifyUser(val);
+                    } else {
+                        IdbKeyval.set('user', null).then(() =>{
+                            this.setState({login: true});
+                        });
+                    }
+                })
             }
         });
 
