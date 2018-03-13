@@ -45,10 +45,15 @@ export default class WhereInfo extends Component {
                 } else throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
             }).catch(err => {
                 this.setState({loading: false});
-                notification['error']({
-                    message: 'Connection Error',
-                    description: "dates are not updated",
-                });
+                if (stateToUpdate === TODAY) {
+                    const key = `open${Date.now()}`;
+                    notification.open({
+                        message: '',
+                        description: <p className="notification-text">Server Connection Failed</p>,
+                        className: "notification-css",
+                        key,
+                    });
+                }
                 console.error("Error updating dates")
             });
     };

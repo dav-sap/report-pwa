@@ -35,9 +35,12 @@ export default class UserHome extends Component {
             }
         }catch (e) {
             let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            notification['error']({
-                message: 'Connection Error',
-                description: description,
+            const key = `open${Date.now()}`;
+            notification.open({
+                message: '',
+                description: <p className="notification-text">Server Connection Failed</p>,
+                className: "notification-css",
+                key,
             });
         }
     };
@@ -101,9 +104,12 @@ export default class UserHome extends Component {
 
             }catch (e) {
                 let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-                notification['error']({
-                    message: 'Connection Error',
-                    description: description,
+                const key = `open${Date.now()}`;
+                notification.open({
+                    message: '',
+                    description: <p className="notification-text">Server Connection Failed</p>,
+                    className: "notification-css",
+                    key,
                 });
             }
         }
@@ -161,9 +167,12 @@ export default class UserHome extends Component {
             }
         }catch (e) {
             let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            notification['error']({
-                message: 'Connection Error',
-                description: description,
+            const key = `open${Date.now()}`;
+            notification.open({
+                message: '',
+                description: <p className="notification-text">Server Connection Failed</p>,
+                className: "notification-css",
+                key,
             });
         }
     };

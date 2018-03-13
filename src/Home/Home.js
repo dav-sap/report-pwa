@@ -226,7 +226,6 @@ class Home extends Component {
                 this.verifyUser(val);
             } else {
                 IdbKeyval.get('waitingUser').then((val) => {
-                    console.log(val);
                     if (val && val.name && val.email) {
                         this.user = val;
                         this.verifyUser(val);

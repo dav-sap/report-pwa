@@ -301,6 +301,7 @@ module.exports = {
       // If a URL is already hashed by Webpack, then there is no concern
       // about it being stale, and the cache-busting can be skipped.
       dontCacheBustUrlsMatching: /\.\w{8}\./,
+
       filename: 'service-worker.js',
         importScripts: [{ filename: 'notification-service-worker.js'}],
       logger(message) {
