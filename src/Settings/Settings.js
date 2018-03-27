@@ -127,9 +127,10 @@ export default class Settings extends Component {
         });
 
         try {
+            let sub = null;
             if ('serviceWorker' in navigator) {
                 let reg = await navigator.serviceWorker.ready;
-                let sub = await reg.pushManager.getSubscription();
+                sub = await reg.pushManager.getSubscription();
                 if (sub) {
                     await sub.unsubscribe();
                     console.log('User is unsubscribed.');
@@ -142,6 +143,7 @@ export default class Settings extends Component {
                 headers: new Headers({
                     name: this.state.user.name,
                     email: this.state.user.email,
+                    sub: sub ? JSON.stringify(sub) : {},
                 })
             };
 
@@ -160,11 +162,16 @@ export default class Settings extends Component {
         try {
             let subJson = {};
             if ('serviceWorker' in navigator) {
+
                 if (!("Notification" in window)) {
                     console.log("This browser does not support desktop notification");
                 }
                 else if (Notification.permission === "granted") {
                     console.log("This site already granted Notifications!");
+                    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+                    let reg = await navigator.serviceWorker.ready;
+                    let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
+                    subJson = sub;
                 }
                 else if (Notification.permission !== 'denied' || Notification.permission === "default") {
                     let permission = await Notification.requestPermission();
@@ -176,6 +183,7 @@ export default class Settings extends Component {
                         subJson = sub;
                     }
                 }
+
             }
             else {
                 console.error("No Service worker!");

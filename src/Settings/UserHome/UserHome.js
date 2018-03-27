@@ -65,7 +65,7 @@ export default class UserHome extends Component {
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
     };
-    componentDidMount() {
+    async componentDidMount() {
         if (!("Notification" in window)) {
             console.log("This browser does not support desktop notification");
             this.setState({
@@ -76,13 +76,17 @@ export default class UserHome extends Component {
             this.setState({
                 notificationStatus: false
             })
-        } else {
+        } else if (Notification.permission === "granted") {
             try {
+                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+                let reg = await navigator.serviceWorker.ready;
+                let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
                 let reqProps = {
                     method: 'POST',
                     headers: new Headers({
                         name: this.props.user.name,
                         email: this.props.user.email,
+                        sub: JSON.stringify(sub)
                     })
                 };
 
