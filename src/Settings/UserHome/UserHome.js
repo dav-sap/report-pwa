@@ -146,13 +146,14 @@ export default class UserHome extends Component {
             })
         }
     };
-    removeSubsciption = async () => {
+    removeSubsciption = async (sub) => {
         try {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
                     name: this.props.user.name,
                     email: this.props.user.email,
+                    sub: sub
                 })
             };
 
@@ -198,13 +199,13 @@ export default class UserHome extends Component {
                 })
             }
         } else {
+            const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+            let reg = await navigator.serviceWorker.ready;
+            let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
+            let subJson = JSON.stringify(sub);
             if (this.state.notificationStatus) {
-                this.removeSubsciption();
+                this.removeSubsciption(subJson);
             } else {
-                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-                let reg = await navigator.serviceWorker.ready;
-                let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
-                let subJson = JSON.stringify(sub);
                 this.addSubscription(subJson);
             }
 
