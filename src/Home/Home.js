@@ -154,7 +154,6 @@ class Home extends Component {
             body: JSON.stringify({
                 name: user.name,
                 email: user.email,
-                sub: user.subscription ? JSON.stringify(user.subscription) : {},
             })
         };
         try {
