@@ -1,33 +1,31 @@
 import React from 'react';
 import DayPicker, { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
+import { observer } from 'mobx-react';
 
 
 
-export default class DatePickerWrapper extends React.Component {
+
+class Date extends React.Component {
 
     static defaultProps = {
         numberOfMonths: 1,
     };
 
     handleDayClick = (day) => {
-        const range = DateUtils.addDayToRange(day, {from:this.props.from, to:this.props.to});
+        const range = DateUtils.addDayToRange(day, {from:this.props.store.dates.from, to:this.props.store.dates.to});
         if (range.to && range.from) {
-            this.props.updateDates(range);
+            this.props.store.updateDates(range);
         }
     };
+    
     render() {
-        const from = this.props.from;
-        const to = this.props.to;
-        const modifiers = { start: this.props.from, end: this.props.to};
+        const from = this.props.store.dates.from;
+        const to = this.props.store.dates.to;
+        const modifiers = { start: this.props.store.dates.from, end: this.props.store.dates.to};
         return (
             <div className="RangeExample">
-                <div>
-                    <div className="date-title">
-                        <img alt="" className="date-img" src="/images/dates.png"/>
-                            SELECT A DATE
-                    </div>
-                </div>
+
                 <DayPicker
                     className="Selectable"
                     numberOfMonths={this.props.numberOfMonths}
@@ -36,7 +34,9 @@ export default class DatePickerWrapper extends React.Component {
                     showOutsideDays={true}
                     onDayClick={this.handleDayClick}
                 />
+                
             </div>
         );
     }
 }
+export default Date = observer(Date)

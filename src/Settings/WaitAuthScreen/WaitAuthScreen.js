@@ -8,7 +8,7 @@ export default class WaitAuthScreen extends Component {
     render() {
         return (
             <div className="wait-auth">
-                <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
+                <Link to="/"><i className="prev-arrow"/></Link>
                 <div className="info">
                     <div className="full-name">
                         {this.props.user ? this.props.user.name : ""}

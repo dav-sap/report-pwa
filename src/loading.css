@@ -5,7 +5,7 @@
     top: 50%;
     left: 50%;
     color: white;
-    z-index: 10;
+    z-index: 11;
     transform: translate(-50%,-50%);
 }
 .sk-circle .sk-child {

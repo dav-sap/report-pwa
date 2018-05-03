@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {STATUS, SERVER_URL} from './../Consts';
-import {notification} from 'antd'
 import Status from './Status'
-import {ServerBadResponseException} from '../Utils'
+import {addErrorNoti} from './../Utils';
 import './where-info.css';
 import {Link } from 'react-router-dom';
 
@@ -14,16 +13,37 @@ export default class WhereInfo extends Component {
         today: {
             ooo: [],
             wf: [],
-            sick: [],
         },
         tomorrow: {
             ooo: [],
             wf: [],
-            sick: [],
         },
         day: TODAY,
         loading: false,
     };
+    parseReports(reports, stateToUpdate) {
+        let ooo = [];
+        let wf = [];
+        reports.forEach((report) => {
+            switch (report.status) {
+                case "OOO":
+                    ooo.push(report);
+                    break;
+                case "WF":
+                    wf.push(report);
+                    break;
+                default:
+                    console.log("No matching Status")
+            }
+        })
+        if (stateToUpdate === TODAY) {
+            this.setState({today : {ooo: ooo, wf:wf}, loading: false});
+
+        }
+        if (stateToUpdate === TOMORROW) {
+            this.setState({tomorrow : {ooo: ooo, wf:wf}});
+        }
+    }
     fetchMembers = (stateToUpdate, date) => {
         let today = date;
         let reqProps = {
@@ -34,25 +54,14 @@ export default class WhereInfo extends Component {
             .then((response) => {
                 if (response.status === 200) {
                     response.json().then((json) => {
-                        if (stateToUpdate === TODAY) {
-                            this.setState({today : {ooo: json.OOO, sick: json.SICK, wf: json.WF}, loading: false});
-
-                        }
-                        if (stateToUpdate === TOMORROW) {
-                            this.setState({tomorrow : {ooo: json.OOO, sick: json.SICK, wf: json.WF}});
-                        }
+                        this.parseReports(json.reports, stateToUpdate)
+                        
                     })
-                } else throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
+                } else throw new Error({msg:"No Internet Connection, or Server error", status:response.status});
             }).catch(err => {
                 this.setState({loading: false});
                 if (stateToUpdate === TODAY) {
-                    const key = `open${Date.now()}`;
-                    notification.open({
-                        message: '',
-                        description: <p className="notification-text">Server Connection Failed</p>,
-                        className: "notification-css",
-                        key,
-                    });
+                    addErrorNoti();
                 }
                 console.error("Error updating dates")
             });
@@ -75,11 +84,10 @@ export default class WhereInfo extends Component {
         return (
             <div className="where-wrapper">
                 <div className="where-info">
-                    <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
+                    <Link to="/"><i className="prev-arrow"/></Link>
                         <div className="title-where-text">Where is Everyone?</div>
                         <Status key={0} title={STATUS.OOO} loading={this.state.loading} people={this.state[this.state.day].ooo}/>
                         <Status key={1} title={STATUS.WF} loading={this.state.loading} people={this.state[this.state.day].wf} />
-                        <Status key={2} title={STATUS.SICK} loading={this.state.loading} people={this.state[this.state.day].sick} />
                         <div className="flex-row bottom-button-wrapper">
                             <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TODAY});}} >
                                 Today

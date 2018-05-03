@@ -13,22 +13,23 @@
 .where-wrapper {
     background-color: rgba(36, 36, 36, 1);
     height: 100%;
+    font-family: 'Amatic SC', cursive;
 }
 .title-where-text {
     color: white;
-    font-size: 25px;
-    font-weight: 800;
     margin: auto;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
+    font-size: 33px;
+    font-weight: 700;
 }
 .status-where {
     margin-bottom: 10px;
 
 }
 .status-where-title {
-    font-size: 22px;
+    font-size: 27px;
     color: white;
     padding: 4px;
     padding-left: 20px;
@@ -66,11 +67,12 @@
     width: 40%;
     border: 3px solid white;
     height: 50px;
-    font-size: 24px;
-    font-weight: 800;
     max-width: 33rem;
     cursor: pointer;
     text-align: center;
+    font-size: 29px;
+    font-weight: 700;
+    border-radius: 10px;
 
 }
 .bottom-button-wrapper {
@@ -84,11 +86,12 @@
     width: 40%;
     border: 3px solid white;
     height: 50px;
-    font-size: 24px;
-    font-weight: 800;
     max-width: 33rem;
     cursor: pointer;
     text-align: center;
     background-color: white;
     color: rgb(31,31,31);
+    font-size: 29px;
+    font-weight: 700;
+    border-radius: 10px;
 }

@@ -14,7 +14,7 @@ export default class Login extends Component {
     render() {
         return (
             <div className="login">
-                <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
+                <Link to="/"><i className="prev-arrow"/></Link>
                 <div className="login-text">But Wait, <br/> who AM I ?!</div>
                     <div className="login-body">
                     <fieldset className="field-set-input">

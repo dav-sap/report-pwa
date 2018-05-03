@@ -3,7 +3,8 @@
     font-weight: 900;
     color: white;
     height: 100%;
-
+    font-family: 'Amatic SC', cursive;
+    
 }
 .login-text {
     width: 100%;
@@ -21,6 +22,8 @@
     margin-left: auto;
     max-width: 33rem;
     font-size: 28px;
+    border-radius: 10px;
+    
 
 }
 .login-body {
@@ -51,7 +54,7 @@
 .login-screen-button {
     padding-top: 3px;
     padding-bottom: 3px;
-
+    border-radius: 10px;
 
     font-size: 28px;
     font-weight: 800;
@@ -59,7 +62,6 @@
     border-style: solid;
     /*max-width: 33rem;*/
     cursor: pointer;
-
     text-align: center;
     height: 50px;
     width: 45%;
@@ -83,6 +85,7 @@
 .bottom-buttons {
     height: calc( 15% - 75px );
     margin-top: 0 !important;
+    
 }
 .clicked-button-style{
     background-color: white;

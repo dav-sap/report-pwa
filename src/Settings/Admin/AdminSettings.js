@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {Link } from 'react-router-dom';
-import {notification} from 'antd';
 import {SERVER_URL} from './../../Consts'
-import {ServerBadResponseException} from './../../Utils'
+import {addErrorNoti} from './../../Utils';
 import './admin-settings.css';
 
 export default class AdminSettings extends Component {
@@ -24,14 +23,11 @@ export default class AdminSettings extends Component {
                     [stateMembersToChange]: json.members
                 });
             } else {
-                throw new ServerBadResponseException("Can't get updated user reports", res.status);
+                throw new Error({msg:"Can't get updated user reports", status:res.status});
 
             }
         } catch(e) {
-            notification['error']({
-                message: 'Connection Error',
-                description: "Can't get updated users data",
-            });
+            addErrorNoti();
         }
     }
     componentDidMount() {
@@ -51,14 +47,11 @@ export default class AdminSettings extends Component {
             if (res.status === 200) {
                 this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
             } else {
-                throw new ServerBadResponseException("Can't get updated user reports", res.status);
+                throw new Error({msg:"Can't get updated user reports", status:res.status});
 
             }
         } catch(e) {
-            notification['error']({
-                message: 'Connection Error',
-                description: "Can't remove user",
-            });
+            addErrorNoti();
         }
     };
     async addAwaitUser(member){
@@ -76,14 +69,11 @@ export default class AdminSettings extends Component {
                 this.fetchMembers("/get_all_members", 'members');
                 this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
             } else {
-                throw new ServerBadResponseException("Can't get updated user reports", res.status);
+                throw new Error({msg:"Can't add user",status: res.status});
 
             }
         } catch(e) {
-            notification['error']({
-                message: 'Connection Error',
-                description: "Can't add user",
-            });
+            addErrorNoti();
         }
     };
     async removeExistingUser(member){
@@ -100,14 +90,11 @@ export default class AdminSettings extends Component {
             if (res.status === 200) {
                 this.fetchMembers("/get_all_members", 'members');
             } else {
-                throw new ServerBadResponseException("Can't get updated user reports", res.status);
+                throw new Error({msg:"Can't remove exsiting user", status:res.status});
 
             }
         } catch(e) {
-            notification['error']({
-                message: 'Connection Error',
-                description: "Can't add user",
-            });
+            addErrorNoti();
         }
     };
 
@@ -115,7 +102,7 @@ export default class AdminSettings extends Component {
         return (
             <div className="admin-settings">
                 <div className="contents-wrapper">
-                <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
+                <Link to="/"><i className="prev-arrow"/></Link>
                 <div className="admin-title">Admin<img src="/images/admin-settings.png" alt="admin" className="admin-settings-img"/></div>
                 {this.state.awaitingMembers.length > 0 ? <div className="sub-admin-title">Awaiting Approval</div> : ""}
                 <table className="members-table">

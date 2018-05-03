@@ -4,99 +4,82 @@ import Login from './Login/Login'
 import UserHome from './UserHome/UserHome'
 import WaitAuthScreen from './WaitAuthScreen/WaitAuthScreen'
 import LoadingCircle from './../LoadingCircle'
-import {urlB64ToUint8Array, applicationServerPublicKey, ServerBadResponseException} from './../Utils';
+import {urlB64ToUint8Array, applicationServerPublicKey} from './../Utils';
 import { SERVER_URL} from './../Consts';
+import {addErrorNoti} from './../Utils';
 import {notification} from 'antd';
+import AppStoreInstance from "./../AppStore";
+import {observer} from "mobx-react/index";
+import { withRouter } from 'react-router-dom'
 
 const IdbKeyval = require('idb-keyval');
 
-export default class Settings extends Component {
+class Settings extends Component {
     constructor(props) {
         super(props);
         this.subscribeUser = this.subscribeUser.bind(this);
-        this.startUpData = this.startUpData.bind(this);
         this.unsubscribeUser = this.unsubscribeUser.bind(this);
         this.cancelRequest = this.cancelRequest.bind(this);
     }
     state = {
-        login: null,
-        waitAuth: false,
         nameValue: "",
         emailValue: "",
         location: "",
         loading: false,
         reports: null,
-        user: {},
-        waitingUser: {},
     };
 
 
-    parseReports = (splitJson) => {
-        let reports = [];
-        splitJson.OOO.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'OOO', _id: report._id})
-        });
-        splitJson.SICK.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'SICK', _id: report._id})
-        });
-        splitJson.WF.forEach(report => {
-            reports.push({startDate: new Date(report.startDate), endDate: new Date(report.endDate), status: 'WF', _id: report._id})
-        });
+    parseReports = (reports) => {
         this.setState({
             reports: reports.sort((a, b) => {
                 return a.startDate > b.startDate ? -1 : a.startDate < b.startDate ? 1 : 0;
             })
-        }, () => {IdbKeyval.set('userReports',this.state.reports)})
+        })
     };
     async fetchReports(val) {
-        let reqProps = {
-            method: 'GET',
-            headers: new Headers({
-                name: val.name,
-                email: val.email,
-            })
-        };
-        let res = await fetch(SERVER_URL + "/get_user_reports", reqProps);
-
-        if (res.status === 200) {
-            res.json().then(json => {
-                this.parseReports(json);
-            })
-        } else {
-            throw new ServerBadResponseException("Can't get updated user reports", res.status);
-
-        }
-    }
-    async startUpData() {
-
-        let val = await IdbKeyval.get('user');
-        let reports = await IdbKeyval.get('userReports');
-        await this.setState({reports: reports, user: val});
-        if (val && val.name && val.email && val.subscription !== undefined) {
-            try {
-                this.setState({waitAuth: false, login: false});
-                this.fetchReports(val);
-            } catch(e) {
-                notification['error']({
-                    message: 'Connection Error',
-                    description: "Can't get updated user reports",
-                });
-            }
-        } else {
-            let waitAuth = await IdbKeyval.get('waitAuth');
-            if (waitAuth) {
-                this.setState({waitAuth: true, login: false});
-                IdbKeyval.get('waitingUser').then((val) => {
-                    this.setState({
-                        waitingUser: val,
-                    })
+        try {
+            let reqProps = {
+                method: 'GET',
+                headers: new Headers({
+                    name: val.name,
+                    email: val.email,
                 })
+            };
+            let res = await fetch(SERVER_URL + "/get_user_reports", reqProps);
 
-            }else this.setState({waitAuth: false, login: true})
-        }
+            if (res.status === 200) {
+                res.json().then(json => {
+                    this.parseReports(json);
+                })
+            } else {
+                throw new Error({msg:"Can't get updated user reports", status:res.status});
+            }
+        } catch (e) {
+            addErrorNoti();
+        } 
     }
-    componentDidMount() {
-        this.startUpData();
+    
+    async componentDidMount() {
+        // this.startUpData();
+        this.setState({loading:true})
+        let val = await IdbKeyval.get('user');
+        if (val && val.name && val.email) {
+            AppStoreInstance.updateUser(val);
+            await this.fetchReports(val);
+            this.setState({loading:false, mounted: true})
+        } else {
+            val = await IdbKeyval.get('waitingUser');
+            if (val && val.name && val.email) {
+                await AppStoreInstance.verifyUser(val);
+                this.setState({loading:false, mounted: true})
+            } else {
+                await IdbKeyval.set('user', null);
+                AppStoreInstance.updateUser(null);
+                this.setState({loading:false, mounted: true})
+            }
+        }
+        
     }
 
     changeFullName = (fn) => {
@@ -113,19 +96,11 @@ export default class Settings extends Component {
 
     async unsubscribeUser(){
         IdbKeyval.set('user', null).then(() => {
-            this.setState({
-                user: null,
-            });
+            AppStoreInstance.updateUser(null);
         });
         IdbKeyval.set('waitAuth', false).then(() => {
-            this.setState({
-                waitAuth: false,
-            });
+            AppStoreInstance.updateWaitAuth(false);
         });
-        this.setState({
-            login: true,
-        });
-
         try {
             let sub = null;
             if ('serviceWorker' in navigator) {
@@ -149,7 +124,7 @@ export default class Settings extends Component {
 
             let response = await fetch(SERVER_URL + "/logout", reqProps);
             if (response.status === 500) {
-                throw new ServerBadResponseException("Can't unsubscribe in server", response.status);
+                throw new Error({msg:"Can't unsubscribe in server", status:response.status});
             }
 
         } catch(e) {
@@ -203,44 +178,46 @@ export default class Settings extends Component {
             let response = await fetch(SERVER_URL + url, reqProps);
 
             if (response.status === 500) {
-                throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
+                throw new Error({msg:"Can't " + url.substr(1) + " user", status: response.status});
             } else if (response.status === 202) {
                 IdbKeyval.set('waitAuth', true).then(() => {
-                    this.setState({waitAuth: true, login: false});
+                    AppStoreInstance.updateWaitAuth(true)
                 });
                 IdbKeyval.set('waitingUser', {name:name, email:email}).then(() => {
-                    this.setState({waitingUser: {name:name, email:email}});
+                    AppStoreInstance.updateWaitingUser({name:name, email:email});
                 });
-                notification['info']({
-                    message: 'Awaiting Approval',
-                    description: "An admin will review your details",
+                const key = `open${Date.now()}`;
+                notification.open({
+                    message: '',
+                    description: <p className="notification-text">An admin will review your details</p>,
+                    className: "notification-css-error",
+                    key,
                 });
             } else if (response.status === 200){
-                // let text = await response.text();
                 let json = await response.json();
-
-                notification['success']({
-                    message: 'Approved',
-                    description: json.info,
-                });
                 IdbKeyval.set('user', json.member).then(() => {
-                    this.setState({login: false, user:json.member});
+                    AppStoreInstance.updateUser(json.member)
                 });
                 this.fetchReports(json.member);
+            }  else if (response.status === 401){
+                const key = `open${Date.now()}`;
+                notification.open({
+                    message: '',
+                    description: <p className="notification-text">Login Failed! Check full name & email</p>,
+                    className: "notification-css-error",
+                    key,
+                });
             } else {
                 let text = await response.text();
-                throw new ServerBadResponseException(text, response.status);
+                throw new Error({msg:text, status:response.status});
             }
             this.setState({loading: false});
         } catch (e) {
-            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            notification['error']({
-                message: 'Connection Error',
-                description: description,
-            });
+            // let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
+            addErrorNoti();
             this.setState({loading: false});
             IdbKeyval.set('waitAuth', false).then(() => {
-                this.setState({waitAuth: false});
+                AppStoreInstance.updateWaitAuth(false);
             });
         }
     };
@@ -275,31 +252,26 @@ export default class Settings extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: this.state.waitingUser.name,
-                    email: this.state.waitingUser.email,
+                    name: AppStoreInstance.waitingUser.name,
+                    email: AppStoreInstance.waitingUser.email,
                 })
             };
 
             let response = await fetch(SERVER_URL + "/cancel_await_member", reqProps);
 
             if (response.status === 500) {
-                throw new ServerBadResponseException("No Internet Connection, or Server error", response.status);
+                throw new Error({msg:"Can't cancel member request", status:response.status});
             } else if (response.status === 200 || response.status === 404) {
                 IdbKeyval.set('waitAuth', false).then(() => {
-                    this.setState({waitAuth: false, login: true, loading: false});
+                    AppStoreInstance.updateWaitAuth(false);
+                    AppStoreInstance.updateUser(null);
+                    this.setState({loading: false});
                 });
                 IdbKeyval.set('waitingUser', {});
-                notification['success']({
-                    message: 'Request Canceled',
-                    description: "You may register with a new account",
-                });
             }
         }catch (e) {
-            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            notification['error']({
-                message: 'Connection Error',
-                description: description,
-            });
+            // let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
+            addErrorNoti();
             this.setState({loading: false});
         }
     }
@@ -307,17 +279,22 @@ export default class Settings extends Component {
         return (
             <div className="settings">
                 {this.state.loading ? <LoadingCircle/>: ""}
-                <div  style={{opacity: this.state.loading ? 0.3 : 1}}>
-                {this.state.login === null ? "" : this.state.login ?
+
+                <div style={{opacity: this.state.loading? 0.3 : 1}}>
+                    {AppStoreInstance.user === null && !AppStoreInstance.waitAuth && this.state.mounted ?
                     <Login nameValue={this.state.nameValue} emailValue={this.state.emailValue}
                            changeLoc={this.changeLoc} changeEmail={this.changeEmail} changeFullName={this.changeFullName}
-                           login={this.login} signup={this.signup} chosenLoc={this.state.location}/>
-                    : this.state.waitAuth ? <WaitAuthScreen user={this.state.waitingUser} cancelRequest={this.cancelRequest}/>
-                        : <UserHome user={this.state.user} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)} />
-                }
+                           login={this.login} signup={this.signup} chosenLoc={this.state.location}/> : ""}
+                    
+                    {AppStoreInstance.waitAuth ? <WaitAuthScreen user={AppStoreInstance.waitingUser} cancelRequest={this.cancelRequest}/>: ""}
+                    {AppStoreInstance.user !== null ? <UserHome user={AppStoreInstance.user} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
                 </div>
+                
             </div>
         );
     }
 }
+
+export default withRouter(observer(Settings));
+
 

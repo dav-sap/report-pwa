@@ -49,7 +49,7 @@
 
 .arrow-bounce {
     position: absolute;
-    top: 10%;
+    top: 2%;
     right: 3px;
     width: 40px;
     height: 40px;
@@ -68,11 +68,12 @@
 }
 .cover-div {
     position: fixed;
-    height: 100%;
-    width: 100%;
+    height: 120vh;
     background-color: grey;
     opacity: 0.8;
     z-index: 10;
-    top: 0;
-    left: 0;
+    width: 100vw;
+    margin-left: -50vw;
+    left: 50%;
+    top: -15%;
 }

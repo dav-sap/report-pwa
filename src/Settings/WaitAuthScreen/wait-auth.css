@@ -2,9 +2,11 @@
     max-width: 40rem;
     width:95%;
     margin: auto;
+    font-family: 'Amatic SC', cursive;
+
 }
 .wait-text {
-    font-size: 33px;
+    font-size: 36px;
     font-weight: 900;
     color: white;
     margin: 70px auto auto auto;
@@ -20,7 +22,7 @@
     height: 60px;
     width: 60%;
     min-width: 17rem;
-    font-size: 27px;
+    font-size: 33px;
     font-weight: 800;
     border: 3px white solid;
     max-width: 33rem;
@@ -29,6 +31,7 @@
     color: white;
     margin: 80px auto auto auto;
     position: relative;
+    border-radius: 10px;
 }
 @keyframes blink {
     0% {

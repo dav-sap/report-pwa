@@ -1,10 +1,15 @@
 @import '~antd/dist/antd.css';
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+@import url('https://fonts.googleapis.com/css?family=Amatic+SC:400,700&subset=hebrew');
 .App {
   text-align: center;
     height: 100%;
     min-height: 35rem;
     position: relative;
     z-index: 5;
+    /* font-size: 27px;
+    font-weight: 900; */
 
 }
 .App-wrapper {
@@ -97,4 +102,17 @@ hr {
     font-size: 43px;
     color: black;
     z-index: 100;
+}
+@media only screen and (max-height : 650px) {
+    .DayPicker-Day {
+        padding: 0.4rem !important;
+        font-size: 18px !important;
+
+    }
+    .DayPicker-Weekday {
+        font-size: 19px !important;
+    }
+    .RangeExample {
+        /* height: 300px !important; */
+    }
 }

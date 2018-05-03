@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './user-home.css';
-import {Icon, notification} from 'antd'
+import {Icon} from 'antd'
 import {Link } from 'react-router-dom';
+import {addErrorNoti} from './../../Utils';
 import { SERVER_URL} from './../../Consts';
-import {ServerBadResponseException} from './../../Utils';
 import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 
 export default class UserHome extends Component {
@@ -16,41 +16,47 @@ export default class UserHome extends Component {
     }
     async removeReport(status, report_id) {
         try {
+           
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
                     name: this.props.user.name,
                     email: this.props.user.email,
-                    status: status,
-                    report_id: JSON.stringify(report_id)
+                    report_id: report_id
                 })
             };
-
             let response = await fetch(SERVER_URL + "/remove_report", reqProps);
             if (response.status === 500) {
-                throw new ServerBadResponseException("Can't remove report, internet connection, or server error", response.status);
+                throw new Error("Can't remove report, internet connection, or server error");
             }
             else if (response.status === 200) {
                 this.props.fetchReports(this.props.user);
             }
         }catch (e) {
-            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            const key = `open${Date.now()}`;
-            notification.open({
-                message: '',
-                description: <p className="notification-text">Server Connection Failed</p>,
-                className: "notification-css",
-                key,
-            });
+            addErrorNoti();
         }
     };
-
-    getDateStr = (startDate, endDate, status, index, report_id) => {
+    isFullDay(startDate, endDate) {
+        return startDate.getHours() === 8 && startDate.getMinutes() === 0 && endDate.getHours() === 17 && endDate.getMinutes() === 0
+    }
+    getDateStr = (startDateStr, endDateStr, status, index, report_id, recurring) => {
         let locale = "en-us";
+        let startDate = new Date(startDateStr)
+        let endDate = new Date(endDateStr)
         let copyStartDate = new Date(startDate.getTime());
         let copyEndDate = new Date(endDate.getTime());
-
-        if (copyStartDate.setHours(0,0,0,0) === copyEndDate.setHours(0,0,0,0)) {
+        if (recurring) {
+            let weekday = startDate.toLocaleString(locale, { weekday: "long" });
+            return (<tr key={index} className="report"><th>{"Every " + weekday}</th>
+                    <th>{this.isFullDay(startDate, endDate) ? "All Day" : ('0' + startDate.getHours()).slice(-2) + ":" + ('0' + startDate.getMinutes()).slice(-2) +
+                    " - " + ('0' + endDate.getHours()).slice(-2) + ":" + ('0' + endDate.getMinutes()).slice(-2)}</th>
+                    <th>{status}</th>
+                    <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
+        }
+        else if (copyStartDate.setHours(0,0,0,0) === copyEndDate.setHours(0,0,0,0)) {
             let month = startDate.toLocaleString(locale, { month: "short" });
             return (<tr key={index} className="report"><th>{month + " " + startDate.getDate()}</th>
                     <th>{('0' + startDate.getHours()).slice(-2) + ":" + ('0' + startDate.getMinutes()).slice(-2) +
@@ -90,31 +96,24 @@ export default class UserHome extends Component {
                     })
                 };
 
-                fetch(SERVER_URL + "/check_subscription", reqProps).then((response) => {
-                    if (response.status === 500) {
-                        throw new ServerBadResponseException("Can't remove notification, internet connection, or server error", response.status);
-                    }
-                    else if (response.status === 200) {
-                        this.setState({
-                            notificationStatus: true
-                        })
-                    }
-                    else if (response.status !== 200) {
-                        this.setState({
-                            notificationStatus: false
-                        })
-                    }
-                })
+                let response = await fetch(SERVER_URL + "/check_subscription", reqProps);
+                if (response.status === 500) {
+                    throw new Error("Can't remove notifications, internet connection, or server error");
+                }
+                else if (response.status === 200) {
+                    this.setState({
+                        notificationStatus: true
+                    })
+                }
+                else if (response.status !== 200) {
+                    this.setState({
+                        notificationStatus: false
+                    })
+                }
+                
 
             }catch (e) {
-                let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-                const key = `open${Date.now()}`;
-                notification.open({
-                    message: '',
-                    description: <p className="notification-text">Server Connection Failed</p>,
-                    className: "notification-css",
-                    key,
-                });
+                addErrorNoti();
             }
         }
 
@@ -132,7 +131,7 @@ export default class UserHome extends Component {
 
             let response = await fetch(SERVER_URL + "/add_subscription", reqProps);
             if (response.status === 500) {
-                throw new ServerBadResponseException("Can't remove notification, internet connection, or server error", response.status);
+                throw new Error({msg:"Can't remove notification, internet connection, or server error", status:response.status});
             }
             else if (response.status === 200) {
                 this.setState({
@@ -140,11 +139,7 @@ export default class UserHome extends Component {
                 })
             }
         }catch (e) {
-            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            notification['error']({
-                message: 'Connection Error',
-                description: description,
-            });
+            addErrorNoti();
             this.setState({
                 notificationStatus: false
             })
@@ -163,7 +158,7 @@ export default class UserHome extends Component {
 
             let response = await fetch(SERVER_URL + "/remove_subscription", reqProps);
             if (response.status === 500) {
-                throw new ServerBadResponseException("Can't remove notification, internet connection, or server error", response.status);
+                throw new Error({msg:"Can't remove notification, internet connection, or server error", status:response.status});
             }
             else if (response.status === 200) {
                 this.setState({
@@ -171,14 +166,7 @@ export default class UserHome extends Component {
                 })
             }
         }catch (e) {
-            let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            const key = `open${Date.now()}`;
-            notification.open({
-                message: '',
-                description: <p className="notification-text">Server Connection Failed</p>,
-                className: "notification-css",
-                key,
-            });
+            addErrorNoti();
         }
     };
     changeNotificationStatus =  async () => {
@@ -216,44 +204,65 @@ export default class UserHome extends Component {
 
         }
     };
+    onlyUnique(value, index, self) { 
+        let firstOcc = -1;
+        self.find((item, i) => {
+            if(item._id === value._id){
+                firstOcc = i;
+              return i;
+            }
+            firstOcc = i;
+            return i;
+          });
+        return firstOcc === index;
+    }
+    getTableWrapperStyle() {
+        let h = document.getElementById("top");
+        if (h && h.clientHeight) {
+            return {height: "calc(100vh - " + (h.clientHeight -3) + "px)", width: "100%"};
+        }
+
+    }
     render() {
+
         return (
             <div className="user-home">
-                <Link to="/"><img className="prev-img" alt="Go back" src="/images/next-button.png"/></Link>
-                <div className="fixed-wrapper">
-                <div className="info">
-                    <div className="full-name">
-                        {this.props.user.name}
+                <Link to="/"><i className="prev-arrow"/></Link>
+                <div id="top">
+                    <div className="info">
+                        <div className="full-name">
+                            {this.props.user.name}
+                        </div>
+                        <div className="email">
+                            {this.props.user.email}
+                        </div>
+                        <div className="location">
+                            <img alt="loc" src="/images/loc.png" />
+                            {this.props.user.loc}
+                        </div>
                     </div>
-                    <div className="email">
-                        {this.props.user.email}
-                    </div>
-                    <div className="location">
-                        <img src="/images/loc.png" />
-                        {this.props.user.loc}
-                    </div>
-                </div>
-                <div className="user-option">
-                    {/*<div className="go-to-admin">*/}
-                        {/*<div className="admin-wrapper">*/}
-                            {/*Admin*/}
-                            {/*<img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>*/}
-                        {/*</div>*/}
+                    <div className="user-option">
+                        {/*<div className="go-to-admin">*/}
+                            {/*<div className="admin-wrapper">*/}
+                                {/*Admin*/}
+                                {/*<img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>*/}
+                            {/*</div>*/}
 
-                    {/*</div>*/}
-                    <img src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
-                    <div className="logout-button" onClick={this.props.logout}>
-                        Logout
-                        <Icon type="user-delete" className="logout-img"/>
+                        {/*</div>*/}
+                        <img alt="notification status" src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
+                        <div className="logout-button" onClick={this.props.logout}>
+                            Logout
+                            <Icon type="user-delete" className="logout-img"/>
+                        </div>
                     </div>
                 </div>
-                </div>
-                <div className="table-wrapper">
+                
+                <div className="table-wrapper" style={this.getTableWrapperStyle()}>
                 <table className="user-reports">
                     <tbody>
-                    {this.props.reports ? this.props.reports.map((report, index) => {
+                    {this.props.reports ? this.props.reports.filter(this.onlyUnique).map((report, index) => {
                         return (
-                            this.getDateStr(report.startDate, report.endDate, report.status, index, report._id)
+                            this.getDateStr(report.startDate, report.endDate, report.status, index, report._id, report.recurring)
                         )
                     }) : ""}
                     </tbody>

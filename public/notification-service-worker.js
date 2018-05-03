@@ -1,5 +1,5 @@
-const SERVER_URL = "https://flex-server.herokuapp.com";
-// const SERVER_URL = "http://localhost:3141";
+// const SERVER_URL = "https://flex-server.herokuapp.com";
+const SERVER_URL = "http://localhost:3141";
 const SITE_URL = "https://pwa-first-71a09.firebaseapp.com";
 'use strict';
 const filesToCache = [
@@ -179,7 +179,7 @@ self.addEventListener('push', function(e) {
         if (jsonData.admin) {
             createAdminNoti(jsonData, e);
         } else if (jsonData.approved){
-            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, subscription: jsonData.sub});
+            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, subscription: jsonData.sub, loc:jsonData.loc});
             idbKeyval.set('waitAuth', false);
             idbKeyval.set('waitingUser', {});
             createUser(jsonData, e);

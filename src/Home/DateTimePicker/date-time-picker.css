@@ -3,14 +3,44 @@
     flex-direction: row;
 }
 .date-time-picker-wrapper {
-    position: relative;
+    z-index: 1;
     max-width: 33rem;
+    opacity: 0;
+    padding-top: 30px;
+    font-family: 'Amatic SC', cursive;
+    font-weight: 700;
+}
+.RangeExample {
+    overflow: hidden;
+    /* height: 100%; */
+    height: 385px;
+    width: 100%;
     margin: auto;
 }
 .time-picker-wrapper {
     width: 60%;
-    margin: 0 20% 0 20%;
-    max-width: 20rem
+    height: 40px;
+    max-width: 14rem;
+    position: relative;
+    margin: auto;
+
+}
+.dash {
+    height: 0px;
+    width: 30px;
+    margin-top: 19px;
+    margin-bottom: 19px;
+    border-top: 2px solid white;
+}
+.time-picker {
+    width: 100%;
+    position: relative;
+    font-size: 27px;
+}
+#time-picker {
+    z-index: 5;
+    width: fit-content;
+    position: absolute;
 }
 .DayPicker {
     width: 100%;
@@ -51,7 +81,7 @@
 
 .DayPicker-Day {
     padding: 0.8rem;
-    font-weight: 800;
+    font-size: 20px;
 }
 .DayPicker-Caption {
     display: table-caption;
@@ -65,32 +95,55 @@
     margin-bottom: 0;
 }
 .DayPicker-Caption > div {
-    font-size: 1.15rem;
+    font-size: 25px;
     font-weight: 800;
 
 }
 .DayPicker-Weekday {
     color: white;
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 23px;
     border-right: 2px solid black;
     border-left: 2px solid black;
     border-bottom: 2px solid black;
 }
 .DayPicker-NavButton {
-    top: 0.7rem;
+    top: 1rem;
     margin-left: 2rem;
 }
 .date-title {
-    font-size: 23px;
-    font-weight: 700;
-    color: white;
+    font-size: 27px;
+    position: relative;
     background-color: black;
     text-align: center;
     width: 95%;
-    padding:0.7rem 1rem 0.7rem 1rem;
+    /* padding:0.7rem 1rem 0.7rem 1rem; */
     margin: auto;
+    height: 55px;
 }
 .date-img {
-    float: left;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+.date-chosen-text {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 200px;
+}
+@media only screen and (max-height : 650px) {
+    .DayPicker-Day {
+        padding: 0.4rem !important;
+        font-size: 18px !important;
+
+    }
+    .DayPicker-Weekday {
+        font-size: 19px !important;
+    }
+    .RangeExample {
+        height: 300px;
+    }
 }
