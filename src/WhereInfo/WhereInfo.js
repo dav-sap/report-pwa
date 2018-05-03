@@ -86,8 +86,8 @@ export default class WhereInfo extends Component {
                 <div className="where-info">
                     <Link to="/"><i className="prev-arrow"/></Link>
                         <div className="title-where-text">Where is Everyone?</div>
-                        <Status key={0} title={STATUS.OOO} loading={this.state.loading} people={this.state[this.state.day].ooo}/>
-                        <Status key={1} title={STATUS.WF} loading={this.state.loading} people={this.state[this.state.day].wf} />
+                        <Status key={0} title={STATUS.OOO} loading={this.state.loading} reports={this.state[this.state.day].ooo}/>
+                        <Status key={1} title={STATUS.WF} loading={this.state.loading} reports={this.state[this.state.day].wf} />
                         <div className="flex-row bottom-button-wrapper">
                             <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TODAY});}} >
                                 Today

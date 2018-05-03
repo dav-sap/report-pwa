@@ -7,14 +7,15 @@ export default class Status extends Component {
         return (
             <div className="status-where">
                 <div className="status-where-title" style={{background: COLOR_MAP[this.props.title]}}>
-                    {this.props.title + " - " + this.props.people.length}
+                    {this.props.title + " - " + this.props.reports.length}
                     {this.props.loading ? <div className="loader"/> : ""}
                     {/* <span className="span-img">{IMAGE_MAP(this.props.title, "status-where-img")}</span> */}
                 </div>
                 <div className="people-wrapper">
-                    {this.props.people.map((member, index) => {
-                        let note = member.note ? " - " + member.note : "";
-                        let text = member.name + note;
+                    {this.props.reports.map((report, index) => {
+                        console.log(report);
+                        let note = " - " + report.statusDescription + (report.note ? " - " + report.note : "");
+                        let text = report.name + note;
                         return <p key={index} className="name">{text} </p>;
                     })}
                 </div>
