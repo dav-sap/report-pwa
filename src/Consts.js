@@ -41,7 +41,7 @@ const SLIDER_SETTINGS = {
     speed: 400,
     variableWidth: false,
   };
-// const SERVER_URL = "https://flex-server.herokuapp.com";
-const SERVER_URL = "http://localhost:3141";
+const SERVER_URL = "https://flex-server.herokuapp.com";
+// const SERVER_URL = "http://localhost:3141";
 export {STATUS, COLOR_MAP, CAPTION_MAP, SUB_STATUS, SERVER_URL, SLIDER_SETTINGS}
 

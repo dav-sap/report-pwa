@@ -179,7 +179,7 @@ self.addEventListener('push', function(e) {
         if (jsonData.admin) {
             createAdminNoti(jsonData, e);
         } else if (jsonData.approved){
-            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, subscription: jsonData.sub});
+            idbKeyval.set('user', {name: jsonData.name, email: jsonData.email, subscription: jsonData.sub, loc:jsonData.loc});
             idbKeyval.set('waitAuth', false);
             idbKeyval.set('waitingUser', {});
             createUser(jsonData, e);
