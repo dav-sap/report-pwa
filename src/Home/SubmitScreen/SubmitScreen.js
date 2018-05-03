@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './submit-screen.css'
-import {SUB_STATUS, SLIDER_SETTINGS, SERVER_URL} from './../../Consts';
+import {SUB_STATUS, SLIDER_SETTINGS, SERVER_URL, STATUS} from './../../Consts';
 import { observer } from 'mobx-react';
 import { Icon} from 'antd';
 import LoadingCircle from "./../../LoadingCircle";
@@ -96,23 +96,26 @@ class SubmitScreen extends Component {
         } return ""
     }
     afterChange = (item) => {
-        this.setState({
-            subStatusNum: item
-        })
-        this.props.store.addStatusDesc(SUB_STATUS[this.props.store.status][item].props.children[1].props.children)
+        if (this.props.store.status !== STATUS.NO_STATUS) {
+            this.setState({
+                subStatusNum: item
+            })
+            this.props.store.addStatusDesc(SUB_STATUS[this.props.store.status][item].props.children[1].props.children)
+        }
     }
     componentDidMount() {
         this.props.store.addStatusDesc("Free Style");
     }
     
     itemClicked(index) {
-        let itemsLen = SUB_STATUS[this.props.store.status].length - 1;
-        if (this.state.subStatusNum === itemsLen && index === 0) {
-            this.slider.slickGoTo(itemsLen + 1);
-        } else if (this.state.subStatusNum === 0 && index === itemsLen) {
-            this.slider.slickGoTo(-1);
-        } else this.slider.slickGoTo(index)
-        
+        if (this.props.store.status !== STATUS.NO_STATUS) {
+            let itemsLen = SUB_STATUS[this.props.store.status].length - 1;
+            if (this.state.subStatusNum === itemsLen && index === 0) {
+                this.slider.slickGoTo(itemsLen + 1);
+            } else if (this.state.subStatusNum === 0 && index === itemsLen) {
+                this.slider.slickGoTo(-1);
+            } else this.slider.slickGoTo(index);
+        }
     }
     render() {
         
