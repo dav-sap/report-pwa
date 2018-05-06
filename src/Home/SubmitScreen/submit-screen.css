@@ -47,6 +47,9 @@ input {
 input:focus {
     outline-width: 0;
 }
+.sub-status-icon {
+    margin:auto;
+}
 
 .button-row {
     margin: auto;

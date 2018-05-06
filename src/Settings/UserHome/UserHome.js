@@ -46,21 +46,22 @@ export default class UserHome extends Component {
         let locale = "en-us";
         let startDate = new Date(startDateStr)
         let endDate = new Date(endDateStr)
+        let timeStr = ('0' + startDate.getUTCHours()).slice(-2) + ":" + ('0' + startDate.getUTCMinutes()).slice(-2) +
+        " - " + ('0' + endDate.getUTCHours()).slice(-2) + ":" + ('0' + endDate.getUTCMinutes()).slice(-2)
         let copyStartDate = new Date(startDate.getTime());
         let copyEndDate = new Date(endDate.getTime());
         if (recurring) {
             let weekday = startDate.toLocaleString(locale, { weekday: "long" });
             return (<tr key={index} className="report"><th>{"Every " + weekday}</th>
-                    <th>{this.isFullDay(startDate, endDate) ? "All Day" : ('0' + startDate.getHours()).slice(-2) + ":" + ('0' + startDate.getMinutes()).slice(-2) +
-                    " - " + ('0' + endDate.getHours()).slice(-2) + ":" + ('0' + endDate.getMinutes()).slice(-2)}</th>
+                    <th>{this.isFullDay(startDate, endDate) ? "All Day" : timeStr}</th>
                     <th>{status}</th>
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
         else if (copyStartDate.setHours(0,0,0,0) === copyEndDate.setHours(0,0,0,0)) {
             let month = startDate.toLocaleString(locale, { month: "short" });
-            return (<tr key={index} className="report"><th>{month + " " + startDate.getDate()}</th>
-                    <th>{('0' + startDate.getHours()).slice(-2) + ":" + ('0' + startDate.getMinutes()).slice(-2) +
-                    " - " + ('0' + endDate.getHours()).slice(-2) + ":" + ('0' + endDate.getMinutes()).slice(-2)}</th>
+            return (<tr key={index} className="report">
+                <th>{month + " " + startDate.getDate()}</th>
+                    <th>{timeStr}</th>
                     <th>{status}</th>
                     <th><Icon type="close"  onClick={() => this.removeReport(status, report_id)} className="remove-report-button"/></th></tr>);
         } else {
@@ -204,17 +205,21 @@ export default class UserHome extends Component {
 
         }
     };
-    onlyUnique(value, index, self) { 
-        let firstOcc = -1;
-        self.find((item, i) => {
-            if(item._id === value._id){
-                firstOcc = i;
-              return i;
-            }
-            firstOcc = i;
-            return i;
-          });
-        return firstOcc === index;
+    onlyUnique(reports) {
+        if (reports) {
+            let newReports = []
+            reports.forEach((report) => {
+                if (report.recurring) {
+                    let idxOfId = newReports.findIndex(newReport => newReport._id === report._id);
+                    if (idxOfId === -1) {
+                        newReports.push(report); 
+                    }
+                
+                } else newReports.push(report);
+            })
+            return newReports;
+       
+        } else return [];
     }
     getTableWrapperStyle() {
         let h = document.getElementById("top");
@@ -260,11 +265,11 @@ export default class UserHome extends Component {
                 <div className="table-wrapper" style={this.getTableWrapperStyle()}>
                 <table className="user-reports">
                     <tbody>
-                    {this.props.reports ? this.props.reports.filter(this.onlyUnique).map((report, index) => {
+                    {this.onlyUnique(this.props.reports).map((report, index) => {
                         return (
                             this.getDateStr(report.startDate, report.endDate, report.status, index, report._id, report.recurring)
                         )
-                    }) : ""}
+                    })}
                     </tbody>
                 </table>
                 </div>

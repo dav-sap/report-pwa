@@ -128,7 +128,7 @@ class SubmitScreen extends Component {
                 </div>
                 <Slider ref={(input) => { this.slider = input; }} {...SLIDER_SETTINGS} afterChange={this.afterChange}>
                     {SUB_STATUS[this.props.store.status] ? SUB_STATUS[this.props.store.status].map((item, index) => {
-                        return <div className="item-slider-wrapper" onClick={() =>this.itemClicked(index)}>{item}</div>
+                        return <div key={index} className="item-slider-wrapper" onClick={() =>this.itemClicked(index)}>{item}</div>
                     }) : ""}
                 </Slider>
                 {this.state.subStatusNum === 0 && !this.state.finishedNote? <div className="arrow-wrapper"><Icon type="arrow-down" className="arrow-freestyle bounce"/></div> : ""}

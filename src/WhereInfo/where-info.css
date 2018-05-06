@@ -14,6 +14,7 @@
     background-color: rgba(36, 36, 36, 1);
     height: 100%;
     font-family: 'Amatic SC', cursive;
+    min-height: 35rem;
 }
 .title-where-text {
     color: white;
