@@ -3,7 +3,7 @@ import './user-home.css';
 import {Icon} from 'antd'
 import {Link } from 'react-router-dom';
 import {addErrorNoti} from './../../Utils';
-import { SERVER_URL} from './../../Consts';
+import { SERVER_URL, STATUS} from './../../Consts';
 import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 
 export default class UserHome extends Component {
@@ -42,19 +42,20 @@ export default class UserHome extends Component {
     isFullDay(startDate, endDate) {
         return startDate.getHours() === 8 && startDate.getMinutes() === 0 && endDate.getHours() === 17 && endDate.getMinutes() === 0
     }
-    getDateStr = (startDateStr, endDateStr, status, index, report_id, recurring) => {
+    getDateStr = (startDateStr, endDateStr, status, index, report_id, recurring, statusDescription, note) => {
         let locale = "en-us";
         let startDate = new Date(startDateStr)
         let endDate = new Date(endDateStr)
         let timeStr = ('0' + startDate.getUTCHours()).slice(-2) + ":" + ('0' + startDate.getUTCMinutes()).slice(-2) +
         " - " + ('0' + endDate.getUTCHours()).slice(-2) + ":" + ('0' + endDate.getUTCMinutes()).slice(-2)
         let copyStartDate = new Date(startDate.getTime());
+        let statusStr = status + " - " + (statusDescription !== STATUS.FREE_STYLE ? statusDescription : note)
         let copyEndDate = new Date(endDate.getTime());
         if (recurring) {
             let weekday = startDate.toLocaleString(locale, { weekday: "long" });
             return (<tr key={index} className="report"><th>{"Every " + weekday}</th>
                     <th>{this.isFullDay(startDate, endDate) ? "All Day" : timeStr}</th>
-                    <th>{status}</th>
+                    <th>{statusStr}</th>
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
         else if (copyStartDate.setHours(0,0,0,0) === copyEndDate.setHours(0,0,0,0)) {
@@ -62,13 +63,13 @@ export default class UserHome extends Component {
             return (<tr key={index} className="report">
                 <th>{month + " " + startDate.getDate()}</th>
                     <th>{timeStr}</th>
-                    <th>{status}</th>
+                    <th>{statusStr}</th>
                     <th><Icon type="close"  onClick={() => this.removeReport(status, report_id)} className="remove-report-button"/></th></tr>);
         } else {
             let monthStart = startDate.toLocaleString(locale, { month: "short" });
             let monthEnd = endDate.toLocaleString(locale, { month: "short" });
             return (<tr key={index} className="report"><th>{monthStart + " " + startDate.getDate() + " - " + monthEnd + " " + endDate.getDate()}</th>
-                    <th></th><th>{status}</th>
+                    <th></th><th>{statusStr}</th>
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
     };
@@ -267,7 +268,7 @@ export default class UserHome extends Component {
                     <tbody>
                     {this.onlyUnique(this.props.reports).map((report, index) => {
                         return (
-                            this.getDateStr(report.startDate, report.endDate, report.status, index, report._id, report.recurring)
+                            this.getDateStr(report.startDate, report.endDate, report.status, index, report._id, report.recurring, report.statusDescription, report.note) 
                         )
                     })}
                     </tbody>
