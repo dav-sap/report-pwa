@@ -75,7 +75,7 @@ class AppStore {
     updateWaitingUser = action('updateWaitingUser', (user) => {
         this.waitingUser = user;
     });
-    verifyUser = async (user) => {
+    verifyAwaitUser = async (user) => {
         let reqProps = {
             method: 'POST',
             headers: new Headers({
@@ -87,7 +87,7 @@ class AppStore {
             })
         };
         try {
-            let res = await fetch(SERVER_URL + "/verify_user", reqProps);
+            let res = await fetch(SERVER_URL + "/verify_await_user", reqProps);
             if (res.status === 200) {
                 let json = await res.json();
                 await IdbKeyval.set('waitAuth', true);
@@ -101,6 +101,12 @@ class AppStore {
                 this.updateWaitAuth(false);
                 await IdbKeyval.set('waitingUser', {});
                 this.updateWaitingUser({});
+                res = await fetch(SERVER_URL + "/verify_user", reqProps);
+                if (res.status === 200) {
+                    let json = await res.json();
+                    await IdbKeyval.set('user', JSON.parse(json.member));
+                    this.updateUser(JSON.parse(json.member));
+                }
             } else {
                 console.log("verify user unknown error");
                 addErrorNoti();

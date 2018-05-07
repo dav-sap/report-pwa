@@ -43,7 +43,7 @@ class Home extends Component {
             } else {
                 IdbKeyval.get('waitingUser').then((val) => {
                     if (val && val.name && val.email) {
-                        AppStoreInstance.verifyUser(val);
+                        AppStoreInstance.verifyAwaitUser(val);
                     } else {
                         IdbKeyval.set('user', null).then(() =>{
                             AppStoreInstance.updateUser(null);

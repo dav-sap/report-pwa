@@ -11,7 +11,9 @@ import {notification} from 'antd';
 import AppStoreInstance from "./../AppStore";
 import {observer} from "mobx-react/index";
 import { withRouter } from 'react-router-dom'
-
+var Promise = require('es6-promise').Promise;
+require('es6-promise').polyfill();
+require('es6-promise/auto');
 const IdbKeyval = require('idb-keyval');
 
 class Settings extends Component {
