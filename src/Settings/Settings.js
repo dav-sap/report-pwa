@@ -73,7 +73,7 @@ class Settings extends Component {
         } else {
             val = await IdbKeyval.get('waitingUser');
             if (val && val.name && val.email) {
-                await AppStoreInstance.verifyUser(val);
+                await AppStoreInstance.verifyAwaitUser(val);
                 this.setState({loading:false, mounted: true})
             } else {
                 await IdbKeyval.set('user', null);
