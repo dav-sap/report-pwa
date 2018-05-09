@@ -18,11 +18,11 @@ class Header extends Component {
                 TweenMax.to(".date-time-picker-wrapper", 0.2, {opacity: 0, zIndex: 1})
                 let allEl = document.getElementsByClassName("status-wrapper");
                 
-                TweenMax.to(el, 0.7, {height:'42%'})
+                TweenMax.to(el, 0.7, {height:'26%'})
                 for (let i = 0; i <allEl.length; i++) {
                     TweenMax.to(allEl[i], 0.0, {borderWidth: '10px'})
                     if (allEl[i] !== el) {
-                        TweenMax.to(allEl[i], 0.7, {height:'42%'})
+                        TweenMax.to(allEl[i], 0.7, {height:'26%'})
                         TweenMax.to(allEl[i], 0.7, {x: '+=300', opacity: 1})
                         
                     }

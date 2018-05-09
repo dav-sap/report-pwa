@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './status-screen.css'
 import { observer } from 'mobx-react';
-import {COLOR_MAP, STATUS} from './../../Consts';
+import {COLOR_MAP, STATUS, SERVER_URL} from './../../Consts';
+import {addErrorNoti} from './../../Utils'
 import { Icon} from 'antd';
 import Power0 from 'gsap'
 import TweenMax from 'gsap/TweenMax';
@@ -16,6 +17,32 @@ class StatusScreen extends Component {
             this.setState({pointToLogin: true});
             return;
         }
+        if (STATUS.ARRIVING === statusChosen) {
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
+                    name: this.props.store.user.name,
+                })
+            };
+            fetch(SERVER_URL +"/add_arriving", reqProps)
+                .then(res => {
+                    if (res.status !== 200) {
+                        throw new Error("Error Connecting");
+                    } else {
+                        
+                        this.props.store.resetAll();   
+                        setTimeout(() => {this.props.history.push('/where-is-everyone')}, 1600)
+                    }
+                })
+                .catch(err => {
+                    addErrorNoti();
+                    console.error("Error send report")
+                });
+        }
+        
         let el = (event.target || event.srcElement); // DOM uses 'target';
         let allEl = document.getElementsByClassName("status-wrapper");
         
@@ -33,6 +60,7 @@ class StatusScreen extends Component {
                 TweenMax.to(allEl[i], 0.7, {height:0, delay: 0.7})
             }
         }
+        if (STATUS.ARRIVING === statusChosen) return
         setTimeout(() => {
             this.props.store.updateStatus(statusChosen);
             this.props.store.nextSlide();
@@ -57,6 +85,10 @@ class StatusScreen extends Component {
                 <div className="status-wrapper" id={STATUS.WF}>
                 <div className="status-button" style={{background: COLOR_MAP[STATUS.WF]}}
                         onClick={(e) => this.handleStatusClick(e, STATUS.WF)} ></div><div className="text-div">Working From...</div>
+                </div>
+                <div className="status-wrapper" id={STATUS.ARRIVING}>
+                <div className="status-button" style={{background: COLOR_MAP[STATUS.ARRIVING]}}
+                        onClick={(e) => this.handleStatusClick(e, STATUS.ARRIVING)} ></div><div className="text-div">Arriving!</div>
                 </div>
                 <Footer className="status-next-button" text="Where is Everyone?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />
             </div>

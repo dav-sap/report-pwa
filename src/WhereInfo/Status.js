@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
-import {COLOR_MAP} from './../Consts'
+import {COLOR_MAP, STATUS} from './../Consts'
 
 export default class Status extends Component {
-
+    getStyle = () => {
+        let retStyle = {}
+        if (this.props.title === STATUS.ARRIVING) {
+            retStyle = {display: "grid",
+            gridTemplateColumns: "50% 50%",
+            justifyContent: "center",
+            textAlign: "center"}
+        }
+        return retStyle;
+    }
     render() {
         return (
             <div className="status-where">
@@ -11,11 +20,15 @@ export default class Status extends Component {
                     {this.props.loading ? <div className="loader"/> : ""}
                     {/* <span className="span-img">{IMAGE_MAP(this.props.title, "status-where-img")}</span> */}
                 </div>
-                <div className="people-wrapper">
+                <div className="people-wrapper" style={this.getStyle()}>
                     {this.props.reports.map((report, index) => {
-                        console.log(report);
-                        let note = " - " + report.statusDescription + (report.note ? " - " + report.note : "");
-                        let text = report.name + note;
+                        let text = ""
+                        if (this.props.title === STATUS.ARRIVING) {
+                            text = report;
+                        } else {
+                            let note = " - " + report.statusDescription + (report.note ? " - " + report.note : "");
+                            text = report.name + note;
+                        }
                         return <p key={index} className="name">{text} </p>;
                     })}
                 </div>

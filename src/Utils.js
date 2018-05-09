@@ -48,3 +48,6 @@ export function addErrorNoti() {
         key,
     });
 }
+export function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}

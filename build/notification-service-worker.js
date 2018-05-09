@@ -73,7 +73,7 @@ function createReportNoti(jsonData, e) {
         },
         actions: [
             {
-                action: 'goToWhere', title: 'Where is Everyone?',
+                action: 'arriving', title: 'Arriving!!!',
                 icon: 'images/checkmark.png'
             },
             {
@@ -138,6 +138,34 @@ self.addEventListener('notificationclick', function(e) {
         notification.close();
     }else if (action === 'goToWhere'){
         clients.openWindow(SITE_URL + "/where-is-everyone");
+        notification.close();
+    }
+    else if (action === 'arriving'){
+        console.log("arriving");
+        idbKeyval.get('user').then((user) => {
+            console.log("arriving", user);
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
+                    name: user.name,
+                })
+            };
+            fetch(SERVER_URL +"/add_arriving", reqProps)
+            .then(res => {
+                if (res.status !== 200) {
+                    throw new Error("Error Connecting");
+                } else {
+                    clients.openWindow(SITE_URL + "/where-is-everyone");
+                }
+            })
+            .catch(err => {
+                console.error("Error send report")
+            });
+        });
+        
         notification.close();
     }
     else if (action === 'Deny') {
