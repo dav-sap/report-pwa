@@ -5,7 +5,7 @@
     margin: auto;
     position: relative;
     /* margin: auto; */
-    min-height: 35rem;
+    /* min-height: 35rem; */
     max-width: 33rem;
     max-height: 70rem;
 
@@ -14,7 +14,7 @@
     background-color: rgba(36, 36, 36, 1);
     height: 100%;
     font-family: 'Amatic SC', cursive;
-    min-height: 35rem;
+    min-height: 600px;
 }
 .title-where-text {
     color: white;
@@ -30,9 +30,9 @@
 
 }
 .status-where-title {
-    font-size: 27px;
+    font-size: 24px;
     color: white;
-    padding: 4px;
+    padding: 2px;
     padding-left: 20px;
     font-weight: 800;
     border-radius: 20px;
@@ -43,17 +43,16 @@
 }
 .name {
     color: white;
-    font-size: 28px;
+    font-size: 27px;
     font-weight: 800;
-    height: 25%;
     position: relative;
-    margin-bottom: 2px; 
+    margin-bottom: 0px; 
     
 
 }
 .people-wrapper {
     overflow-y: auto;
-    max-height: 150px;
+    max-height: 105px;
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -97,4 +96,19 @@
     font-size: 29px;
     font-weight: 700;
     border-radius: 10px;
+}
+@media screen and (min-height: 700px) {
+    .people-wrapper {
+        max-height: 138px;
+    }
+}
+@media screen and (min-height: 750px) {
+    .people-wrapper {
+        max-height: 154px;
+    }
+}
+@media screen and (min-height: 800px) {
+    .people-wrapper {
+        max-height: 171px;
+    }
 }

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import {Link } from 'react-router-dom';
+import {emailToName} from './../../Utils'
+import {observer} from "mobx-react/index";
 
 import './wait-auth.css';
 
-export default class WaitAuthScreen extends Component {
+class WaitAuthScreen extends Component {
 
     render() {
         return (
@@ -11,10 +13,10 @@ export default class WaitAuthScreen extends Component {
                 <Link to="/"><i className="prev-arrow"/></Link>
                 <div className="info">
                     <div className="full-name">
-                        {this.props.user ? this.props.user.name : ""}
+                        {this.props.store.waitingUser ? emailToName(this.props.store.waitingUser.email): ""}
                     </div>
                     <div className="email">
-                        {this.props.user ? this.props.user.email: ""}
+                        {this.props.store.waitingUser ? this.props.store.waitingUser.email: ""}
                     </div>
                 </div>
                 <div className="wait-text">
@@ -30,3 +32,5 @@ export default class WaitAuthScreen extends Component {
         );
     }
 }
+
+export default observer(WaitAuthScreen);

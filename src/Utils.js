@@ -23,6 +23,13 @@ export function urlB64ToUint8Array(base64String) {
 //     this.status = status;
 //     this.name = 'ServerBadResponseException';
 // }
+export function emailToName(str) {
+    let name = str.substr(0,str.indexOf("@")).replace(".", " ")
+    return name.replace(/\w\S*/g, function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
 export function isMobile() {
     window.mobilecheck = function() {
         let check = false;
@@ -44,6 +51,15 @@ export function addErrorNoti() {
     notification.open({
         message: '',
         description: <p className="notification-text">Server Connection Failed</p>,
+        className: "notification-css-error",
+        key,
+    });
+}
+export function addNotification(str) {
+    const key = `open${Date.now()}`;
+    notification.open({
+        message: '',
+        description: <p className="notification-text">{str}</p>,
         className: "notification-css-error",
         key,
     });

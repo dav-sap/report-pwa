@@ -6,7 +6,7 @@ import WaitAuthScreen from './WaitAuthScreen/WaitAuthScreen'
 import LoadingCircle from './../LoadingCircle'
 import {urlB64ToUint8Array, applicationServerPublicKey} from './../Utils';
 import { SERVER_URL} from './../Consts';
-import {addErrorNoti} from './../Utils';
+import {addErrorNoti, addNotification} from './../Utils';
 import {notification} from 'antd';
 import AppStoreInstance from "./../AppStore";
 import {observer} from "mobx-react/index";
@@ -22,7 +22,7 @@ class Settings extends Component {
         this.cancelRequest = this.cancelRequest.bind(this);
     }
     state = {
-        nameValue: "",
+        passwordValue: "",
         emailValue: "",
         location: "",
         loading: false,
@@ -42,7 +42,6 @@ class Settings extends Component {
             let reqProps = {
                 method: 'GET',
                 headers: new Headers({
-                    name: val.name,
                     email: val.email,
                 })
             };
@@ -64,13 +63,13 @@ class Settings extends Component {
         // this.startUpData();
         this.setState({loading:true})
         let val = await IdbKeyval.get('user');
-        if (val && val.name && val.email) {
+        if (val && val.email) {
             AppStoreInstance.updateUser(val);
             await this.fetchReports(val);
             this.setState({loading:false, mounted: true})
         } else {
             val = await IdbKeyval.get('waitingUser');
-            if (val && val.name && val.email) {
+            if (val && val.email) {
                 await AppStoreInstance.verifyAwaitUser(val);
                 this.setState({loading:false, mounted: true})
             } else {
@@ -81,10 +80,16 @@ class Settings extends Component {
         }
         
     }
+    startLoading = () => {
+        this.setState({loading:true})
+    }
+    stopLoading = () => {
+        this.setState({loading:false})
+    }
 
-    changeFullName = (fn) => {
+    changePassword = (fn) => {
         this.setState({
-            nameValue: fn
+            passwordValue: fn
         })
     };
 
@@ -116,8 +121,7 @@ class Settings extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: this.state.user.name,
-                    email: this.state.user.email,
+                    email: AppStoreInstance.user.email,
                     sub: sub ? JSON.stringify(sub) : {},
                 })
             };
@@ -132,7 +136,7 @@ class Settings extends Component {
         }
     };
 
-    async subscribeUser (name, email, url, location){
+    async subscribeUser (pwd, email, url, location){
         this.setState({loading: true});
         try {
             let subJson = {};
@@ -148,7 +152,7 @@ class Settings extends Component {
                     let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
                     subJson = sub;
                 }
-                else if (Notification.permission !== 'denied' || Notification.permission === "default") {
+                else if (Notification.permission === "default") {
                     let permission = await Notification.requestPermission();
                     if (permission === "granted") {
                         console.log("Granted permission for notifications!");
@@ -157,6 +161,10 @@ class Settings extends Component {
                         let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
                         subJson = sub;
                     }
+                }else if (Notification.permission === "denied" && url === "/register") {
+                    addNotification("Norifications are blocked! Go to chrome settings to allow");
+                } else {
+                    console.log("notification permission status unknown", Notification.permission);
                 }
 
             }
@@ -168,10 +176,10 @@ class Settings extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: name,
+                    password: pwd,
                     email: email,
                     sub: JSON.stringify(subJson),
-                    loc: location
+                    loc: location ? location : AppStoreInstance.user.loc
                 })
             };
 
@@ -183,30 +191,26 @@ class Settings extends Component {
                 IdbKeyval.set('waitAuth', true).then(() => {
                     AppStoreInstance.updateWaitAuth(true)
                 });
-                IdbKeyval.set('waitingUser', {name:name, email:email}).then(() => {
-                    AppStoreInstance.updateWaitingUser({name:name, email:email});
+                IdbKeyval.set('waitingUser', {email:email}).then(() => {
+                    AppStoreInstance.updateWaitingUser({email:email});
                 });
-                const key = `open${Date.now()}`;
-                notification.open({
-                    message: '',
-                    description: <p className="notification-text">An admin will review your details</p>,
-                    className: "notification-css-error",
-                    key,
-                });
+                addNotification("An admin will review your details")
+                
             } else if (response.status === 200){
                 let json = await response.json();
+                console.log("STATEUS 200", json)
                 IdbKeyval.set('user', json.member).then(() => {
                     AppStoreInstance.updateUser(json.member)
                 });
+                IdbKeyval.set('waitingUser', {}).then(() => {
+                    AppStoreInstance.updateWaitingUser({});
+                });
+                IdbKeyval.set('waitAuth', false).then(() => {
+                    AppStoreInstance.updateWaitAuth(false)
+                });
                 this.fetchReports(json.member);
             }  else if (response.status === 401){
-                const key = `open${Date.now()}`;
-                notification.open({
-                    message: '',
-                    description: <p className="notification-text">Login Failed! Check full name & email</p>,
-                    className: "notification-css-error",
-                    key,
-                });
+                addNotification("Login Failed! Check email & password");
             } else {
                 let text = await response.text();
                 throw new Error({msg:text, status:response.status});
@@ -223,10 +227,10 @@ class Settings extends Component {
     };
 
     login = () => {
-        this.subscribeUser(this.state.nameValue, this.state.emailValue, "/login", this.state.location);
+        this.subscribeUser(this.state.passwordValue, this.state.emailValue, "/login", this.state.location);
     };
     signup = () => {
-        this.subscribeUser(this.state.nameValue, this.state.emailValue, "/register", this.state.location);
+        this.subscribeUser(this.state.passwordValue, this.state.emailValue, "/register", this.state.location);
     };
 
 
@@ -252,7 +256,6 @@ class Settings extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: AppStoreInstance.waitingUser.name,
                     email: AppStoreInstance.waitingUser.email,
                 })
             };
@@ -282,12 +285,12 @@ class Settings extends Component {
 
                 <div style={{opacity: this.state.loading? 0.3 : 1}}>
                     {AppStoreInstance.user === null && !AppStoreInstance.waitAuth && this.state.mounted ?
-                    <Login nameValue={this.state.nameValue} emailValue={this.state.emailValue}
-                           changeLoc={this.changeLoc} changeEmail={this.changeEmail} changeFullName={this.changeFullName}
+                    <Login passwordValue={this.state.passwordValue} emailValue={this.state.emailValue}
+                           changeLoc={this.changeLoc} changeEmail={this.changeEmail} changePassword={this.changePassword}
                            login={this.login} signup={this.signup} chosenLoc={this.state.location}/> : ""}
                     
-                    {AppStoreInstance.waitAuth ? <WaitAuthScreen user={AppStoreInstance.waitingUser} cancelRequest={this.cancelRequest}/>: ""}
-                    {AppStoreInstance.user !== null ? <UserHome user={AppStoreInstance.user} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
+                    {AppStoreInstance.waitAuth ? <WaitAuthScreen store={AppStoreInstance}  cancelRequest={this.cancelRequest}/>: ""}
+                    {AppStoreInstance.user !== null ? <UserHome  startLoading={this.startLoading} stopLoading={this.stopLoading} store={AppStoreInstance} subscribeUser={this.subscribeUser} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
                 </div>
                 
             </div>

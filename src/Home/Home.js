@@ -38,11 +38,11 @@ class Home extends Component {
                 }
             });
         IdbKeyval.get('user').then(val => {
-            if (val && val.name && val.email) {
+            if (val && val.email) {
                 AppStoreInstance.updateUser(val);
             } else {
                 IdbKeyval.get('waitingUser').then((val) => {
-                    if (val && val.name && val.email) {
+                    if (val && val.email) {
                         AppStoreInstance.verifyAwaitUser(val);
                     } else {
                         IdbKeyval.set('user', null).then(() =>{

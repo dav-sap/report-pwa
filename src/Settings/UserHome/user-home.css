@@ -6,6 +6,7 @@
     width:95%;
     margin: auto;
     font-family: 'Amatic SC', cursive;
+    color:white;
 }
 .full-name {
     color: white;
@@ -15,7 +16,21 @@
     text-overflow: ellipsis;
     display: block;
     overflow: hidden;
-    padding-top: 45px;
+    padding-top: 25px;
+}
+.submit-changes-button {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-radius: 10px;
+    font-size: 28px;
+    font-weight: 800;
+    border-width: 3px;
+    border-style: solid;
+    cursor: pointer;
+    text-align: center;
+    width: 150px;
+    margin: auto;
+    margin-top:20px;
 }
 .email {
     color: white;
@@ -46,6 +61,22 @@
     top: 0;
     font-size: 25px;
     width: 100px;
+    height:38px;
+    /* padding: 2px 5px 2px 5px; */
+    padding-left: 5px;
+    font-weight: 800;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.edit-profile {
+    border: 1.8px red solid;
+    color:#ff5400;
+    position: absolute;
+    right: 3px;
+    top: -45px;
+    font-size: 20px;
+    width: 100px;
+    height:38px;
     padding: 2px 5px 2px 5px;
     font-weight: 800;
     border-radius: 10px;

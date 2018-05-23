@@ -26,7 +26,8 @@ export default class Status extends Component {
                         if (this.props.title === STATUS.ARRIVING) {
                             text = report;
                         } else {
-                            let note = " - " + report.statusDescription + (report.note ? " - " + report.note : "");
+                            let desc = report.statusDescription === STATUS.FREE_STYLE ? "" : " - " + report.statusDescription
+                            let note = desc + (report.note ? " - " + report.note : "");
                             text = report.name + note;
                         }
                         return <p key={index} className="name">{text} </p>;

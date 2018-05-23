@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
 import './user-home.css';
-import {Icon} from 'antd'
+import {Icon, notification} from 'antd'
 import {Link } from 'react-router-dom';
-import {addErrorNoti} from './../../Utils';
+import {addErrorNoti, emailToName, addNotification} from './../../Utils';
 import { SERVER_URL, STATUS} from './../../Consts';
 import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
+import {observer} from "mobx-react/index";
 
-export default class UserHome extends Component {
+class UserHome extends Component {
     constructor(props) {
         super(props);
         this.removeReport = this.removeReport.bind(this);
     }
     state = {
         notificationStatus: true,
+        editing: false,
+        newEmail: this.props.store.user.email,
+        oldPass: "",
+        newPass: "",
+        newNickname: this.props.store.user.name
     }
     async removeReport(status, report_id) {
         try {
@@ -23,8 +29,7 @@ export default class UserHome extends Component {
                     'content-type': 'application/json'
                 }),
                 body: JSON.stringify({
-                    name: this.props.user.name,
-                    email: this.props.user.email,
+                    email: this.props.store.user.email,
                     report_id: report_id
                 })
             };
@@ -33,7 +38,7 @@ export default class UserHome extends Component {
                 throw new Error("Can't remove report, internet connection, or server error");
             }
             else if (response.status === 200) {
-                this.props.fetchReports(this.props.user);
+                this.props.fetchReports(this.store.props.user);
             }
         }catch (e) {
             addErrorNoti();
@@ -92,8 +97,7 @@ export default class UserHome extends Component {
                 let reqProps = {
                     method: 'POST',
                     headers: new Headers({
-                        name: this.props.user.name,
-                        email: this.props.user.email,
+                        email: this.props.store.user.email,
                         sub: JSON.stringify(sub)
                     })
                 };
@@ -125,8 +129,7 @@ export default class UserHome extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: this.props.user.name,
-                    email: this.props.user.email,
+                    email: this.props.store.user.email,
                     sub: sub
                 })
             };
@@ -152,8 +155,7 @@ export default class UserHome extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: this.props.user.name,
-                    email: this.props.user.email,
+                    email: this.props.store.user.email,
                     sub: sub
                 })
             };
@@ -171,14 +173,16 @@ export default class UserHome extends Component {
             addErrorNoti();
         }
     };
+    
     changeNotificationStatus =  async () => {
         if (!("Notification" in window)) {
             console.log("This browser does not support desktop notification");
             this.setState({
                 notificationStatus: false
             })
+            addNotification("This phone does not support notifications");
         }
-        else if (Notification.permission !== "granted") {
+        else if (Notification.permission === "default") {
             let permission = await Notification.requestPermission();
             if (permission === "granted") {
                 console.log("Granted permission for notifications!");
@@ -192,7 +196,7 @@ export default class UserHome extends Component {
                     notificationStatus: false
                 })
             }
-        } else {
+        } else if (Notification.permission === "granted") {
             const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
             let reg = await navigator.serviceWorker.ready;
             let sub = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationServerKey});
@@ -202,8 +206,10 @@ export default class UserHome extends Component {
             } else {
                 this.addSubscription(subJson);
             }
-
-
+        } else if (Notification.permission === "denied") {
+            addNotification(<p>Norifications are blocked!<br/> Go to chrome settings to edit</p>);
+        } else {
+            console.log("notification permission status unknown", Notification.permission);
         }
     };
     onlyUnique(reports) {
@@ -229,6 +235,75 @@ export default class UserHome extends Component {
         }
 
     }
+    editProfile = () => {
+        if (this.state.editing) {
+            this.setState({
+                newEmail: this.props.store.user.email,
+                oldPass: "",
+                newPass: "",
+                editing: false,
+                newNickname: this.props.store.user.name
+            })
+            
+        } else {
+            this.setState({
+                editing: true
+            })
+        }
+    }
+    changePwdVisibility = (inputID) => {
+        let x = document.getElementById(inputID);
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+    submitProfileChanges = async () => {
+        try {
+            if (this.state.oldPass === "") {
+                addNotification("Please enter old password to submit changes");
+                return;
+            }
+            this.props.startLoading()
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
+                    oldEmail: this.props.store.user.email,
+                    newEmail: this.state.newEmail,
+                    oldPass: this.state.oldPass,
+                    newPass: this.state.newPass,
+                    nickname: this.state.newNickname
+                })
+            };
+
+            let response = await fetch(SERVER_URL + "/change_profile", reqProps);
+            if (response.status === 500) {
+                throw new Error({msg:"Can't remove notification, internet connection, or server error", status:response.status});
+            }
+            else if (response.status === 401) {
+                let resJson = await response.json()
+                addNotification(resJson.msg);
+                this.props.stopLoading();
+            }
+            else if (response.status === 200) {
+                addNotification("New Details Updated!");
+                await this.props.subscribeUser(this.state.newPass !== "" ? this.state.newPass : this.state.oldPass, this.state.newEmail, "/login", undefined)
+                this.setState({
+                    oldPass: "",
+                    newPass: "",
+                    editing: false,
+                })
+                
+            }
+        }catch (e) {
+            addErrorNoti();
+            this.props.stopLoading();
+        }
+    }
     render() {
 
         return (
@@ -237,14 +312,14 @@ export default class UserHome extends Component {
                 <div id="top">
                     <div className="info">
                         <div className="full-name">
-                            {this.props.user.name}
+                            {this.props.store.user ? this.props.store.user.name : ""}
                         </div>
                         <div className="email">
-                            {this.props.user.email}
+                            {this.props.store.user ? this.props.store.user.email : ""}
                         </div>
                         <div className="location">
                             <img alt="loc" src="/images/loc.png" />
-                            {this.props.user.loc}
+                            {this.props.store.user ? this.props.store.user.loc : ""}
                         </div>
                     </div>
                     <div className="user-option">
@@ -256,6 +331,11 @@ export default class UserHome extends Component {
 
                         {/*</div>*/}
                         <img alt="notification status" src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
+                        <div className="edit-profile" onClick={this.editProfile}>
+                            Edit Profile
+                            <Icon type="edit" className="edit-img"/>
+                            
+                        </div>
                         <div className="logout-button" onClick={this.props.logout}>
                             Logout
                             <Icon type="user-delete" className="logout-img"/>
@@ -263,7 +343,27 @@ export default class UserHome extends Component {
                     </div>
                 </div>
                 
-                <div className="table-wrapper" style={this.getTableWrapperStyle()}>
+                {this.state.editing ? 
+                <div>
+                    <fieldset className="field-set-input">
+                        <input type="text" placeholder="Email" className="text-password" value={this.state.newEmail} onChange={(e) => this.setState({newEmail: e.target.value})}/>
+                    </fieldset>
+                    <fieldset className="field-set-input">
+                        <input type="text" placeholder="Nickname" className="text-password" value={this.state.newNickname} onChange={(e) => this.setState({newNickname: e.target.value})}/>
+                    </fieldset>
+                    <fieldset className="field-set-input">
+                        <input type="password" id="pwd-edit-old" placeholder="Old Password" className="text-password" value={this.state.oldPass} onChange={(e) => this.setState({oldPass: e.target.value})}/>
+                        <Icon type="eye-o" className="pwd-visibility-icon" onClick={() => this.changePwdVisibility("pwd-edit-old")}/>
+                    </fieldset>
+                    <fieldset className="field-set-input">
+                        <input type="password" id="pwd-edit-new" placeholder="New Password" className="text-password" value={this.state.newPass} onChange={(e) => this.setState({newPass: e.target.value})}/>
+                        <Icon type="eye-o" className="pwd-visibility-icon" onClick={() => this.changePwdVisibility("pwd-edit-new")}/>
+                    </fieldset>
+                    <div className="submit-changes-button" onClick={this.submitProfileChanges} >
+                            Submit
+                        </div>
+                        
+                </div> : <div className="table-wrapper" style={this.getTableWrapperStyle()}>
                 <table className="user-reports">
                     <tbody>
                     {this.onlyUnique(this.props.reports).map((report, index) => {
@@ -273,9 +373,10 @@ export default class UserHome extends Component {
                     })}
                     </tbody>
                 </table>
-                </div>
+                </div>}
             </div>
         );
     }
 }
 
+export default observer(UserHome);
