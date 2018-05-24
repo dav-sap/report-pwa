@@ -1,7 +1,5 @@
 # My First Progressive Web App
 
-## An application to report your working status for each day.
-
 The App is hosted on my Firebase account. 
 The firebase server is using the `Build` folder for the `index.html` file (`.css`, `.js` etc.) it's using.
 
