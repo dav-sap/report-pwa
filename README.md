@@ -1,6 +1,8 @@
-# My First Progressive Web App
+# Status Reporter - Progressive Web App
 
-The App is hosted on my Firebase account. 
+The App is hosted on my Firebase account, at http://pwa-first-71a09.firebaseapp.com/
+
+
 The firebase server is using the `Build` folder for the `index.html` file (`.css`, `.js` etc.) it's using.
 
 ## To use the app locally, just follow these simple steps:
