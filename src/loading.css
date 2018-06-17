@@ -134,7 +134,7 @@
     -webkit-animation: spin 1.2s linear infinite;
     animation: spin 1.2s linear infinite;
     top: 21%;
-    left: 30%;
+    left: 90%;
 }
 
 @keyframes spin {

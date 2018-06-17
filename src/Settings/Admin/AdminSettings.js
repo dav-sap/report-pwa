@@ -2,19 +2,22 @@ import React, { Component } from 'react';
 import {Link } from 'react-router-dom';
 import {SERVER_URL} from './../../Consts'
 import {addErrorNoti} from './../../Utils';
+import AppStoreInstance from "./../../AppStore";
 import './admin-settings.css';
+const IdbKeyval = require('idb-keyval');
 
 export default class AdminSettings extends Component {
     state = {
         members: [],
         awaitingMembers: [],
+        user: undefined,
     }
     async fetchMembers(url, stateMembersToChange) {
         try {
             let reqProps = {
                 method: 'GET',
             };
-            let res = await fetch(SERVER_URL + url, reqProps);
+            let res = await fetch(SERVER_URL + url + "?email=" + this.state.user.email, reqProps);
 
             if (res.status === 200) {
                 let json = await res.json();
@@ -23,16 +26,21 @@ export default class AdminSettings extends Component {
                     [stateMembersToChange]: json.members
                 });
             } else {
-                throw new Error({msg:"Can't get updated user reports", status:res.status});
-
+                throw new Error("Error fetching members as admin. Server error");
             }
         } catch(e) {
+            console.log(e);
             addErrorNoti();
         }
     }
-    componentDidMount() {
-        this.fetchMembers("/get_all_members", 'members');
-        this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
+    async componentDidMount() {
+        let user = await IdbKeyval.get('user');
+        if (user && user.email) {
+            AppStoreInstance.updateUser(user);
+            await this.setState({user: user});
+            this.fetchMembers("/get_all_members", 'members');
+            this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
+        }
     }
     async removeAwaitUser(member) {
         try {
@@ -81,8 +89,8 @@ export default class AdminSettings extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: member.name,
                     email: member.email,
+                    adminEmail: this.state.user.email
                 })
             };
             let res = await fetch(SERVER_URL + "/remove_member", reqProps);
@@ -103,7 +111,7 @@ export default class AdminSettings extends Component {
             <div className="admin-settings">
                 <div className="contents-wrapper">
                 <Link to="/"><i className="prev-arrow"/></Link>
-                <div className="admin-title">Admin<img src="/images/admin-settings.png" alt="admin" className="admin-settings-img"/></div>
+                <div className="admin-title">Welcome {this.state.user ? this.state.user.name : ""}</div>
                 {this.state.awaitingMembers.length > 0 ? <div className="sub-admin-title">Awaiting Approval</div> : ""}
                 <table className="members-table">
                     <tbody>

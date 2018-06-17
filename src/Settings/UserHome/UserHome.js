@@ -6,6 +6,7 @@ import {addErrorNoti, emailToName, addNotification} from './../../Utils';
 import { SERVER_URL, STATUS} from './../../Consts';
 import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 import {observer} from "mobx-react/index";
+const IdbKeyval = require('idb-keyval');
 
 class UserHome extends Component {
     constructor(props) {
@@ -18,7 +19,9 @@ class UserHome extends Component {
         newEmail: this.props.store.user.email,
         oldPass: "",
         newPass: "",
-        newNickname: this.props.store.user.name
+        newNickname: this.props.store.user.name,
+        editNewPassword: false,
+        adminStatus: false
     }
     async removeReport(status, report_id) {
         try {
@@ -38,7 +41,7 @@ class UserHome extends Component {
                 throw new Error("Can't remove report, internet connection, or server error");
             }
             else if (response.status === 200) {
-                this.props.fetchReports(this.store.props.user);
+                this.props.fetchReports(this.props.store.user);
             }
         }catch (e) {
             addErrorNoti();
@@ -67,8 +70,8 @@ class UserHome extends Component {
             let month = startDate.toLocaleString(locale, { month: "short" });
             return (<tr key={index} className="report">
                 <th>{month + " " + startDate.getDate()}</th>
-                    <th>{timeStr}</th>
-                    <th>{statusStr}</th>
+                    <th>{status === STATUS.ARRIVING ? "" : timeStr}</th>
+                    <th>{status === STATUS.ARRIVING ?  STATUS.ARRIVING : statusStr}</th>
                     <th><Icon type="close"  onClick={() => this.removeReport(status, report_id)} className="remove-report-button"/></th></tr>);
         } else {
             let monthStart = startDate.toLocaleString(locale, { month: "short" });
@@ -78,7 +81,49 @@ class UserHome extends Component {
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
     };
+    fetchGroupName = async () => {
+        try {
+            let reqProps = {
+                method: 'GET',
+            };
+            let response = await fetch(SERVER_URL + "/get_group_name?user="+this.props.store.user.email, reqProps);
+            if (response.status === 200) {
+                let resJson = await response.json();
+                this.setState({
+                    groupName: resJson.name
+                })
+            }
+            else throw new Error("Can't fetch group name");
+
+
+        }catch (e) {
+            addErrorNoti();
+        }
+    }
+    fetchAdminStatus = async (email) => {
+        try {
+            let reqProps = {
+                method: 'GET',
+            };
+            let response = await fetch(SERVER_URL + "/get_admin_status?email="+email, reqProps);
+            if (response.status === 200) {
+                let resJson = await response.json();
+                this.setState({
+                    adminStatus: resJson.admin
+                })
+            }
+            else throw new Error("Can't fetch admin status");
+        }catch (e) {
+            addErrorNoti();
+        }
+    }
     async componentDidMount() {
+        let user = await IdbKeyval.get('user');
+        if (user && user.email) {
+            this.fetchAdminStatus(user.email)
+        }
+
+        this.fetchGroupName();
         if (!("Notification" in window)) {
             console.log("This browser does not support desktop notification");
             this.setState({
@@ -97,6 +142,9 @@ class UserHome extends Component {
                 let reqProps = {
                     method: 'POST',
                     headers: new Headers({
+                        'content-type': 'application/json'
+                    }),
+                    body: JSON.stringify({
                         email: this.props.store.user.email,
                         sub: JSON.stringify(sub)
                     })
@@ -231,7 +279,10 @@ class UserHome extends Component {
     getTableWrapperStyle() {
         let h = document.getElementById("top");
         if (h && h.clientHeight) {
-            return {height: "calc(100vh - " + (h.clientHeight -3) + "px)", width: "100%"};
+            return {height: "calc(100vh - " + (h.clientHeight -3) + "px)",
+                    width: "100%",
+                    position: "relative",
+                    top: this.state.adminStatus ? "40px" : "0px"};
         }
 
     }
@@ -242,7 +293,8 @@ class UserHome extends Component {
                 oldPass: "",
                 newPass: "",
                 editing: false,
-                newNickname: this.props.store.user.name
+                newNickname: this.props.store.user.name,
+                editNewPassword: false
             })
             
         } else {
@@ -262,7 +314,6 @@ class UserHome extends Component {
     submitProfileChanges = async () => {
         try {
             if (this.state.oldPass === "") {
-                addNotification("Please enter old password to submit changes");
                 return;
             }
             this.props.startLoading()
@@ -303,7 +354,17 @@ class UserHome extends Component {
             addErrorNoti();
             this.props.stopLoading();
         }
-    }
+    };
+    editNewPass = () => {
+        if (this.state.oldPass === "") {
+            return
+        }
+        this.setState({
+            editNewPassword: true,
+        }, () => {
+            document.getElementById("pwd-edit-new").focus()
+        })
+    };
     render() {
 
         return (
@@ -319,49 +380,66 @@ class UserHome extends Component {
                         </div>
                         <div className="location">
                             <img alt="loc" src="/images/loc.png" />
-                            {this.props.store.user ? this.props.store.user.loc : ""}
+                            {this.state.groupName}
                         </div>
                     </div>
-                    <div className="user-option">
-                        {/*<div className="go-to-admin">*/}
-                            {/*<div className="admin-wrapper">*/}
-                                {/*Admin*/}
-                                {/*<img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>*/}
-                            {/*</div>*/}
 
-                        {/*</div>*/}
-                        <img alt="notification status" src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
+                    <div className="user-option">
+                        { this.state.adminStatus ?
+                        <Link to="/admin-settings">
+                            <div className="go-to-admin">
+                                <div className="admin-wrapper">
+                                    <div className="admin-text">
+                                    Admin
+                                    </div>
+                                    <img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>
+                                </div>
+
+                            </div>
+                        </Link> : ""}
+
                         <div className="edit-profile" onClick={this.editProfile}>
                             Edit Profile
                             <Icon type="edit" className="edit-img"/>
                             
                         </div>
-                        <div className="logout-button" onClick={this.props.logout}>
-                            Logout
-                            <Icon type="user-delete" className="logout-img"/>
-                        </div>
+                        <img alt="notification status" src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
                     </div>
+
                 </div>
                 
                 {this.state.editing ? 
-                <div>
-                    <fieldset className="field-set-input">
-                        <input type="text" placeholder="Email" className="text-password" value={this.state.newEmail} onChange={(e) => this.setState({newEmail: e.target.value})}/>
-                    </fieldset>
-                    <fieldset className="field-set-input">
-                        <input type="text" placeholder="Nickname" className="text-password" value={this.state.newNickname} onChange={(e) => this.setState({newNickname: e.target.value})}/>
-                    </fieldset>
-                    <fieldset className="field-set-input">
-                        <input type="password" id="pwd-edit-old" placeholder="Old Password" className="text-password" value={this.state.oldPass} onChange={(e) => this.setState({oldPass: e.target.value})}/>
+                <div style={{color: this.state.oldPass === "" ? "grey" : "white",
+                            borderColor: this.state.oldPass === "" ? "grey" : "white", position: "relative", top: this.state.adminStatus ? "30px" : "0px"}}
+                >
+
+                    <fieldset className="field-set-input old-password">
+                        <input type="password" id="pwd-edit-old" placeholder="Password" className="text-password" value={this.state.oldPass} onChange={(e) => this.setState({oldPass: e.target.value})}/>
                         <Icon type="eye-o" className="pwd-visibility-icon" onClick={() => this.changePwdVisibility("pwd-edit-old")}/>
                     </fieldset>
                     <fieldset className="field-set-input">
-                        <input type="password" id="pwd-edit-new" placeholder="New Password" className="text-password" value={this.state.newPass} onChange={(e) => this.setState({newPass: e.target.value})}/>
+                        <input type="text" placeholder="Email" disabled={this.state.oldPass === ""} className="text-password" value={this.state.newEmail} onChange={(e) => this.setState({newEmail: e.target.value})}/>
+                    </fieldset>
+                    <fieldset className="field-set-input">
+                        <input type="text" placeholder="Nickname" disabled={this.state.oldPass === ""} className="text-password" value={this.state.newNickname} onChange={(e) => this.setState({newNickname: e.target.value})}/>
+                    </fieldset>
+
+                    <fieldset className="field-set-input" style={{width: this.state.editNewPassword ? "80%" : "60%"}}>
+
+                    {this.state.editNewPassword ?
+                        <div>
+                        <input type="password" id="pwd-edit-new" disabled={this.state.oldPass === ""} placeholder="New Password" className="text-password" value={this.state.newPass} onChange={(e) => this.setState({newPass: e.target.value})}/>
                         <Icon type="eye-o" className="pwd-visibility-icon" onClick={() => this.changePwdVisibility("pwd-edit-new")}/>
+                        </div>
+                     : <div className=""  onClick={this.editNewPass}>Change Password</div>}
                     </fieldset>
                     <div className="submit-changes-button" onClick={this.submitProfileChanges} >
                             Submit
                         </div>
+                    <div className="logout-button" onClick={this.props.logout}>
+                        Logout
+                        <Icon type="user-delete" className="logout-img"/>
+                    </div>
                         
                 </div> : <div className="table-wrapper" style={this.getTableWrapperStyle()}>
                 <table className="user-reports">

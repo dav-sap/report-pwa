@@ -22,15 +22,9 @@ export default class Status extends Component {
                 </div>
                 <div className="people-wrapper" style={this.getStyle()}>
                     {this.props.reports.map((report, index) => {
-                        let text = ""
-                        if (this.props.title === STATUS.ARRIVING) {
-                            text = report;
-                        } else {
-                            let desc = report.statusDescription === STATUS.FREE_STYLE ? "" : " - " + report.statusDescription
-                            let note = desc + (report.note ? " - " + report.note : "");
-                            text = report.name + note;
-                        }
-                        return <p key={index} className="name">{text} </p>;
+                        let desc = report.statusDescription === STATUS.FREE_STYLE  || this.props.title === STATUS.ARRIVING ? "" : " - " + report.statusDescription
+                        let note = desc + (report.note ? " - " + report.note : "");
+                        return <p key={index} className="name">{report.name + note} </p>;
                     })}
                 </div>
             </div>

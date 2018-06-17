@@ -55,7 +55,8 @@ class SubmitScreen extends Component {
         let reqProps = {
             method: 'POST',
             headers: new Headers({
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'user': this.props.store.user.email + ":" + this.props.store.user.password
             }),
             body: JSON.stringify({
                 name: this.props.store.user.name,

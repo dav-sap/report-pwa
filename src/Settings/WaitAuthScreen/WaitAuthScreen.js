@@ -13,7 +13,7 @@ class WaitAuthScreen extends Component {
                 <Link to="/"><i className="prev-arrow"/></Link>
                 <div className="info">
                     <div className="full-name">
-                        {this.props.store.waitingUser ? emailToName(this.props.store.waitingUser.email): ""}
+                        {this.props.store.waitingUser ? this.props.store.waitingUser.name: ""}
                     </div>
                     <div className="email">
                         {this.props.store.waitingUser ? this.props.store.waitingUser.email: ""}

@@ -1,5 +1,8 @@
 const SERVER_URL = "https://flex-server.herokuapp.com";
-//const SERVER_URL = "http://localhost:3141";
+import {STATUS} from "../src/Consts";
+import {addErrorNoti} from "../src/Utils";
+
+// const SERVER_URL = "http://localhost:3141";
 const SITE_URL = "https://pwa-first-71a09.firebaseapp.com";
 'use strict';
 const filesToCache = [
@@ -23,11 +26,11 @@ function createAdminNoti(jsonData, e) {
         actions: [
             {
                 action: 'Accept', title: 'Accept',
-                icon: 'images/checkmark.png'
+                icon: 'images/v.png'
             },
             {
                 action: 'Deny', title: 'Deny',
-                icon: 'images/xmark.png'
+                icon: 'images/x.png'
             },
         ]
     };
@@ -73,12 +76,12 @@ function createReportNoti(jsonData, e) {
         },
         actions: [
             {
-                action: 'arriving', title: 'Arriving!!!',
-                icon: 'images/checkmark.png'
+                action: 'arriving', title: 'Arriving!',
+                icon: 'images/superman.png'
             },
             {
                 action: 'goToApp', title: 'Send Report',
-                icon: 'images/xmark.png'
+                icon: 'images/report.png'
             },
         ]
     };
@@ -144,26 +147,37 @@ self.addEventListener('notificationclick', function(e) {
         console.log("arriving");
         idbKeyval.get('user').then((user) => {
             console.log("arriving", user);
+            let startDate = new Date();
+            startDate.setHours(0,0,0,0);
+            let startDateStr = startDate.toISOString().replace(":00.000Z", "");
+            let endDate = new Date();
+            endDate.setHours(23,59,0,0);
+            let endDateeStr = endDate.toISOString().replace(":00.000Z", "");
+
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
                     'content-type': 'application/json'
                 }),
                 body: JSON.stringify({
-                    name: user.name,
+                    email: user.email,
+                    startDate: startDateStr,
+                    endDate: endDateeStr,
+                    status: STATUS.ARRIVING,
+                    statusDesc: "",
+                    note: "",
+                    repeat: 0
                 })
             };
-            fetch(SERVER_URL +"/add_arriving", reqProps)
-            .then(res => {
-                if (res.status !== 200) {
-                    throw new Error("Error Connecting");
-                } else {
-                    clients.openWindow(SITE_URL + "/where-is-everyone");
-                }
-            })
-            .catch(err => {
-                console.error("Error send report")
-            });
+            fetch(SERVER_URL +"/add_report", reqProps)
+                .then(res => {
+                    if (res.status !== 200) {
+                        throw new Error("Error Connecting");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error send report")
+                });
         });
         
         notification.close();
@@ -178,7 +192,7 @@ self.addEventListener('notificationclick', function(e) {
         };
         fetch(SERVER_URL + "/deny_user", reqProps)
             .then(res => {
-                console.log('res from add user: ', res);
+                console.log('res from deny user: ', res);
             });
         notification.close();
     } else if (action === 'Accept') {

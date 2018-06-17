@@ -24,7 +24,7 @@ class Settings extends Component {
     state = {
         passwordValue: "",
         emailValue: "",
-        location: "",
+        group: "",
         loading: false,
         reports: null,
     };
@@ -60,7 +60,6 @@ class Settings extends Component {
     }
     
     async componentDidMount() {
-        // this.startUpData();
         this.setState({loading:true})
         let val = await IdbKeyval.get('user');
         if (val && val.email) {
@@ -93,10 +92,9 @@ class Settings extends Component {
         })
     };
 
-    changeLoc = (loc) => {
-        this.setState({
-            location: loc
-        })
+    changeGroup = (group) => {
+        console.log(group);
+        this.setState({group})
     };
 
     async unsubscribeUser(){
@@ -121,8 +119,11 @@ class Settings extends Component {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
                     email: AppStoreInstance.user.email,
-                    sub: sub ? JSON.stringify(sub) : {},
+                    sub: sub ? sub : {},
                 })
             };
 
@@ -136,8 +137,13 @@ class Settings extends Component {
         }
     };
 
-    async subscribeUser (pwd, email, url, location){
+    async subscribeUser (pwd, email, url, group){
+        if (email.indexOf('@') === -1 || email.substr(email.indexOf('@'), email.length).indexOf(".") === -1) {
+            addNotification("Invalid Email");
+            return;
+        }
         this.setState({loading: true});
+
         try {
             let subJson = {};
             if ('serviceWorker' in navigator) {
@@ -162,7 +168,7 @@ class Settings extends Component {
                         subJson = sub;
                     }
                 }else if (Notification.permission === "denied" && url === "/register") {
-                    addNotification("Norifications are blocked! Go to chrome settings to allow");
+                    addNotification("Notifications are blocked! Go to chrome settings to allow");
                 } else {
                     console.log("notification permission status unknown", Notification.permission);
                 }
@@ -171,22 +177,28 @@ class Settings extends Component {
             else {
                 console.error("No Service worker!");
             }
-
+            if (url === "/register" && !group) {
+                addNotification("Join/Create Group");
+                this.setState({loading: false});
+            }
             console.log(subJson);
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
                     password: pwd,
                     email: email,
                     sub: JSON.stringify(subJson),
-                    loc: location ? location : AppStoreInstance.user.loc
+                    group: group ? group : ""
                 })
             };
 
             let response = await fetch(SERVER_URL + url, reqProps);
 
             if (response.status === 500) {
-                throw new Error({msg:"Can't " + url.substr(1) + " user", status: response.status});
+                throw "server returned 500";
             } else if (response.status === 202) {
                 IdbKeyval.set('waitAuth', true).then(() => {
                     AppStoreInstance.updateWaitAuth(true)
@@ -198,7 +210,7 @@ class Settings extends Component {
                 
             } else if (response.status === 200){
                 let json = await response.json();
-                console.log("STATEUS 200", json)
+                console.log("STATUS 200", json);
                 IdbKeyval.set('user', json.member).then(() => {
                     AppStoreInstance.updateUser(json.member)
                 });
@@ -212,13 +224,13 @@ class Settings extends Component {
             }  else if (response.status === 401){
                 addNotification("Login Failed! Check email & password");
             } else {
-                let text = await response.text();
-                throw new Error({msg:text, status:response.status});
+                throw "Unknown Server Error"
             }
             this.setState({loading: false});
         } catch (e) {
             // let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
             addErrorNoti();
+            console.log(e);
             this.setState({loading: false});
             IdbKeyval.set('waitAuth', false).then(() => {
                 AppStoreInstance.updateWaitAuth(false);
@@ -227,27 +239,17 @@ class Settings extends Component {
     };
 
     login = () => {
-        this.subscribeUser(this.state.passwordValue, this.state.emailValue, "/login", this.state.location);
+        this.subscribeUser(this.state.passwordValue, this.state.emailValue, "/login", this.state.group);
     };
     signup = () => {
-        this.subscribeUser(this.state.passwordValue, this.state.emailValue, "/register", this.state.location);
+        this.subscribeUser(this.state.passwordValue, this.state.emailValue, "/register", this.state.group);
     };
 
 
     changeEmail = (email) => {
-        if (email.length === 1) {
-            this.setState({
-                emailValue: email + "@intel.com"
-            }, () => {
-                let cursorLoc = (email + "@intel.com").indexOf("@intel.com");
-                document.getElementById("email-input").setSelectionRange(cursorLoc,cursorLoc)
-            })
-
-        } else {
-            this.setState({
-                emailValue: email
-            })
-        }
+        this.setState({
+            emailValue: email
+        })
     };
 
     async cancelRequest() {
@@ -286,8 +288,8 @@ class Settings extends Component {
                 <div style={{opacity: this.state.loading? 0.3 : 1}}>
                     {AppStoreInstance.user === null && !AppStoreInstance.waitAuth && this.state.mounted ?
                     <Login passwordValue={this.state.passwordValue} emailValue={this.state.emailValue}
-                           changeLoc={this.changeLoc} changeEmail={this.changeEmail} changePassword={this.changePassword}
-                           login={this.login} signup={this.signup} chosenLoc={this.state.location}/> : ""}
+                           changeGroup={this.changeGroup} changeEmail={this.changeEmail} changePassword={this.changePassword}
+                           login={this.login} signup={this.signup} group={this.state.group}/> : ""}
                     
                     {AppStoreInstance.waitAuth ? <WaitAuthScreen store={AppStoreInstance}  cancelRequest={this.cancelRequest}/>: ""}
                     {AppStoreInstance.user !== null ? <UserHome  startLoading={this.startLoading} stopLoading={this.stopLoading} store={AppStoreInstance} subscribeUser={this.subscribeUser} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}

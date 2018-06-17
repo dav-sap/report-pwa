@@ -10,6 +10,7 @@
     border-bottom: 1px solid;
     padding-left: 8px;
     padding-right: 8px;
+    position: relative;
 }
 .sub-admin-title {
     color: rgb(153, 153, 153);
@@ -22,14 +23,15 @@
     padding-right: 8px;
 }
 .admin-title > .admin-settings-img {
-    margin-left: 10px;
+    margin-left: 0px;
 }
 .admin-settings {
     background-color: #404040;
-    /* height: 100v; */
-    min-height: 630px;
+    height: 100%;
+    min-height: 500px;
     /*min-width: 330px;*/
     font-family: 'Amatic SC', cursive;
+    overflow: auto;
 }
 .contents-wrapper {
     margin: auto;

@@ -56,10 +56,11 @@ export function addErrorNoti() {
     });
 }
 export function addNotification(str) {
+    console.log(str);
     const key = `open${Date.now()}`;
     notification.open({
         message: '',
-        description: <p className="notification-text">{str}</p>,
+        description: <p className="notification-text">{str ? str : "Server Connection Failed"}</p>,
         className: "notification-css-error",
         key,
     });

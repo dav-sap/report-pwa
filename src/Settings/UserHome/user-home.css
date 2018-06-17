@@ -1,5 +1,6 @@
 .info {
     margin-top: 10px;
+    position: relative;
 }
 .user-home {
     max-width: 40rem;
@@ -30,7 +31,7 @@
     text-align: center;
     width: 150px;
     margin: auto;
-    margin-top:20px;
+    margin-top:40px;
 }
 .email {
     color: white;
@@ -47,18 +48,26 @@
     padding-top: 15px;
     font-size: 24px;
     font-weight: 800;
+    position: absolute;
+    left:50%;
+    transform: translate(-50%, -25%);
 }
 .user-option {
     border-bottom: 1px #029292 solid;
     position: relative;
     height: 50px;
 }
+.old-password {
+    border-color: white;
+}
 .logout-button {
     border: 1.8px red solid;
     color:#ff5400;
-    position: absolute;
-    right: 3px;
-    top: 0;
+    position: relative;
+    margin-top:20px;
+    margin-bottom: 5px;
+    margin-right: 3px;
+    margin-left: auto;
     font-size: 25px;
     width: 100px;
     height:38px;
@@ -69,11 +78,11 @@
     cursor: pointer;
 }
 .edit-profile {
-    border: 1.8px red solid;
-    color:#ff5400;
+    border: 1.8px #8f949a solid;
+    color:#8f949a;
     position: absolute;
     right: 3px;
-    top: -45px;
+    top: 0px;
     font-size: 20px;
     width: 100px;
     height:38px;
@@ -82,24 +91,39 @@
     border-radius: 10px;
     cursor: pointer;
 }
+
 .go-to-admin {
-    border: 2px #029292 solid;
-    color:#029292;
+    border: 1.8px #8f949a solid;
+    color:#8f949a;
     position: absolute;
-    left: 0;
-    font-size: 18px;
+    right: 3px;
+    top: 60px;
+    font-size: 20px;
     width: 100px;
+    height:38px;
     padding: 2px 5px 2px 5px;
     font-weight: 800;
+    border-radius: 10px;
     cursor: pointer;
 }
 .admin-wrapper {
     position: relative;
+    height: calc(100% - 4px);
+    top:2px;
 
 }
+.admin-text{
+    position: absolute;
+    left: 4px;
+    top:50%;
+    transform: translateY(-50%);
+}
 .admin-settings-img {
-    margin-left: 4px;
     margin-bottom: 1px;
+    position: absolute;
+    right: 3px;
+    top:50%;
+    transform: translateY(-50%);
 }
 .logout-img {
     margin-left: 7px;
@@ -136,7 +160,7 @@
     top: -4px;
 }
 .notification-updater {
-    color: white;
+    color: #8f949a;
     position: absolute;
     left: 0;
     top: 0;
