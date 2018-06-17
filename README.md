@@ -1,6 +1,8 @@
-# My First Progressive Web App
+# WheresMyPeers
 
-The App is hosted on my Firebase account. 
+The App is hosted on my Firebase account, at http://pwa-first-71a09.firebaseapp.com/
+
+
 The firebase server is using the `Build` folder for the `index.html` file (`.css`, `.js` etc.) it's using.
 
 ## To use the app locally, just follow these simple steps:
@@ -18,7 +20,7 @@ This repo is just the Client side of the application. The requests to the server
 `SERVER_URL` const variable in the `Consts.js` and `notification-service-worker.js`.
 
 If you wish to work on the server locally please clone the serevr repo at
-https://github.com/dav-sap/StatusReporter-server
+https://github.com/dav-sap/WheresMyPeers-server
 
 and in the `Consts.js` and `notification-service-worker.js`(if you made any changes to the notification system you should change `SERVER_URL` here as well) comment out the line of `SERVER_URL` and the localhost.
 
