@@ -282,7 +282,7 @@ class UserHome extends Component {
             return {height: "calc(100vh - " + (h.clientHeight -3) + "px)",
                     width: "100%",
                     position: "relative",
-                    top: this.state.adminStatus ? "40px" : "0px"};
+                    top: this.state.adminStatus ? "57px" : "0px"};
         }
 
     }

@@ -1,7 +1,5 @@
-const SERVER_URL = "https://flex-server.herokuapp.com";
-import {STATUS} from "../src/Consts";
-import {addErrorNoti} from "../src/Utils";
 
+const SERVER_URL = "https://flex-server.herokuapp.com";
 // const SERVER_URL = "http://localhost:3141";
 const SITE_URL = "https://pwa-first-71a09.firebaseapp.com";
 'use strict';
@@ -163,7 +161,7 @@ self.addEventListener('notificationclick', function(e) {
                     email: user.email,
                     startDate: startDateStr,
                     endDate: endDateeStr,
-                    status: STATUS.ARRIVING,
+                    status: "Arriving",
                     statusDesc: "",
                     note: "",
                     repeat: 0
