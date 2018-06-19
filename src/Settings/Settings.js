@@ -123,7 +123,7 @@ class Settings extends Component {
                 }),
                 body: JSON.stringify({
                     email: AppStoreInstance.user.email,
-                    sub: sub ? sub : {},
+                    sub: sub,
                 })
             };
 
@@ -180,6 +180,7 @@ class Settings extends Component {
             if (url === "/register" && !group) {
                 addNotification("Join/Create Group");
                 this.setState({loading: false});
+                return;
             }
             console.log(subJson);
             let reqProps = {
