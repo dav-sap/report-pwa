@@ -24,8 +24,12 @@ export default class WhereInfo extends Component {
         day: TODAY,
         loading: false,
         user: null,
+        heightNeeded: null,
+
     };
     updateDatesInterval = null;
+    heightToFill = null;
+    lineHeight = 40;
 
     parseReports(reports, stateToUpdate) {
         let ooo = [];
@@ -53,6 +57,11 @@ export default class WhereInfo extends Component {
         if (stateToUpdate === TOMORROW) {
             this.setState({tomorrow : {ooo: ooo, wf:wf, arriving: arriving}});
         }
+        if (stateToUpdate === this.state.day) {
+            this.setState({
+                heightNeeded: this.lineHeight * (ooo.length + wf.length + (arriving.length / 2))
+            });
+        }
     }
     fetchMembers = async (stateToUpdate, date) => {
         let today = date;
@@ -75,47 +84,78 @@ export default class WhereInfo extends Component {
                 console.error("Error updating dates")
             });
     };
-    updateDates = () => {
+    updateDates = async () => {
         this.setState({loading: true});
         let today = new Date();
 
-        this.fetchMembers(TODAY, today.toDateString());
+        await this.fetchMembers(TODAY, today.toDateString());
         let tomorrow = new Date();
         tomorrow.setDate(today.getDate() + 1);
-        this.fetchMembers(TOMORROW, tomorrow.toDateString());
+        await this.fetchMembers(TOMORROW, tomorrow.toDateString());
+    }
+    calculateScreenHeight() {
+        let w = window,
+            d = document,
+            e = d.documentElement,
+            g = d.getElementsByTagName('body')[0],
+            y = w.innerHeight || e.clientHeight || g.clientHeight;
+        let topHeight = d.getElementsByClassName("title-where-text")[0].offsetHeight;
+        let bottomHeight = d.getElementsByClassName("bottom-button-wrapper")[0].offsetHeight + 15;
+        let middleHeight = 0;
+        let middleMargin = 30;
+        let titleList = d.getElementsByClassName("status-where-title");
+        Array.prototype.forEach.call(titleList, (el) => {
+            middleHeight += el.offsetHeight;
+        });
+        this.heightToFill = y - topHeight - middleHeight - bottomHeight - middleMargin;
     }
     async componentDidMount() {
+        this.calculateScreenHeight();
         let user = await IdbKeyval.get('user');
         if (user && user.email) {
             AppStoreInstance.updateUser(user);
             await this.setState({user: user});
             this.updateDates();
-            this.updateDatesInterval = setInterval(() => this.updateDates(), 120000);
+            this.updateDatesInterval = setInterval(() => this.updateDates(), 12000);
         }
-
     }
     componentWillUnmount() {
         clearInterval(this.updateDatesInterval);
     }
+    switchDay = (day) => {
+        const heightNeeded = this.lineHeight * (this.state[day].ooo.length + this.state[day].wf.length + (this.state[day].arriving.length / 2));
+        this.setState({day: day, heightNeeded: heightNeeded})
+    }
     render() {
+        let heightSpare = this.heightToFill - this.state.heightNeeded;
+        let oooLength = this.state[this.state.day].ooo.length;
+        let wfLength = this.state[this.state.day].wf.length;
+        let arrivingLength = this.state[this.state.day].arriving.length / 2;
+        let heightToRemoveOOO = 0, heightToRemoveWF = 0, heightToRemoveArriving = 0;
+        if (heightSpare < 0) {
+            heightSpare = Math.abs(heightSpare);
+            let heightFactor = heightSpare / ( oooLength+ wfLength + arrivingLength);
+            heightToRemoveOOO = oooLength * heightFactor;
+            heightToRemoveWF = wfLength * heightFactor;
+            heightToRemoveArriving = arrivingLength * heightFactor;
+        }
 
         return (
             <div className="where-wrapper">
                 <div className="where-info">
                     <Link to="/"><i className="prev-arrow"/></Link>
-                        <div className="title-where-text">Where is Everyone?</div>
-                        <Status key={0} title={STATUS.OOO} loading={this.state.loading} reports={this.state[this.state.day].ooo}/>
-                        <Status key={1} title={STATUS.WF} loading={this.state.loading} reports={this.state[this.state.day].wf} />
-                        {this.state.day === TODAY ? <Status key={2} title={STATUS.ARRIVING} loading={this.state.loading} reports={this.state[this.state.day].arriving} /> : ""}
-                        <div className="flex-row bottom-button-wrapper">
-                            <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TODAY});}} >
-                                Today
-                            </div>
-                            <div className={this.state.day === TOMORROW ? "day-button-clicked" : "day-button"} onClick={ () => {this.setState({day: TOMORROW});}} >
-                                Tomorrow
-                            </div>
+                    <div className="title-where-text">Where is Everyone?</div>
+                    <Status key={0} title={STATUS.OOO} height={Math.floor(this.lineHeight * oooLength - heightToRemoveOOO)} loading={this.state.loading} reports={this.state[this.state.day].ooo}/>
+                    <Status key={1} title={STATUS.WF} height={Math.floor(this.lineHeight * wfLength - heightToRemoveWF)} loading={this.state.loading} reports={this.state[this.state.day].wf} />
+                    {this.state.day === TODAY ? <Status key={2} title={STATUS.ARRIVING} height={Math.floor(this.lineHeight * arrivingLength - heightToRemoveArriving)} loading={this.state.loading} reports={this.state[this.state.day].arriving} /> : ""}
+                    <div className="flex-row bottom-button-wrapper">
+                        <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={() => this.switchDay(TODAY)} >
+                            Today
                         </div>
-
+                        <div className={this.state.day === TOMORROW ? "day-button-clicked" : "day-button"} onClick={() => this.switchDay(TOMORROW)} >
+                            Tomorrow
+                        </div>
+                    </div>
                 </div>
             </div>
         );
