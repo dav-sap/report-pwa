@@ -137,7 +137,7 @@ export default class WhereInfo extends Component {
         let heightSpare = this.heightToFill - this.state.heightNeeded;
         let oooLength = this.state[this.state.day].ooo.length;
         let wfLength = this.state[this.state.day].wf.length;
-        let arrivingLength = this.state[this.state.day].arriving.length / 2;
+        let arrivingLength = Math.ceil(this.state[this.state.day].arriving.length / 2);
         let heightToRemoveOOO = 0, heightToRemoveWF = 0, heightToRemoveArriving = 0;
         if (heightSpare < 0) {
             heightSpare = Math.abs(heightSpare);
