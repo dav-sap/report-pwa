@@ -14,7 +14,7 @@
     background-color: rgba(36, 36, 36, 1);
     height: 100%;
     font-family: 'Amatic SC', cursive;
-    min-height:  500px;
+    min-height:  480px;
 }
 .title-where-text {
     color: white;
@@ -42,13 +42,15 @@
 
 }
 .report-line {
-    color: white;
     font-size: 27px;
-    font-weight: 800;
-    position: relative;
-    margin-bottom: 0px;
-    overflow-x: hidden;
+    margin-bottom: 0;
     height: 40px;
+    overflow: hidden;
+    width: 100%;
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: white;
 }
 .people-wrapper {
     overflow-y: auto;

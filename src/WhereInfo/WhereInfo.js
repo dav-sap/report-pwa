@@ -84,8 +84,8 @@ export default class WhereInfo extends Component {
                 console.error("Error updating dates")
             });
     };
-    updateDates = async () => {
-        this.setState({loading: true});
+    updateDates = async (showLoading) => {
+        this.setState({loading: showLoading});
         let today = new Date();
 
         await this.fetchMembers(TODAY, today.toDateString());
@@ -107,6 +107,8 @@ export default class WhereInfo extends Component {
         Array.prototype.forEach.call(titleList, (el) => {
             middleHeight += el.offsetHeight;
         });
+        let windowMinHeight = 480;
+        y = y < windowMinHeight ? windowMinHeight : y;
         this.heightToFill = y - topHeight - middleHeight - bottomHeight - middleMargin;
     }
     async componentDidMount() {
@@ -115,10 +117,15 @@ export default class WhereInfo extends Component {
         if (user && user.email) {
             AppStoreInstance.updateUser(user);
             await this.setState({user: user});
-            this.updateDates();
+            this.updateDates(true);
             this.updateDatesInterval = setInterval(() => this.updateDates(), 12000);
         }
     }
+
+    componentWillUpdate(nextProps, nextState) {
+        this.calculateScreenHeight();
+    }
+
     componentWillUnmount() {
         clearInterval(this.updateDatesInterval);
     }
