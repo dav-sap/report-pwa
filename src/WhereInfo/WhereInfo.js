@@ -87,11 +87,11 @@ export default class WhereInfo extends Component {
     updateDates = async (showLoading) => {
         this.setState({loading: showLoading});
         let today = new Date();
-
-        await this.fetchMembers(TODAY, today.toDateString());
+        today.setTime(today.getTime() + ((-1*today.getTimezoneOffset())*60*1000));
+        await this.fetchMembers(TODAY, today.toISOString());
         let tomorrow = new Date();
         tomorrow.setDate(today.getDate() + 1);
-        await this.fetchMembers(TOMORROW, tomorrow.toDateString());
+        await this.fetchMembers(TOMORROW, tomorrow.toISOString());
     }
     calculateScreenHeight() {
         let w = window,
@@ -102,7 +102,7 @@ export default class WhereInfo extends Component {
         let topHeight = d.getElementsByClassName("title-where-text")[0].offsetHeight;
         let bottomHeight = d.getElementsByClassName("bottom-button-wrapper")[0].offsetHeight + 15;
         let middleHeight = 0;
-        let middleMargin = 30;
+        let middleMargin = 45;
         let titleList = d.getElementsByClassName("status-where-title");
         Array.prototype.forEach.call(titleList, (el) => {
             middleHeight += el.offsetHeight;

@@ -53,9 +53,10 @@ class Header extends Component {
                 TweenMax.to(".date-next-button", 0.7, {opacity: 1, delay: 1.2});    
                 TweenMax.to(".date-img", 0.0, {opacity: 1, delay: 1.9});
 
-                if (this.props.store.time.from === "08:00" && this.props.store.time.to === "17:00") {
+                if (this.props.store.allDay) {
                     TweenMax.to(".time-picker-wrapper", 0.0, {opacity: 1, delay: 1.9});    
                 }
+                TweenMax.to(".all-day-wrapper", 0.0, {opacity: 1, delay: 1.9});
                 break;
             default:
                 console.log("No match for previous click!");

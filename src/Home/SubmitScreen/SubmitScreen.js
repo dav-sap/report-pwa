@@ -49,7 +49,7 @@ class SubmitScreen extends Component {
         }
     };
     sendReport = () => {
-        this.setState({loading: true});
+        this.setState({loading: true, finishedNote: true});
         let startDate = `${this.props.store.dates.from.getFullYear()}-${this.props.store.dates.from.getMonth() + 1}-${this.props.store.dates.from.getDate()}T${this.props.store.time.from.split(":")[0]}:${this.props.store.time.from.split(":")[1]}`
         let endDate = `${this.props.store.dates.to.getFullYear()}-${this.props.store.dates.to.getMonth() + 1}-${this.props.store.dates.to.getDate()}T${this.props.store.time.to.split(":")[0]}:${this.props.store.time.to.split(":")[1]}`
         let reqProps = {
@@ -64,10 +64,12 @@ class SubmitScreen extends Component {
                 sub: this.props.store.user.subscription,
                 startDate: startDate,
                 endDate: endDate,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 status: this.props.store.status,
                 statusDesc: this.props.store.statusDesc,
                 note: this.props.store.note,
-                repeat: this.props.store.repeat
+                repeat: this.props.store.repeat,
+                allDay: this.props.store.allDay,
             })
         };
         fetch(SERVER_URL +"/add_report", reqProps)
@@ -75,13 +77,13 @@ class SubmitScreen extends Component {
                 if (res.status !== 200) {
                     throw new Error("Error Connecting");
                 } else {
-                    this.setState({loading: false});
+                    this.setState({loading: false, finishedNote: false});
                     this.props.store.resetAll();   
                     this.props.history.push('/where-is-everyone');
                 }
             })
             .catch(err => {
-                this.setState({loading: false});
+                this.setState({loading: false, finishedNote: false});
                 addErrorNoti();
                 console.error("Error send report")
             });

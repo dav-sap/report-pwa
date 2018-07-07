@@ -47,22 +47,20 @@ class UserHome extends Component {
             addErrorNoti();
         }
     };
-    isFullDay(startDate, endDate) {
-        return startDate.getHours() === 8 && startDate.getMinutes() === 0 && endDate.getHours() === 17 && endDate.getMinutes() === 0
-    }
-    getDateStr = (startDateStr, endDateStr, status, index, report_id, recurring, statusDescription, note) => {
+
+    getDateStr = (startDateStr, endDateStr, status, index, report_id, recurring, statusDescription, note, allDay) => {
         let locale = "en-us";
         let startDate = new Date(startDateStr)
         let endDate = new Date(endDateStr)
         let timeStr = ('0' + startDate.getUTCHours()).slice(-2) + ":" + ('0' + startDate.getUTCMinutes()).slice(-2) +
         " - " + ('0' + endDate.getUTCHours()).slice(-2) + ":" + ('0' + endDate.getUTCMinutes()).slice(-2)
         let copyStartDate = new Date(startDate.getTime());
-        let statusStr = status + " - " + (statusDescription !== STATUS.FREE_STYLE ? statusDescription : note)
+        let statusStr = status + (statusDescription !== STATUS.FREE_STYLE ? " - " + statusDescription : note !== "" ? " - " + note : "")
         let copyEndDate = new Date(endDate.getTime());
         if (recurring) {
             let weekday = startDate.toLocaleString(locale, { weekday: "long" });
             return (<tr key={index} className="report"><th>{"Every " + weekday}</th>
-                    <th>{this.isFullDay(startDate, endDate) ? "All Day" : timeStr}</th>
+                    <th>{allDay ? "All Day" : timeStr}</th>
                     <th>{statusStr}</th>
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
@@ -70,7 +68,7 @@ class UserHome extends Component {
             let month = startDate.toLocaleString(locale, { month: "short" });
             return (<tr key={index} className="report">
                 <th>{month + " " + startDate.getDate()}</th>
-                    <th>{status === STATUS.ARRIVING ? "" : timeStr}</th>
+                    <th>{status === STATUS.ARRIVING ? "" : allDay ? "All Day" : timeStr}</th>
                     <th>{status === STATUS.ARRIVING ?  STATUS.ARRIVING : statusStr}</th>
                     <th><Icon type="close"  onClick={() => this.removeReport(status, report_id)} className="remove-report-button"/></th></tr>);
         } else {
@@ -446,7 +444,7 @@ class UserHome extends Component {
                     <tbody>
                     {this.onlyUnique(this.props.reports).map((report, index) => {
                         return (
-                            this.getDateStr(report.startDate, report.endDate, report.status, index, report._id, report.recurring, report.statusDescription, report.note) 
+                            this.getDateStr(report.startDate, report.endDate, report.status, index, report._id, report.recurring, report.statusDescription, report.note, report.allDay)
                         )
                     })}
                     </tbody>

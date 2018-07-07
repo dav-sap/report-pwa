@@ -18,9 +18,10 @@ class DateTimePicker extends Component {
         return fromStr === toStr ? fromStr : fromStr + " - " + toStr
     }
     handleDatePickerClick = () => {
-        if (this.props.store.time.from === "08:00" && this.props.store.time.to === "17:00") {
+        if (this.props.store.allDay) {
             TweenMax.to(".time-picker-wrapper", 0.0, {opacity: 0});    
         }
+        TweenMax.to(".all-day-wrapper", 0.0, {opacity: 0});
         TweenMax.to(".date-img", 0.0, {opacity: 0});
 
         TweenMax.to(".date-next-button", 0.7, {opacity: 0});    
@@ -53,9 +54,16 @@ class DateTimePicker extends Component {
                 </div>
                 <Date store={this.props.store} />
                 <div className="time-picker-wrapper flex-row">
+                    <div className="flex-row all-day-wrapper">
+                        <input type="checkbox" id="c1" checked={this.props.store.allDay} onChange={this.props.store.changeAllDay}/><label htmlFor="c1">All Day</label>
+                    </div>
+                    {!this.props.store.allDay ?
+                    <div className="flex-row time-wrapper">
                     <Time align="left" time={this.props.store.time.from} store={this.props.store} />
                     <div className="dash"/>
                     <Time align="right" time={this.props.store.time.to} store={this.props.store} />
+                    </div>
+                        : ""}
                 </div>
                 <Footer className="date-next-button" text="Save" nextFunc={this.handleDatePickerClick} />
 

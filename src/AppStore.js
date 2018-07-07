@@ -16,7 +16,8 @@ class AppStore {
             statusDesc: null,
             repeat: 0,
             user: null,
-            waitingUser: null
+            waitingUser: null,
+            allDay: true,
         })
     }
     
@@ -42,6 +43,8 @@ class AppStore {
         this.slideNumber = 0;
         this.statusDesc = null;
         this.repeat = 0;
+        this.allDay = true;
+
     })
     changeNote = action('changeNote', (note) => {    
         this.note = note;
@@ -62,6 +65,9 @@ class AppStore {
         if (align === "right") {
             this.time = {from: this.time.from, to:time}
         }
+    });
+    changeAllDay = action('changeAllDay', () => {
+        this.allDay = !this.allDay;
     });
     addStatusDesc = action('addStatusDesc', (statusDesc) => {
         this.statusDesc = statusDesc;

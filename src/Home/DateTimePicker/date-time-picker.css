@@ -18,22 +18,22 @@
     margin: auto;
 }
 .time-picker-wrapper {
-    width: 60%;
+    width: 100%;
     height: 40px;
-    max-width: 14rem;
+    /*max-width: 14rem;*/
     position: relative;
     margin: auto;
 
 }
 .dash {
     height: 0px;
-    width: 30px;
+    width: 15px;
     margin-top: 19px;
     margin-bottom: 19px;
     border-top: 2px solid white;
 }
 .time-picker {
-    width: 100%;
+    width: 65px;
     position: relative;
     font-size: 27px;
 }
@@ -146,4 +146,53 @@
     .RangeExample {
         height: 300px;
     }
+}
+input[type="checkbox"] {
+    visibility: hidden;
+    position: absolute;
+}
+input[type="checkbox"] + label {
+    font-size: 20px;
+    color: white;
+    position: relative;
+    width: 115px
+}
+input[type="checkbox"] + label:before {
+    border: 1px solid white;
+    content: "\00a0";
+    display: inline-block;
+    font: 18px/1em sans-serif;
+    height: 20px;
+    vertical-align: top;
+    width: 20px;
+    position: absolute;
+    top:50%;
+    left:11px;
+    transform: translateY(-50%);
+
+}
+input[type="checkbox"]:checked + label:before {
+    background: transparent;
+    color: white;
+    content: "\2713";
+    text-align: center;
+}
+input[type="checkbox"]:checked + label:after {
+    font-weight: bold;
+}
+
+input[type="checkbox"]:focus + label::before {
+    outline: white auto 5px;
+}
+.all-day-wrapper {
+    position: absolute;
+    left: 0;
+    top:50%;
+    transform: translateY(-50%);
+}
+.time-wrapper {
+    position: absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%, -50%);
 }

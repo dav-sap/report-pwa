@@ -18,12 +18,10 @@ class StatusScreen extends Component {
             return;
         }
         if (STATUS.ARRIVING === statusChosen) {
-            let startDate = new Date();
-            startDate.setHours(0,0,0,0);
-            let startDateStr = startDate.toISOString().replace(":00.000Z", "");
-            let endDate = new Date();
-            endDate.setHours(23,59,0,0);
-            let endDateeStr = endDate.toISOString().replace(":00.000Z", "");
+            let today = new Date();
+            today.setTime(today.getTime() + ((-1*today.getTimezoneOffset())*60*1000));
+            let todayStr = today.toISOString();
+            todayStr = todayStr.substr(0, todayStr.lastIndexOf(':'));
 
             let reqProps = {
                 method: 'POST',
@@ -33,12 +31,14 @@ class StatusScreen extends Component {
                 }),
                 body: JSON.stringify({
                     email: this.props.store.user.email,
-                    startDate: startDateStr,
-                    endDate: endDateeStr,
+                    startDate: todayStr,
+                    endDate: todayStr,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     status: STATUS.ARRIVING,
                     statusDesc: "",
                     note: "",
-                    repeat: 0
+                    repeat: 0,
+                    allDay: true,
                 })
             };
             fetch(SERVER_URL +"/add_report", reqProps)
@@ -103,7 +103,7 @@ class StatusScreen extends Component {
                 <div className="status-button" style={{background: COLOR_MAP[STATUS.ARRIVING]}}
                         onClick={(e) => this.handleStatusClick(e, STATUS.ARRIVING)}/><div className="text-div">Arriving!</div>
                 </div>
-                <Footer className="status-next-button" text="Where is Everyone?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />
+                <Footer className="status-next-button" text="Where's My Peers?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />
             </div>
 
 
