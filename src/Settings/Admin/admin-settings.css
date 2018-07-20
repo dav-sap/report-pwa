@@ -34,20 +34,25 @@
     overflow: auto;
 }
 .contents-wrapper {
-    margin: auto;
+    height: 100%;
+    min-height: 420px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 35rem;
     position: relative;
-    max-width: 40rem;
-    /*min-width: 340px;*/
-    width:95%;
+    margin: auto;
+    max-height: 70rem;
 }
 .member-row {
     color: white;
 }
 .members-table {
-    width: 100%;
     border-collapse: collapse;
     overflow-y: hidden;
     font-size: 18px;
+    width: 97%;
+    margin-left: auto;
+    margin-right: auto;
 }
 .member-row > th {
     padding-top:5px;
@@ -57,9 +62,11 @@
 }
 .member-table-cell {
     max-height: 25px;
-    /*min-width: 80px;*/
     overflow: hidden;
     text-overflow: ellipsis;
+    width: fit-content;
+    max-width: 144px;
+    margin-right: 3px;
 }
 .member-table-cell-images {
     margin: auto;
@@ -79,11 +86,31 @@
     border: 1px white solid;
     color: white;
     background-color: red;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 15px;
     width: fit-content;
-    padding: 2px 10px 2px 10px
+    padding: 2px 7px 2px 7px;
+    margin-right: 5px;
+}
+.member-table-cell-admin-button {
+    border: 1px white solid;
+    color: white;
+    background-color: #ff7f00;
+    font-size: 15px;
+    width: fit-content;
+    padding: 2px 7px 2px 7px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.member-table-cell-admin-button-disabled {
+    /*border: 1px white solid;*/
+    color: white;
+    background-color: green;
+    font-size: 15px;
+    width: fit-content;
+    padding: 2px 7px 2px 7px;
+    margin-right: auto;
+    margin-left: auto;
 }
 .last-cell-row {
-    width:77px;
+    /*width:77px;*/
 }

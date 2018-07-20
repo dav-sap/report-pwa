@@ -7,7 +7,6 @@ import AdminSettings from './Settings/Admin/AdminSettings'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
 
-
 export default class App extends Component {
 
 

@@ -11,6 +11,7 @@ import {notification} from 'antd';
 import AppStoreInstance from "./../AppStore";
 import {observer} from "mobx-react/index";
 import { withRouter } from 'react-router-dom'
+import {COLOR_MAP} from "../Consts";
 
 const IdbKeyval = require('idb-keyval');
 
@@ -283,19 +284,20 @@ class Settings extends Component {
     }
     render() {
         return (
-            <div className="settings">
-                {this.state.loading ? <LoadingCircle/>: ""}
+            <div className="App-wrapper" style={{backgroundColor: "#404040"}}>
+                <div className="settings">
+                    {this.state.loading ? <LoadingCircle/>: ""}
 
-                <div style={{opacity: this.state.loading? 0.3 : 1}}>
-                    {AppStoreInstance.user === null && !AppStoreInstance.waitAuth && this.state.mounted ?
-                    <Login passwordValue={this.state.passwordValue} emailValue={this.state.emailValue}
-                           changeGroup={this.changeGroup} changeEmail={this.changeEmail} changePassword={this.changePassword}
-                           login={this.login} signup={this.signup} group={this.state.group}/> : ""}
-                    
-                    {AppStoreInstance.waitAuth ? <WaitAuthScreen store={AppStoreInstance}  cancelRequest={this.cancelRequest}/>: ""}
-                    {AppStoreInstance.user !== null ? <UserHome  startLoading={this.startLoading} stopLoading={this.stopLoading} store={AppStoreInstance} subscribeUser={this.subscribeUser} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
+                    <div style={{opacity: this.state.loading? 0.3 : 1}}>
+                        {AppStoreInstance.user === null && !AppStoreInstance.waitAuth && this.state.mounted ?
+                        <Login passwordValue={this.state.passwordValue} emailValue={this.state.emailValue}
+                               changeGroup={this.changeGroup} changeEmail={this.changeEmail} changePassword={this.changePassword}
+                               login={this.login} signup={this.signup} group={this.state.group}/> : ""}
+
+                        {AppStoreInstance.waitAuth ? <WaitAuthScreen store={AppStoreInstance}  cancelRequest={this.cancelRequest}/>: ""}
+                        {AppStoreInstance.user !== null ? <UserHome  startLoading={this.startLoading} stopLoading={this.stopLoading} store={AppStoreInstance} subscribeUser={this.subscribeUser} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
+                    </div>
                 </div>
-                
             </div>
         );
     }

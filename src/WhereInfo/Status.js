@@ -46,7 +46,8 @@ export default class Status extends Component {
                 </div>
                 <div className="people-wrapper" id={"people-wrapper-"+this.props.title} style={this.getStyle()}>
                     {this.props.reports.map((report, index) => {
-                        let desc = report.statusDescription === STATUS.FREE_STYLE  || this.props.title === STATUS.ARRIVING ? "" : " - " + report.statusDescription
+                        let desc = report.statusDescription === STATUS.FREE_STYLE
+                                    || this.props.title === STATUS.ARRIVING ? "" : " - " + report.statusDescription
                         let note = desc + (report.note ? " - " + report.note : "");
                         return <p key={index} className="report-line">{report.name + note} </p>;
                     })}

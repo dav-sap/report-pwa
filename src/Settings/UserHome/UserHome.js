@@ -21,7 +21,8 @@ class UserHome extends Component {
         newPass: "",
         newNickname: this.props.store.user.name,
         editNewPassword: false,
-        adminStatus: false
+        adminStatus: false,
+        sendEmail: this.props.store.user.sendEmail
     }
     async removeReport(status, report_id) {
         try {
@@ -277,7 +278,8 @@ class UserHome extends Component {
     getTableWrapperStyle() {
         let h = document.getElementById("top");
         if (h && h.clientHeight) {
-            return {height: "calc(100vh - " + (h.clientHeight -3) + "px)",
+            let addedPixels = this.state.adminStatus ? 70 : 0;
+            return {height: "calc(100vh - " + (h.clientHeight + 10 + addedPixels) + "px)",
                     width: "100%",
                     position: "relative",
                     top: this.state.adminStatus ? "57px" : "0px"};
@@ -325,7 +327,8 @@ class UserHome extends Component {
                     newEmail: this.state.newEmail,
                     oldPass: this.state.oldPass,
                     newPass: this.state.newPass,
-                    nickname: this.state.newNickname
+                    nickname: this.state.newNickname,
+                    sendEmail: this.state.sendEmail
                 })
             };
 
@@ -421,7 +424,9 @@ class UserHome extends Component {
                     <fieldset className="field-set-input">
                         <input type="text" placeholder="Nickname" disabled={this.state.oldPass === ""} className="text-password" value={this.state.newNickname} onChange={(e) => this.setState({newNickname: e.target.value})}/>
                     </fieldset>
-
+                    <div className="send-email-cb">
+                        <input type="checkbox" id="c2" checked={this.state.sendEmail} onChange={() => this.setState({sendEmail: !this.state.sendEmail})}/><label htmlFor="c2">Send me calendar event</label>
+                    </div>
                     <fieldset className="field-set-input" style={{width: this.state.editNewPassword ? "80%" : "60%"}}>
 
                     {this.state.editNewPassword ?

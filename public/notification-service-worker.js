@@ -1,7 +1,4 @@
-
-const SERVER_URL = "https://flex-server.herokuapp.com";
-// const SERVER_URL = "http://localhost:3141";
-const SITE_URL = "https://pwa-first-71a09.firebaseapp.com";
+const SITE_URL = "https://flex-server.herokuapp.com/";
 'use strict';
 const filesToCache = [
     "/images/admin-settings.png", "/images/dates.png", "/images/everyone.png", "/images/loc.png", "/images/next-button.png",
@@ -99,8 +96,6 @@ function createUser(jsonData, e) {
                 client.focus();
             } else {
                 console.log('All Clients are not visible!!!');
-                // clients.openWindow("http://localhost:3210/");
-
             }
         }
     });
@@ -145,29 +140,30 @@ self.addEventListener('notificationclick', function(e) {
         console.log("arriving");
         idbKeyval.get('user').then((user) => {
             console.log("arriving", user);
-            let startDate = new Date();
-            startDate.setHours(0,0,0,0);
-            let startDateStr = startDate.toISOString().replace(":00.000Z", "");
-            let endDate = new Date();
-            endDate.setHours(23,59,0,0);
-            let endDateeStr = endDate.toISOString().replace(":00.000Z", "");
+            let today = new Date();
+            today.setTime(today.getTime() + ((-1*today.getTimezoneOffset())*60*1000));
+            let todayStr = today.toISOString();
+            todayStr = todayStr.substr(0, todayStr.lastIndexOf(':'));
 
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    'content-type': 'application/json'
+                    'content-type': 'application/json',
+                    'user': user.email + ":" + user.password
                 }),
                 body: JSON.stringify({
                     email: user.email,
-                    startDate: startDateStr,
-                    endDate: endDateeStr,
+                    startDate: todayStr,
+                    endDate: todayStr,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     status: "Arriving",
                     statusDesc: "",
                     note: "",
-                    repeat: 0
+                    repeat: 0,
+                    allDay: true,
                 })
             };
-            fetch(SERVER_URL +"/add_report", reqProps)
+            fetch("/add_report", reqProps)
                 .then(res => {
                     if (res.status !== 200) {
                         throw new Error("Error Connecting");
@@ -188,7 +184,7 @@ self.addEventListener('notificationclick', function(e) {
                 email: notification.data.email,
             })
         };
-        fetch(SERVER_URL + "/deny_user", reqProps)
+        fetch("/deny_user", reqProps)
             .then(res => {
                 console.log('res from deny user: ', res);
             });
@@ -201,7 +197,7 @@ self.addEventListener('notificationclick', function(e) {
                 email: notification.data.email,
             })
         };
-        fetch(SERVER_URL + "/add_user", reqProps)
+        fetch("/add_user", reqProps)
             .then(res => {
                 console.log('res from add user: ', res);
             });

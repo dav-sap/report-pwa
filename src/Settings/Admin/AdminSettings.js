@@ -4,6 +4,7 @@ import {SERVER_URL} from './../../Consts'
 import {addErrorNoti} from './../../Utils';
 import AppStoreInstance from "./../../AppStore";
 import './admin-settings.css';
+import {addNotification} from "../../Utils";
 const IdbKeyval = require('idb-keyval');
 
 export default class AdminSettings extends Component {
@@ -24,6 +25,42 @@ export default class AdminSettings extends Component {
 
                 this.setState({
                     [stateMembersToChange]: json.members
+                }, () => {
+                    if (stateMembersToChange === "members") {
+                        let copyMembers = this.state.members;
+                        // let promises = [];
+                        this.state.members.forEach( member => {
+
+                            let reqProps = {
+                                method: 'GET',
+                            };
+                            //promises.push(
+                            fetch(SERVER_URL + "/get_admin_status?email=" + member.email, reqProps)
+                                .then((response) => {
+                                    if (response.status === 200) {
+                                        response.json()
+                                            .then((resJson) => {
+                                                copyMembers.map((newMember) => {
+                                                    if (member.email.toLowerCase() === newMember.email.toLowerCase()) {
+                                                        newMember.adminStatus = resJson.admin;
+                                                        return newMember;
+                                                    } else return newMember;
+
+                                                })
+                                                this.setState({members: copyMembers})
+                                            });
+                                    }
+                                    else throw new Error("Can't fetch admin status");
+                                })
+                                .catch(() => {
+                                    addErrorNoti();
+                                })
+                            //)
+                        })
+                        // Promise.all(promises).then(() =>{
+                        //     this.setState({members: copyMembers})
+                        // });
+                    }
                 });
             } else {
                 throw new Error("Error fetching members as admin. Server error");
@@ -105,6 +142,33 @@ export default class AdminSettings extends Component {
             addErrorNoti();
         }
     };
+    async makeUserAdmin(member) {
+        if (member.adminStatus) {
+            return
+        } else {
+            try {
+                let reqProps = {
+                    method: 'POST',
+                    headers: new Headers({
+                        'content-type': 'application/json',
+                        'user': AppStoreInstance.user.email + ":" + AppStoreInstance.user.password
+                    }),
+                    body: JSON.stringify({
+                        email: member.email
+                    })
+                };
+                let res = await fetch("/make_admin", reqProps);
+
+                if (res.status === 200) {
+                    addNotification(member.name + " added as admin to ")
+                } else {
+                    throw new Error({msg: "Can't remove exsiting user", status: res.status});
+                }
+            } catch(e) {
+                addErrorNoti();
+            }
+        }
+    }
 
     render() {
         return (
@@ -141,9 +205,18 @@ export default class AdminSettings extends Component {
                                 <th><div className="member-table-cell">{member.name}</div></th>
                                 <th><div className="member-table-cell">{member.email}</div></th>
                                 <th className="last-cell-row">
+                                    {!(member.email === this.state.user.email) ?
                                     <div className="member-table-cell-remove-button" onClick={this.removeExistingUser.bind(this, member)}>
                                         Remove
-                                    </div>
+                                    </div> :
+                                    ""}
+                                </th>
+                                <th>
+                                    {member.adminStatus === true || member.adminStatus === false ?
+                                    <div className={"member-table-cell-admin-button" + (member.adminStatus ? "-disabled" : "")}
+                                         onClick={this.makeUserAdmin.bind(this, member)}>
+                                        {member.adminStatus ? "Admin" : "Make Admin"}
+                                    </div> : "" }
                                 </th>
                             </tr>)
                     })}

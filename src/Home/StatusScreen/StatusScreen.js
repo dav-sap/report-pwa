@@ -103,7 +103,7 @@ class StatusScreen extends Component {
                 <div className="status-button" style={{background: COLOR_MAP[STATUS.ARRIVING]}}
                         onClick={(e) => this.handleStatusClick(e, STATUS.ARRIVING)}/><div className="text-div">Arriving!</div>
                 </div>
-                <Footer className="status-next-button" text="Where's My Peers?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />
+                <Footer className="status-next-button" text="Where is Everyone?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />
             </div>
 
 

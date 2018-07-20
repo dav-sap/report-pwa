@@ -2,6 +2,7 @@
   "name": "pwa-experiment",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3141",
   "dependencies": {
     "antd": "^3.1.1",
     "autoprefixer": "7.1.6",
@@ -57,7 +58,7 @@
   },
   "scripts": {
     "start": "set PORT=4300 && node scripts/start.js",
-    "build": "node scripts/build.js",
+    "build": "node scripts/build.js && rm -Rf ../server/build && mv build ../server/build",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {

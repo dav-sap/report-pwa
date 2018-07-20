@@ -33,18 +33,30 @@ export default class WhereInfo extends Component {
 
     parseReports(reports, stateToUpdate) {
         let ooo = [];
+        let oooNames = [];
         let wf = [];
-        let arriving = []
+        let wfNames = [] ;
+        let arriving = [];
+        let arrivingNames = [];
         reports.forEach((report) => {
             switch (report.status) {
                 case "OOO":
-                    ooo.push(report);
-                    break;
+                    if (oooNames.indexOf(report.name) === -1) {
+                        ooo.push(report);
+                        oooNames.push(report.name)
+                        break;
+                    }
                 case "WF":
-                    wf.push(report);
-                    break;
+                    if (wfNames.indexOf(report.name) === -1) {
+                        wf.push(report);
+                        wfNames.push(report.name);
+                        break;
+                    }
                 case STATUS.ARRIVING:
-                    arriving.push(report);
+                    if (arrivingNames.indexOf(report.name) === -1) {
+                        arriving.push(report);
+                        arrivingNames.push(report.name);
+                    }
                     break;
                 default:
                     console.log("No matching Status")
@@ -89,8 +101,8 @@ export default class WhereInfo extends Component {
         let today = new Date();
         today.setTime(today.getTime() + ((-1*today.getTimezoneOffset())*60*1000));
         await this.fetchMembers(TODAY, today.toISOString());
-        let tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
+        let tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
         await this.fetchMembers(TOMORROW, tomorrow.toISOString());
     }
     calculateScreenHeight() {

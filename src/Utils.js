@@ -2,6 +2,8 @@ import React from 'react'
 import {notification} from 'antd'
 
 export const applicationServerPublicKey = 'BCKvDKBurBXsf-WJ4r8Sn-qEzMMN6Ntsw8VFvxnM1XS-pYVj4cVbFgM__I8wbes4au2C3pzU8e9hcsp_i7y87Ww';
+const notifictionDuration = 4.5;
+let notifictionShowing = false;
 
 export function urlB64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -18,11 +20,6 @@ export function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 
-// export function ServerBadResponseException(message, status) {
-//     this.message = message;
-//     this.status = status;
-//     this.name = 'ServerBadResponseException';
-// }
 export function emailToName(str) {
     let name = str.substr(0,str.indexOf("@")).replace(".", " ")
     return name.replace(/\w\S*/g, function(txt){
@@ -46,25 +43,27 @@ export function isChrome() {
 export function isFirefox()  {
     return typeof InstallTrigger !== 'undefined'
 }
-export function addErrorNoti() {
-    const key = `open${Date.now()}`;
-    notification.open({
-        message: '',
-        description: <p className="notification-text">Server Connection Failed</p>,
-        className: "notification-css-error",
-        key,
-    });
-}
 export function addNotification(str) {
-    console.log(str);
-    const key = `open${Date.now()}`;
-    notification.open({
-        message: '',
-        description: <p className="notification-text">{str ? str : "Server Connection Failed"}</p>,
-        className: "notification-css-error",
-        key,
-    });
+    if (!notifictionShowing) {
+        const key = `open${Date.now()}`;
+        notification.open({
+            message: '',
+            description: <p className="notification-text">{str ? str : "Server Connection Failed"}</p>,
+            className: "notification-css-error",
+            key,
+        });
+
+        notifictionShowing = true
+        setTimeout(() => {
+            notifictionShowing = false;
+        }, notifictionDuration * 1000)
+    }
 }
+
+export function addErrorNoti() {
+    addNotification("Server Connection Failed")
+}
+
 export function onlyUnique(value, index, self) { 
     return self.indexOf(value) === index;
 }

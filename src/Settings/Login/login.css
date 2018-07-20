@@ -16,7 +16,7 @@
 }
 .forgot-pwd {
     color: white;
-    margin-left: 50px;
+    margin-left: 38px;
     width: fit-content;
 
     margin-top: 7px;
@@ -140,6 +140,7 @@
     font-size: 28px;
     position: relative;
     text-align: center;
+    margin-top: 10px;
 }
 .ant-select-selection--single {
     height: 100% !important;
@@ -150,6 +151,11 @@
 .group-autocomplete {
     margin-left: auto !important;
     margin-right: auto !important;
+}
+.reset-pwd {
+    color: beige;
+    padding-left: 15px;
+    font-size: 16px;
 }
 .group-autocomplete:before {
     font-family: 'Amatic SC', cursive;
