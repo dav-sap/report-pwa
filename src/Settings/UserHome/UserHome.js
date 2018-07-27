@@ -3,7 +3,7 @@ import './user-home.css';
 import {Icon, notification} from 'antd'
 import {Link } from 'react-router-dom';
 import {addErrorNoti, emailToName, addNotification} from './../../Utils';
-import { SERVER_URL, STATUS} from './../../Consts';
+import { STATUS} from './../../Consts';
 import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 import {observer} from "mobx-react/index";
 const IdbKeyval = require('idb-keyval');
@@ -37,7 +37,7 @@ class UserHome extends Component {
                     report_id: report_id
                 })
             };
-            let response = await fetch(SERVER_URL + "/remove_report", reqProps);
+            let response = await fetch("/remove_report", reqProps);
             if (response.status === 500) {
                 throw new Error("Can't remove report, internet connection, or server error");
             }
@@ -85,7 +85,7 @@ class UserHome extends Component {
             let reqProps = {
                 method: 'GET',
             };
-            let response = await fetch(SERVER_URL + "/get_group_name?user="+this.props.store.user.email, reqProps);
+            let response = await fetch("/get_group_name?user="+this.props.store.user.email, reqProps);
             if (response.status === 200) {
                 let resJson = await response.json();
                 this.setState({
@@ -104,7 +104,7 @@ class UserHome extends Component {
             let reqProps = {
                 method: 'GET',
             };
-            let response = await fetch(SERVER_URL + "/get_admin_status?email="+email, reqProps);
+            let response = await fetch("/get_admin_status?email="+email, reqProps);
             if (response.status === 200) {
                 let resJson = await response.json();
                 this.setState({
@@ -149,7 +149,7 @@ class UserHome extends Component {
                     })
                 };
 
-                let response = await fetch(SERVER_URL + "/check_subscription", reqProps);
+                let response = await fetch("/check_subscription", reqProps);
                 if (response.status === 500) {
                     throw new Error("Can't remove notifications, internet connection, or server error");
                 }
@@ -181,7 +181,7 @@ class UserHome extends Component {
                 })
             };
 
-            let response = await fetch(SERVER_URL + "/add_subscription", reqProps);
+            let response = await fetch("/add_subscription", reqProps);
             if (response.status === 500) {
                 throw new Error({msg:"Can't remove notification, internet connection, or server error", status:response.status});
             }
@@ -207,7 +207,7 @@ class UserHome extends Component {
                 })
             };
 
-            let response = await fetch(SERVER_URL + "/remove_subscription", reqProps);
+            let response = await fetch("/remove_subscription", reqProps);
             if (response.status === 500) {
                 throw new Error({msg:"Can't remove notification, internet connection, or server error", status:response.status});
             }
@@ -278,11 +278,11 @@ class UserHome extends Component {
     getTableWrapperStyle() {
         let h = document.getElementById("top");
         if (h && h.clientHeight) {
-            let addedPixels = this.state.adminStatus ? 70 : 0;
-            return {height: "calc(100vh - " + (h.clientHeight + 10 + addedPixels) + "px)",
-                    width: "100%",
-                    position: "relative",
-                    top: this.state.adminStatus ? "57px" : "0px"};
+            return {
+                height: "calc(100vh - " + (h.clientHeight + 15) + "px)",
+                width: "100%",
+                position: "relative"
+            };
         }
 
     }
@@ -332,7 +332,7 @@ class UserHome extends Component {
                 })
             };
 
-            let response = await fetch(SERVER_URL + "/change_profile", reqProps);
+            let response = await fetch("/change_profile", reqProps);
             if (response.status === 500) {
                 throw new Error({msg:"Can't remove notification, internet connection, or server error", status:response.status});
             }
@@ -376,32 +376,26 @@ class UserHome extends Component {
                         <div className="full-name">
                             {this.props.store.user ? this.props.store.user.name : ""}
                         </div>
+                        { this.state.adminStatus ?
+                        <Link to="/admin-settings">
+                            <span className="admin-text">
+                                <Icon type="tool" className="admin-tools" />
+                                Admin
+                            </span>
+                        </Link> : ""}
+
                         <div className="email">
                             {this.props.store.user ? this.props.store.user.email : ""}
                         </div>
                         <div className="location">
-                            <img alt="loc" src="/images/loc.png" />
                             {this.state.groupName}
                         </div>
                     </div>
 
                     <div className="user-option">
-                        { this.state.adminStatus ?
-                        <Link to="/admin-settings">
-                            <div className="go-to-admin">
-                                <div className="admin-wrapper">
-                                    <div className="admin-text">
-                                    Admin
-                                    </div>
-                                    <img src="/images/admin-settings.png" alt="Go to admin settings" className="admin-settings-img"/>
-                                </div>
-
-                            </div>
-                        </Link> : ""}
-
                         <div className="edit-profile" onClick={this.editProfile}>
-                            Edit Profile
-                            <Icon type="edit" className="edit-img"/>
+                            {this.state.editing ? <Icon type="database" className="edit-img" />
+                                 : <Icon type="edit" className="edit-img"/>}
                             
                         </div>
                         <img alt="notification status" src={this.state.notificationStatus ? "/images/noti-on.png" : "/images/noti-off.png"} className="notification-updater" onClick={this.changeNotificationStatus}/>
@@ -414,20 +408,20 @@ class UserHome extends Component {
                             borderColor: this.state.oldPass === "" ? "grey" : "white", position: "relative", top: this.state.adminStatus ? "30px" : "0px"}}
                 >
 
-                    <fieldset className="field-set-input old-password">
+                    <fieldset className="field-set-input user-home-input old-password">
                         <input type="password" id="pwd-edit-old" placeholder="Password" className="text-password" value={this.state.oldPass} onChange={(e) => this.setState({oldPass: e.target.value})}/>
                         <Icon type="eye-o" className="pwd-visibility-icon" onClick={() => this.changePwdVisibility("pwd-edit-old")}/>
                     </fieldset>
-                    <fieldset className="field-set-input">
+                    <fieldset className="field-set-input user-home-input">
                         <input type="text" placeholder="Email" disabled={this.state.oldPass === ""} className="text-password" value={this.state.newEmail} onChange={(e) => this.setState({newEmail: e.target.value})}/>
                     </fieldset>
-                    <fieldset className="field-set-input">
+                    <fieldset className="field-set-input user-home-input">
                         <input type="text" placeholder="Nickname" disabled={this.state.oldPass === ""} className="text-password" value={this.state.newNickname} onChange={(e) => this.setState({newNickname: e.target.value})}/>
                     </fieldset>
                     <div className="send-email-cb">
                         <input type="checkbox" id="c2" checked={this.state.sendEmail} onChange={() => this.setState({sendEmail: !this.state.sendEmail})}/><label htmlFor="c2">Send me calendar event</label>
                     </div>
-                    <fieldset className="field-set-input" style={{width: this.state.editNewPassword ? "80%" : "60%"}}>
+                    <fieldset className="field-set-input user-home-input" style={{width: this.state.editNewPassword ? "80%" : "60%"}}>
 
                     {this.state.editNewPassword ?
                         <div>

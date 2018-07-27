@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './status-screen.css'
 import { observer } from 'mobx-react';
-import {COLOR_MAP, STATUS, SERVER_URL} from './../../Consts';
+import {COLOR_MAP, STATUS} from './../../Consts';
 import {addErrorNoti} from './../../Utils'
 import { Icon} from 'antd';
 import Power0 from 'gsap'
@@ -41,7 +41,7 @@ class StatusScreen extends Component {
                     allDay: true,
                 })
             };
-            fetch(SERVER_URL +"/add_report", reqProps)
+            fetch("/add_report", reqProps)
                 .then(res => {
                     if (res.status !== 200) {
                         throw new Error("Error Connecting");

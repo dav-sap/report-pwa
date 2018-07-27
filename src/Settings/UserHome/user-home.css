@@ -9,21 +9,26 @@
     font-family: 'Amatic SC', cursive;
     color:white;
 }
+.user-home-input {
+    margin-top: 18px;
+    font-size: 25px;
+}
 .full-name {
     color: white;
     text-align: center;
-    font-size: 35px;
+    font-size: 30px;
     font-weight: 700;
     text-overflow: ellipsis;
     display: block;
     overflow: hidden;
-    padding-top: 25px;
+    max-width: 80%;
+    margin: auto;
 }
 .submit-changes-button {
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 1px;
+    padding-bottom: 1px;
     border-radius: 10px;
-    font-size: 28px;
+    font-size: 25px;
     font-weight: 800;
     border-width: 3px;
     border-style: solid;
@@ -31,31 +36,35 @@
     text-align: center;
     width: 150px;
     margin: auto;
-    margin-top:40px;
+    margin-top:20px;
 }
 .email {
     color: white;
     text-align: center;
-    font-size: 35px;
+    font-size: 30px;
     font-weight: 800;
     text-overflow: ellipsis;
     display: block;
-    overflow: hidden
+    overflow: hidden;
+    max-width: 80%;
+    margin: auto;
 }
 .location {
     color: grey;
     text-align: center;
-    padding-top: 15px;
+    /*padding-top: 15px;*/
     font-size: 24px;
     font-weight: 800;
-    position: absolute;
-    left:50%;
-    transform: translate(-50%, -25%);
+    /*position: absolute;*/
+    /*left:50%;*/
+    /*transform: translate(-50%, -25%);*/
 }
 .user-option {
-    border-bottom: 1px #029292 solid;
+    /*border-bottom: 1px #029292 solid;*/
     position: relative;
-    height: 50px;
+    display: flex;
+    margin: auto;
+    width: fit-content;
 }
 .old-password {
     border-color: white;
@@ -78,18 +87,26 @@
     cursor: pointer;
 }
 .edit-profile {
-    border: 1.8px #8f949a solid;
-    color:#8f949a;
-    position: absolute;
-    right: 3px;
-    top: 0px;
-    font-size: 20px;
-    width: 100px;
-    height:38px;
-    padding: 2px 5px 2px 5px;
-    font-weight: 800;
-    border-radius: 10px;
+    /*border: 1.8px #8f949a solid;*/
+    color: #8f949a;
+    /*position: relative;*/
+    /*right: 3px;*/
+    /*top: 0px;*/
+    /*font-size: 35px;*/
+
+    /*padding: 3px;*/
+    /*padding: 2px 5px 2px 5px;*/
+    /*font-weight: 800;*/
+    /*border-radius: 10px;*/
     cursor: pointer;
+    width: fit-content;
+}
+.edit-img {
+    width: 35px;
+    height: 35px;
+    font-size: 30px;
+    margin: 5px;
+    color: #00fff2;
 }
 
 .go-to-admin {
@@ -107,23 +124,37 @@
     cursor: pointer;
 }
 .admin-wrapper {
-    position: relative;
-    height: calc(100% - 4px);
-    top:2px;
-
+    /*border: 1.8px #8f949a solid;*/
+    color: #8f949a;
+    /*position: relative;*/
+    /*right: 3px;*/
+    /*top: 0px;*/
+    /*font-size: 20px;*/
+    /*padding: 2px 5px 2px 5px;*/
+    /*font-weight: 800;*/
+    /*border-radius: 10px;*/
+    cursor: pointer;
+    width: fit-content;
 }
 .admin-text{
     position: absolute;
-    left: 4px;
-    top:50%;
-    transform: translateY(-50%);
+    font-size: 16px;
+    right: 0;
+    top: 0px;
+}
+.admin-tools {
+    margin-right: 3px;
 }
 .admin-settings-img {
-    margin-bottom: 1px;
-    position: absolute;
-    right: 3px;
-    top:50%;
-    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    margin-right: 15px;
+}
+.report-img {
+    width: 35px;
+    height: 35px;
+    margin: 5px;
 }
 .logout-img {
     margin-left: 7px;
@@ -161,13 +192,15 @@
 }
 .notification-updater {
     color: #8f949a;
-    position: absolute;
-    left: 0;
-    top: 0;
+    /*position: absolute;*/
+    /*left: 0;*/
+    /*top: 0;*/
     /*transform: translate(50%, 50%);*/
-    width: 36px;
-    height: 36px;
     cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    margin-left: 15px;
 }
 .send-email-cb > label:before {
     /*position: relative;*/
@@ -180,5 +213,6 @@
     margin-right: auto;
     position: relative;
     left: 25px;
+    margin-top: 5px;
 
 }

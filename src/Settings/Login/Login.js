@@ -3,7 +3,6 @@ import './login.css'
 import {Link } from 'react-router-dom';
 import {Icon, AutoComplete } from 'antd'
 import {addErrorNoti, addNotification} from "../../Utils";
-import {SERVER_URL} from "../../Consts";
 
 export default class Login extends Component {
     state = {
@@ -26,7 +25,7 @@ export default class Login extends Component {
     }
     fetchGroups = async () => {
         try {
-            let res = await fetch(SERVER_URL + "/get_groups", {method: 'GET'});
+            let res = await fetch("/get_groups", {method: 'GET'});
 
             if (res.status === 200) {
                 let  resJson = await res.json();

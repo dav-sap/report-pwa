@@ -5,13 +5,11 @@ import UserHome from './UserHome/UserHome'
 import WaitAuthScreen from './WaitAuthScreen/WaitAuthScreen'
 import LoadingCircle from './../LoadingCircle'
 import {urlB64ToUint8Array, applicationServerPublicKey} from './../Utils';
-import { SERVER_URL} from './../Consts';
 import {addErrorNoti, addNotification} from './../Utils';
-import {notification} from 'antd';
 import AppStoreInstance from "./../AppStore";
 import {observer} from "mobx-react/index";
 import { withRouter } from 'react-router-dom'
-import {COLOR_MAP} from "../Consts";
+
 
 const IdbKeyval = require('idb-keyval');
 
@@ -46,7 +44,7 @@ class Settings extends Component {
                     email: val.email,
                 })
             };
-            let res = await fetch(SERVER_URL + "/get_user_reports", reqProps);
+            let res = await fetch("/get_user_reports", reqProps);
 
             if (res.status === 200) {
                 res.json().then(json => {
@@ -128,7 +126,7 @@ class Settings extends Component {
                 })
             };
 
-            let response = await fetch(SERVER_URL + "/logout", reqProps);
+            let response = await fetch("/logout", reqProps);
             if (response.status === 500) {
                 throw new Error({msg:"Can't unsubscribe in server", status:response.status});
             }
@@ -197,7 +195,7 @@ class Settings extends Component {
                 })
             };
 
-            let response = await fetch(SERVER_URL + url, reqProps);
+            let response = await fetch(url, reqProps);
 
             if (response.status === 500) {
                 throw "server returned 500";
@@ -264,7 +262,7 @@ class Settings extends Component {
                 })
             };
 
-            let response = await fetch(SERVER_URL + "/cancel_await_member", reqProps);
+            let response = await fetch("/cancel_await_member", reqProps);
 
             if (response.status === 500) {
                 throw new Error({msg:"Can't cancel member request", status:response.status});

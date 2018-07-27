@@ -48,11 +48,14 @@
 }
 .members-table {
     border-collapse: collapse;
-    overflow-y: hidden;
+    /*overflow-y: hidden;*/
+    display: block;
     font-size: 18px;
-    width: 97%;
+    width: 96%;
     margin-left: auto;
     margin-right: auto;
+    max-height: 250px;
+    overflow-y: auto;
 }
 .member-row > th {
     padding-top:5px;
@@ -65,7 +68,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: fit-content;
-    max-width: 144px;
+    max-width: 140px;
+    min-width: 30px;
     margin-right: 3px;
 }
 .member-table-cell-images {
@@ -112,5 +116,11 @@
     margin-left: auto;
 }
 .last-cell-row {
-    /*width:77px;*/
+
+}
+.work-from-list {
+
+}
+.member-table-cell > input {
+    text-align: left;
 }

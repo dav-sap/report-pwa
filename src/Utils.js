@@ -48,7 +48,7 @@ export function addNotification(str) {
         const key = `open${Date.now()}`;
         notification.open({
             message: '',
-            description: <p className="notification-text">{str ? str : "Server Connection Failed"}</p>,
+            description: <p className="notification-text">{str ? str : "Connection Failed"}</p>,
             className: "notification-css-error",
             key,
         });

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {STATUS, SERVER_URL} from './../Consts';
+import {STATUS} from './../Consts';
 import Status from './Status'
 import {addErrorNoti} from './../Utils';
 import './where-info.css';
@@ -80,7 +80,7 @@ export default class WhereInfo extends Component {
         let reqProps = {
             method: 'GET',
         };
-        fetch(SERVER_URL + "/get_members_status_by_date?date=" + today + "&user=" + this.state.user.email, reqProps)
+        fetch("/get_members_status_by_date?date=" + today + "&user=" + this.state.user.email, reqProps)
             .then((response) => {
                 if (response.status === 200) {
                     response.json().then((json) => {

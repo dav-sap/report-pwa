@@ -1,5 +1,5 @@
 import { action, extendObservable } from 'mobx';
-import { STATUS, SERVER_URL} from './Consts';
+import { STATUS} from './Consts';
 import {addErrorNoti} from './Utils';
 const IdbKeyval = require('idb-keyval');
 
@@ -18,6 +18,7 @@ class AppStore {
             user: null,
             waitingUser: null,
             allDay: true,
+            wfOptions: [],
         })
     }
     
@@ -77,10 +78,14 @@ class AppStore {
     });
     updateUser = action('updateUser', (user) => {
         this.user = user;
+        if (user) {
+            this.fetchWfOptions();
+        }
     });
     updateWaitingUser = action('updateWaitingUser', (user) => {
         this.waitingUser = user;
     });
+
     verifyAwaitUser = async (user) => {
         let reqProps = {
             method: 'POST',
@@ -93,7 +98,7 @@ class AppStore {
             })
         };
         try {
-            let res = await fetch(SERVER_URL + "/verify_await_user", reqProps);
+            let res = await fetch("/verify_await_user", reqProps);
             if (res.status === 200) {
                 let json = await res.json();
                 await IdbKeyval.set('waitAuth', true);
@@ -107,7 +112,7 @@ class AppStore {
                 this.updateWaitAuth(false);
                 await IdbKeyval.set('waitingUser', {});
                 this.updateWaitingUser({});
-                res = await fetch(SERVER_URL + "/verify_user", reqProps);
+                res = await fetch("/verify_user", reqProps);
                 if (res.status === 200) {
                     let json = await res.json();
                     await IdbKeyval.set('user', JSON.parse(json.member));
@@ -122,7 +127,21 @@ class AppStore {
             addErrorNoti();
         }
     }
-    
+
+    fetchWfOptions = async () => {
+        let reqProps = {
+            method: 'GET',
+            headers: new Headers({
+                'content-type': 'application/json',
+                'user': this.user.email + ":" + this.user.password
+            }),
+        };
+        let res = await fetch("/get_group_wf_options", reqProps);
+        if (res.status === 200) {
+            let resJson = await res.json();
+            this.wfOptions = resJson.options;
+        }
+    }
 }
 
 const AppStoreInstance = new AppStore();

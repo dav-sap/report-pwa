@@ -12,6 +12,42 @@
     font-weight: 900; */
 
 }
+.title {
+}
+.link {
+    color: purple;
+    cursor: pointer;
+    font-size: 23px;
+}
+.download-link {
+    font-size: 23px;
+}
+.download-link {
+    cursor: pointer;
+}
+.download-link-screen {
+    text-align: center;
+    margin: auto;
+    color: white;
+    padding-top: 25px;
+    height: 100%;
+    width: 100%;
+    font-family: 'Amatic SC', cursive;
+    font-size: 22px;
+    background-color: #d83979;
+
+}
+.background-img {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    width: 192px;
+    height: 240px;
+    transform: translate(-50%, -50%);
+    /*max-width: 33rem;*/
+    z-index: 1;
+    cursor: pointer;
+}
 .App-wrapper {
     height: 100%;
     -webkit-transition: opacity 0.7s linear;
@@ -116,3 +152,4 @@ hr {
         /* height: 300px !important; */
     }
 }
+

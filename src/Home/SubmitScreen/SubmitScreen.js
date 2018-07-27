@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './submit-screen.css'
-import {SUB_STATUS, SLIDER_SETTINGS, SERVER_URL, STATUS} from './../../Consts';
+import {SUB_STATUS, SLIDER_SETTINGS, STATUS} from './../../Consts';
 import { observer } from 'mobx-react';
 import { Icon} from 'antd';
 import LoadingCircle from "./../../LoadingCircle";
@@ -9,15 +9,17 @@ import Footer from './../Footer/Footer'
 import Slider from "react-slick";
 
 class SubmitScreen extends Component {
+
     state = {
         startedNote: false,
         finishedNote: false,
         loading:false,
-        subStatusNum: 0
+        subStatusNum: 0,
     };
     
     noteInput = null;
-    
+    optionChanged = false;
+
     handleChange = (event) => {
         this.props.store.changeNote(event.target.value);
     };
@@ -72,7 +74,7 @@ class SubmitScreen extends Component {
                 allDay: this.props.store.allDay,
             })
         };
-        fetch(SERVER_URL +"/add_report", reqProps)
+        fetch("/add_report", reqProps)
             .then(res => {
                 if (res.status !== 200) {
                     throw new Error("Error Connecting");
@@ -90,29 +92,38 @@ class SubmitScreen extends Component {
 
 
     };
+
     getRepeatStr = () => {
-        let from = this.props.store.dates.from
-        let to = this.props.store.dates.to
+        let from = this.props.store.dates.from;
+        let to = this.props.store.dates.to;
         if (from.setHours(0,0,0,0) === to.setHours(0,0,0,0)) {
             return <div className="repeat-text-wrapper">{"Every " + from.toLocaleString('en-En', {weekday: "long"}) + " for "}
-                <input type="number" value={this.props.store.repeat} className="input-weeks" onChange={(event) => this.props.store.updateRepeat(event.target.value)}/> {" weeks"} </div>
+                        <input type="number" value={this.props.store.repeat} className="input-weeks"
+                           onChange={(event) => this.props.store.updateRepeat(event.target.value)}/>
+                        {" weeks"}
+                    </div>
         } return ""
     }
-    afterChange = (item) => {
-        if (this.props.store.status !== STATUS.NO_STATUS) {
+
+    afterChange = (item, options) => {
+        if (this.props.store.status !== STATUS.NO_STATUS && options[item]) {
             this.setState({
                 subStatusNum: item
             })
-            this.props.store.addStatusDesc(SUB_STATUS[this.props.store.status][item].props.children[1].props.children)
+
+            this.props.store.addStatusDesc(options[item].name)
+
         }
     }
-    componentDidMount() {
+
+    async componentDidMount() {
         this.props.store.addStatusDesc("Free Style");
     }
-    
-    itemClicked(index) {
+
+    itemClicked(options, index) {
+        this.optionChanged = true;
         if (this.props.store.status !== STATUS.NO_STATUS) {
-            let itemsLen = SUB_STATUS[this.props.store.status].length - 1;
+            let itemsLen = options.length - 1;
             if (this.state.subStatusNum === itemsLen && index === 0) {
                 this.slider.slickGoTo(itemsLen + 1);
             } else if (this.state.subStatusNum === 0 && index === itemsLen) {
@@ -121,6 +132,11 @@ class SubmitScreen extends Component {
         }
     }
     render() {
+        let options = this.props.store.status === STATUS.WF ? this.props.store.wfOptions
+            : this.props.store.status === STATUS.OOO ? SUB_STATUS[this.props.store.status] : [];
+        if (options.length > 0 && !this.optionChanged) {
+            this.slider.slickGoTo(options.findIndex((item) => item.name === STATUS.FREE_STYLE));
+        }
         
         return (
             <div className="submit-screen body-wrapper">
@@ -129,12 +145,16 @@ class SubmitScreen extends Component {
                 <div className="repeat-options">
                     {this.getRepeatStr()}
                 </div>
-                <Slider ref={(input) => { this.slider = input; }} {...SLIDER_SETTINGS} afterChange={this.afterChange}>
-                    {SUB_STATUS[this.props.store.status] ? SUB_STATUS[this.props.store.status].map((item, index) => {
-                        return <div key={index} className="item-slider-wrapper" onClick={() =>this.itemClicked(index)}>{item}</div>
-                    }) : ""}
+                <Slider ref={(input) => { this.slider = input; }} {...SLIDER_SETTINGS} afterChange={(item) => this.afterChange(item, options)}>
+                    {options.map((item, index) => {
+                        return (
+                        <div key={index} className="item-slider-wrapper" onClick={() =>this.itemClicked(options, index)}>
+                            <div><span className="sub-status-icon" aria-label={item.name}>{item.emoji}</span><div>{item.name}</div></div>
+                        </div>)
+                    })}
                 </Slider>
-                {this.state.subStatusNum === 0 && !this.state.finishedNote? <div className="arrow-wrapper"><Icon type="arrow-down" className="arrow-freestyle bounce"/></div> : ""}
+                {this.state.subStatusNum === options.findIndex((item) => item.name === STATUS.FREE_STYLE)
+                    && !this.state.finishedNote? <div className="arrow-wrapper"><Icon type="arrow-down" className="arrow-freestyle bounce"/></div> : ""}
                 
                 <input ref={(input) => { this.noteInput = input; }} id="note" type="text" value={this.getValue()} className="add-note" onClick={this.changeInput}
                         onChange={this.handleChange} onKeyDown={this.handleSubmit} onBlur={this.focusOut}/>

@@ -64,7 +64,7 @@ class Home extends Component {
                     <div className="app-body">
                         <StatusScreen store={AppStoreInstance} history={this.props.history}/>
                         <DateTimePicker store={AppStoreInstance}/>
-                        <SubmitScreen store={AppStoreInstance} history={this.props.history}/>
+                        {AppStoreInstance.user ? <SubmitScreen store={AppStoreInstance} history={this.props.history}/> : ""}
                     </div>
                 </div>
             </div>
