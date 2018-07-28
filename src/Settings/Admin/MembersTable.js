@@ -18,9 +18,8 @@ class MembersTable extends PureComponent {
             if (res.status === 200) {
                 this.props.fetchMembers("/get_all_members", 'members');
             } else {
-                throw new Error({msg:"Can't remove exsiting user", status:res.status});
+                addErrorNoti();
             }
-
         } catch(e) {
             addErrorNoti();
         }
@@ -66,14 +65,14 @@ class MembersTable extends PureComponent {
                             <tr key={index} className="member-row">
                                 <th><div className="member-table-cell">{member.name}</div></th>
                                 <th><div className="member-table-cell">{member.email}</div></th>
-                                <th className="last-cell-row">
+                                <th>
                                     {!(member.email === this.props.store.user.email) ?
                                         <div className="member-table-cell-remove-button" onClick={() => this.removeExistingUser(member)}>
                                             Remove
                                         </div> :
                                         ""}
                                 </th>
-                                <th>
+                                <th className="last-cell-row">
                                     {member.adminStatus === true || member.adminStatus === false ?
                                     <div className={"member-table-cell-admin-button" + (member.adminStatus ? "-disabled" : "")}
                                          onClick={() => this.makeUserAdmin(member)}>

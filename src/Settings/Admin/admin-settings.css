@@ -68,7 +68,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: fit-content;
-    max-width: 140px;
+    max-width: 130px;
     min-width: 30px;
     margin-right: 3px;
 }
@@ -116,10 +116,11 @@
     margin-left: auto;
 }
 .last-cell-row {
-
+    min-width: 71px;
 }
 .work-from-list {
-
+    max-height: 176px;
+    overflow-y: auto;
 }
 .member-table-cell > input {
     text-align: left;

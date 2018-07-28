@@ -39,7 +39,7 @@ class UserHome extends Component {
             };
             let response = await fetch("/remove_report", reqProps);
             if (response.status === 500) {
-                throw new Error("Can't remove report, internet connection, or server error");
+                addErrorNoti();
             }
             else if (response.status === 200) {
                 this.props.fetchReports(this.props.store.user);
@@ -92,9 +92,9 @@ class UserHome extends Component {
                     groupName: resJson.name
                 })
             }
-            else throw new Error("Can't fetch group name");
-
-
+            else {
+                addErrorNoti();
+            }
         }catch (e) {
             addErrorNoti();
         }
@@ -111,18 +111,16 @@ class UserHome extends Component {
                     adminStatus: resJson.admin
                 })
             }
-            else throw new Error("Can't fetch admin status");
+            else {
+                addErrorNoti();
+            }
         }catch (e) {
             addErrorNoti();
         }
     }
     async componentDidMount() {
-        let user = await IdbKeyval.get('user');
-        if (user && user.email) {
-            this.fetchAdminStatus(user.email)
-        }
-
-        this.fetchGroupName();
+        this.fetchAdminStatus(this.props.store.user.email);
+        await this.fetchGroupName();
         if (!("Notification" in window)) {
             console.log("This browser does not support desktop notification");
             this.setState({
@@ -151,7 +149,7 @@ class UserHome extends Component {
 
                 let response = await fetch("/check_subscription", reqProps);
                 if (response.status === 500) {
-                    throw new Error("Can't remove notifications, internet connection, or server error");
+                    addErrorNoti();
                 }
                 else if (response.status === 200) {
                     this.setState({

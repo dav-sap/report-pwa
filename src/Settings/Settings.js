@@ -51,7 +51,7 @@ class Settings extends Component {
                     this.parseReports(json);
                 })
             } else {
-                throw new Error({msg:"Can't get updated user reports", status:res.status});
+                addErrorNoti();
             }
         } catch (e) {
             addErrorNoti();
@@ -60,6 +60,7 @@ class Settings extends Component {
     
     async componentDidMount() {
         this.setState({loading:true})
+        await AppStoreInstance.resetAll();
         let val = await IdbKeyval.get('user');
         if (val && val.email) {
             AppStoreInstance.updateUser(val);
@@ -223,7 +224,9 @@ class Settings extends Component {
                 this.fetchReports(json.member);
             }  else if (response.status === 401){
                 addNotification("Login Failed! Check email & password");
-            } else {
+            }   else if (response.status === 409){
+                addNotification("Signup Failed! Try a different Email/Password");
+            }else {
                 throw "Unknown Server Error"
             }
             this.setState({loading: false});

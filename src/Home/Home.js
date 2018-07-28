@@ -39,6 +39,24 @@ class Home extends Component {
             });
         IdbKeyval.get('user').then(val => {
             if (val && val.email) {
+                let reqProps = {
+                    method: 'POST',
+                    headers: new Headers({
+                        'content-type': 'application/json'
+                    }),
+                    body: JSON.stringify({
+                        name: val.name,
+                        email: val.email,
+                    })
+                };
+                fetch("/verify_user", reqProps).then( (res) => {
+                        if (res.status === 401) {
+                            IdbKeyval.set('user', null);
+                            AppStoreInstance.updateUser(null);
+                        }
+                    }
+                )
+
                 AppStoreInstance.updateUser(val);
             } else {
                 IdbKeyval.get('waitingUser').then((val) => {
@@ -53,17 +71,15 @@ class Home extends Component {
             }
         });
     }
-    
-
 
     render() {
         return (
             <div className="App-wrapper" style={{background: COLOR_MAP[AppStoreInstance.status]}}> 
                 <div className="App" style={{width: "100%", maxWidth: "35rem", position: "relative", margin: "auto",maxHeight: "70rem"}}>
-                    <Header store={AppStoreInstance}/>
+                    <Header store={AppStoreInstance} history={this.props.history}/>
                     <div className="app-body">
                         <StatusScreen store={AppStoreInstance} history={this.props.history}/>
-                        <DateTimePicker store={AppStoreInstance}/>
+                        <DateTimePicker store={AppStoreInstance} history={this.props.history}/>
                         {AppStoreInstance.user ? <SubmitScreen store={AppStoreInstance} history={this.props.history}/> : ""}
                     </div>
                 </div>

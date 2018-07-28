@@ -20,14 +20,13 @@
     font-family: 'Amatic SC', cursive;
 }
 .repeat-options {
-    padding-top: 40px;
+    padding-top: 30px;
     padding-bottom: 30px;
     font-size: 28px;
     color:white;
 }
 
 .add-note {
-    color: black;
     border: 1.5px solid white;
     padding: 7px 25px 7px 25px;
     border-radius: 10px;

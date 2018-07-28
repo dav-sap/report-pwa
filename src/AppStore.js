@@ -23,7 +23,12 @@ class AppStore {
     }
     
     nextSlide = action('nextSlide', () => {
-        this.slideNumber = this.slideNumber + 1;
+        // console.log("next");
+        let newSlideNum = this.slideNumber + 1;
+        // window.history.pushState({slideNumber: newSlideNum},
+        //     "",
+        //     "");
+        this.slideNumber = newSlideNum;
     });
     prevSlide = action('prevSlide', () => {
         if (this.slideNumber - 1 === 0) {
@@ -31,7 +36,10 @@ class AppStore {
             this.dates = {from: new Date(), to: new Date()}
             this.time = {from: "08:00", to: "17:00"};
         }
-        this.slideNumber = this.slideNumber - 1;        
+        // window.history.replaceState({slideNumber: this.slideNumber - 1}, this.status + (this.slideNumber - 1).toString(), this.status + (this.slideNumber - 1).toString());
+        // window.history.back()
+        this.slideNumber = this.slideNumber - 1;
+
     });
     updateStatus = action('updateStatus', (status) => {
         this.status = status;       

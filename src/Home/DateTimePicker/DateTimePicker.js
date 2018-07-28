@@ -18,6 +18,10 @@ class DateTimePicker extends Component {
         return fromStr === toStr ? fromStr : fromStr + " - " + toStr
     }
     handleDatePickerClick = () => {
+        let prevB = document.getElementById("prev-button");
+        if (prevB) {
+            prevB.style.pointerEvents = 'none';
+        }
         if (this.props.store.allDay) {
             TweenMax.to(".time-picker-wrapper", 0.0, {opacity: 0});    
         }
@@ -43,7 +47,13 @@ class DateTimePicker extends Component {
         TweenMax.to(".date-time-picker-wrapper", 0.3, {zIndex: 1, delay: 1.8});
         TweenMax.to(".submit-screen", 0.3, {opacity: 1, zIndex: 2, delay: 1.8});
         
-        setTimeout(() => this.props.store.nextSlide(), 2000);
+        setTimeout(() => {
+            this.props.store.nextSlide();
+            if (prevB) {
+                prevB.style.pointerEvents = 'auto';
+            }
+        }, 2000);
+
     }
     render() {
         return (

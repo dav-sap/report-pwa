@@ -122,7 +122,7 @@ class SubmitScreen extends Component {
 
     itemClicked(options, index) {
         this.optionChanged = true;
-        if (this.props.store.status !== STATUS.NO_STATUS) {
+        if (this.props.store.status !== STATUS.NO_STATUS && this.slider) {
             let itemsLen = options.length - 1;
             if (this.state.subStatusNum === itemsLen && index === 0) {
                 this.slider.slickGoTo(itemsLen + 1);
@@ -134,7 +134,7 @@ class SubmitScreen extends Component {
     render() {
         let options = this.props.store.status === STATUS.WF ? this.props.store.wfOptions
             : this.props.store.status === STATUS.OOO ? SUB_STATUS[this.props.store.status] : [];
-        if (options.length > 0 && !this.optionChanged) {
+        if (options.length > 0 && !this.optionChanged  && this.slider) {
             this.slider.slickGoTo(options.findIndex((item) => item.name === STATUS.FREE_STYLE));
         }
         

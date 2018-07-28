@@ -58,7 +58,7 @@ class StatusScreen extends Component {
         
         let el = (event.target || event.srcElement); // DOM uses 'target';
         let allEl = document.getElementsByClassName("status-wrapper");
-        
+
         TweenMax.to(".status-button", 0.7, {width: 0, height: 0, ease: Power0.easeOut})
         TweenMax.to(".status-next-button", 0.7, {opacity: 0, ease: Power0.easeOut})
         
@@ -80,7 +80,7 @@ class StatusScreen extends Component {
             TweenMax.to(".status-div", 0.0, {zIndex: 1})
             TweenMax.to(".app-body", 0.0, {zIndex: 1})
             TweenMax.to(".date-time-picker-wrapper", 0.2, {opacity: 1, zIndex: 2})
-            
+
         }, 1500 )
 
     }

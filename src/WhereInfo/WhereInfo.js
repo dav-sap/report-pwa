@@ -5,6 +5,7 @@ import {addErrorNoti} from './../Utils';
 import './where-info.css';
 import {Link } from 'react-router-dom';
 import AppStoreInstance from "../AppStore";
+import {addNotification} from "../Utils";
 const TODAY = "today";
 const TOMORROW = "tomorrow";
 const IdbKeyval = require('idb-keyval');
@@ -75,26 +76,34 @@ export default class WhereInfo extends Component {
             });
         }
     }
+
     fetchMembers = async (stateToUpdate, date) => {
-        let today = date;
-        let reqProps = {
-            method: 'GET',
-        };
-        fetch("/get_members_status_by_date?date=" + today + "&user=" + this.state.user.email, reqProps)
-            .then((response) => {
-                if (response.status === 200) {
-                    response.json().then((json) => {
-                        this.parseReports(json.reports, stateToUpdate)
-                        
-                    })
-                } else throw new Error({msg:"No Internet Connection, or Server error", status:response.status});
-            }).catch(err => {
-                this.setState({loading: false});
-                if (stateToUpdate === TODAY) {
-                    addErrorNoti();
-                }
-                console.error("Error updating dates")
-            });
+        try {
+            let today = date;
+            let reqProps = {
+                method: 'GET',
+                headers: new Headers({
+                    'content-type': 'application/json',
+                    'user': this.state.user.email + ":" + this.state.user.password
+                }),
+            };
+
+            let response = await fetch("/get_members_status_by_date?date=" + today, reqProps);
+            if (response.status === 200) {
+                let resJson = await response.json();
+                this.parseReports(resJson.reports, stateToUpdate);
+
+            } else if (response.status === 401) {
+                addNotification("No group, please sign up to a group");
+            }
+            else {
+                addErrorNoti();
+            }
+
+        } catch (e) {
+            this.setState({loading: false});
+            addErrorNoti();
+        }
     };
     updateDates = async (showLoading) => {
         this.setState({loading: showLoading});
@@ -125,12 +134,15 @@ export default class WhereInfo extends Component {
     }
     async componentDidMount() {
         this.calculateScreenHeight();
+        AppStoreInstance.resetAll();
         let user = await IdbKeyval.get('user');
         if (user && user.email) {
             AppStoreInstance.updateUser(user);
             await this.setState({user: user});
             this.updateDates(true);
             this.updateDatesInterval = setInterval(() => this.updateDates(), 12000);
+        } else {
+            addNotification("No group, please sign up to a group");
         }
     }
 

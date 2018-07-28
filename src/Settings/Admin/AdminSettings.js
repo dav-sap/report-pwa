@@ -13,7 +13,7 @@ export default class AdminSettings extends Component {
         awaitingMembers: [],
         user: undefined,
     }
-    async fetchMembers(url, stateMembersToChange) {
+    fetchMembers = async (url, stateMembersToChange) => {
         try {
             let reqProps = {
                 method: 'GET',
@@ -132,7 +132,7 @@ export default class AdminSettings extends Component {
                                 <tr key={index} className="member-row">
                                     <th><div className="member-table-cell">{member.name}</div></th>
                                     <th><div className="member-table-cell">{member.email}</div></th>
-                                    <th className="last-cell-row">
+                                    <th>
                                         <div className="member-table-cell-images">
                                             <img src="/images/v.png" alt="add" className="add-member-button" onClick={this.addAwaitUser.bind(this, member)}/>
                                             <img src="/images/x.png" alt="remove" className="remove-member-button" onClick={this.removeAwaitUser.bind(this, member)}/>

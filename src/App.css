@@ -25,6 +25,9 @@
 .download-link {
     cursor: pointer;
 }
+.app-text {
+    margin-top: 30px;
+}
 .download-link-screen {
     text-align: center;
     margin: auto;
@@ -38,12 +41,12 @@
 
 }
 .background-img {
-    position: absolute;
-    top: 60%;
-    left: 50%;
-    width: 192px;
-    height: 240px;
-    transform: translate(-50%, -50%);
+    position: relative;
+    /*top: 60%;*/
+    /*left: 50%;*/
+    width: 130px;
+    height: 162px;
+    /*transform: translate(-50%, -50%);*/
     /*max-width: 33rem;*/
     z-index: 1;
     cursor: pointer;

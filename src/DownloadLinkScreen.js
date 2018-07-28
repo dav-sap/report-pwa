@@ -11,7 +11,8 @@ export default class DownloadLinkScreen extends Component {
                 <a href="/base.apk" download="where_my_peers_v1.2.apk">
                     <img className="background-img" src="/images/icons/logo_with_text.png"/>
                 </a>
-                <div>The App has been moved</div>
+                <div className="app-text">The App has been moved</div>
+                <div>Click on the icon above or</div>
                 <div className="download-link">
                     <a href="/base.apk" download="where_my_peers_v1.2.apk" style={{color:"black"}}>
                         Download APK from here
@@ -29,10 +30,10 @@ export default class DownloadLinkScreen extends Component {
                     </a>
                 </div>
                 <div>
-                    and click "Add to Home Screen"
+                    go to page settings (chrome or safari (on iOS 11.3) )
                 </div>
                 <div>
-                    from chrome settings or safari (on iOS 11.3) settings
+                    and click "Add to Home Screen"
                 </div>
             </div>
         );

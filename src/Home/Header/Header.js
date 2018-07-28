@@ -9,8 +9,13 @@ import { STATUS } from '../../Consts';
 import AppStoreInstance from '../../AppStore';
 
 class Header extends Component {
+
     handlePrevClick = () => {
         let el = document.getElementById(this.props.store.status);
+        let prevB = document.getElementById("prev-button");
+        if (prevB) {
+            prevB.style.pointerEvents = 'none';
+        }
         switch (this.props.store.slideNumber) {
             case 1:
                 TweenMax.to(".status-div", 0.0, {zIndex: 2})
@@ -29,6 +34,12 @@ class Header extends Component {
                 }
                 TweenMax.to(".status-button", 0.7, {width: '100%', height: '100%', ease: Power0.easeOut, delay: 0.7})
                 TweenMax.to(".status-next-button", 0.7, {opacity: 1, ease: Power0.easeOut, delay: 0.7})
+                this.props.store.prevSlide();
+                setTimeout(() => {
+                    if (prevB) {
+                        prevB.style.pointerEvents = 'auto';
+                    }
+                }, 1400);
                 break;
             case 2:
                 TweenMax.to(".submit-screen", 0.3, {opacity: 0, zIndex: 1});
@@ -57,19 +68,41 @@ class Header extends Component {
                     TweenMax.to(".time-picker-wrapper", 0.0, {opacity: 1, delay: 1.9});    
                 }
                 TweenMax.to(".all-day-wrapper", 0.0, {opacity: 1, delay: 1.9});
+                this.props.store.prevSlide();
+                setTimeout(() => {
+                    if (prevB) {
+                        prevB.style.pointerEvents = 'auto';
+                    }
+                }, 1900);
                 break;
             default:
                 console.log("No match for previous click!");
 
         }
-        this.props.store.prevSlide();
         
     }
+
+    componentDidMount() {
+        // let that = this
+        // window.addEventListener('popstate', function(event) {
+            // console.log("popstate");
+            // console.log(event.state);
+            // if (event.state && event.state.slideNumber !== undefined) {
+            //     that.handlePrevClick();
+            // }
+            // else {
+                // window.history.pushState({}, '');
+            // }
+            // that.props.store.resetAll();
+            // that.props.history.push('//');
+        // })
+    }
+
     render() {
         return (
             <div className="header">
-                <Link to="/settings"><Icon className="user-settings-button" type="user" onClick={AppStoreInstance.resetAll}/></Link>
-                {this.props.store.slideNumber !== 0  ? <i className="prev-arrow" onClick={this.handlePrevClick}/>: ""}
+                <Link to="/settings"><Icon className="user-settings-button" type="user"/></Link>
+                {this.props.store.slideNumber !== 0  ? <i className="prev-arrow" id="prev-button" onClick={this.handlePrevClick}/>: ""}
                 <div className="title-font-style"><div className="header-text">I AM</div></div>
             </div>
         );
