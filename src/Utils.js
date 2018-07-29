@@ -2,8 +2,8 @@ import React from 'react'
 import {notification} from 'antd'
 
 export const applicationServerPublicKey = 'BCKvDKBurBXsf-WJ4r8Sn-qEzMMN6Ntsw8VFvxnM1XS-pYVj4cVbFgM__I8wbes4au2C3pzU8e9hcsp_i7y87Ww';
-const notifictionDuration = 4.5;
-let notifictionShowing = false;
+const notificationDuration = 4.5;
+let notificationShowing = false;
 
 export function urlB64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -43,8 +43,30 @@ export function isChrome() {
 export function isFirefox()  {
     return typeof InstallTrigger !== 'undefined'
 }
+export function addNotificationWithQuestion(question, optionOne, optionTwo) {
+    const key = `open${Date.now()}`;
+    const btn = (
+        <div className="notification-options-container">
+            <div className="notification-answer" onClick={() => {notification.close(key);notificationShowing = false;optionOne.handlerFunc()}}>
+                {optionOne.text}
+            </div>
+            <div className="notification-answer" onClick={() => {notification.close(key);notificationShowing = false;optionTwo.handlerFunc()}}>
+                {optionTwo.text}
+            </div>
+        </div>
+    );
+    notification.open({
+        message: '',
+        description:  <p className="notification-text">{question}</p>,
+        btn,
+        key,
+        duration: 0,
+        className: "notification-css-error",
+    });
+    notificationShowing = true
+}
 export function addNotification(str) {
-    if (!notifictionShowing) {
+    if (!notificationShowing) {
         const key = `open${Date.now()}`;
         notification.open({
             message: '',
@@ -53,10 +75,10 @@ export function addNotification(str) {
             key,
         });
 
-        notifictionShowing = true
+        notificationShowing = true
         setTimeout(() => {
-            notifictionShowing = false;
-        }, notifictionDuration * 1000)
+            notificationShowing = false;
+        }, notificationDuration * 1000)
     }
 }
 

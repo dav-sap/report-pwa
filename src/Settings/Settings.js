@@ -63,8 +63,25 @@ class Settings extends Component {
         await AppStoreInstance.resetAll();
         let val = await IdbKeyval.get('user');
         if (val && val.email) {
-            AppStoreInstance.updateUser(val);
-            await this.fetchReports(val);
+            let reqProps = {
+                method: 'POST',
+                headers: new Headers({
+                    'content-type': 'application/json'
+                }),
+                body: JSON.stringify({
+                    name: val.name,
+                    email: val.email,
+                })
+            };
+            let response  = await fetch("/verify_user", reqProps);
+            if (response.status === 401) {
+                IdbKeyval.set('user', null);
+                AppStoreInstance.updateUser(null);
+            } else {
+                AppStoreInstance.updateUser(val);
+                await this.fetchReports(val);
+            }
+
             this.setState({loading:false, mounted: true})
         } else {
             val = await IdbKeyval.get('waitingUser');
@@ -129,13 +146,20 @@ class Settings extends Component {
 
             let response = await fetch("/logout", reqProps);
             if (response.status === 500) {
-                throw new Error({msg:"Can't unsubscribe in server", status:response.status});
+                addErrorNoti();
             }
-
         } catch(e) {
-            console.error("Error while unsubscribing");
+            addErrorNoti();
         }
     };
+
+    handleSubscribeError = () => {
+        addErrorNoti();
+        this.setState({loading: false});
+        IdbKeyval.set('waitAuth', false).then(() => {
+            AppStoreInstance.updateWaitAuth(false);
+        });
+    }
 
     async subscribeUser (pwd, email, url, group){
         if (email.indexOf('@') === -1 || email.substr(email.indexOf('@'), email.length).indexOf(".") === -1) {
@@ -198,9 +222,7 @@ class Settings extends Component {
 
             let response = await fetch(url, reqProps);
 
-            if (response.status === 500) {
-                throw "server returned 500";
-            } else if (response.status === 202) {
+            if (response.status === 202) {
                 IdbKeyval.set('waitAuth', true).then(() => {
                     AppStoreInstance.updateWaitAuth(true)
                 });
@@ -211,7 +233,6 @@ class Settings extends Component {
                 
             } else if (response.status === 200){
                 let json = await response.json();
-                console.log("STATUS 200", json);
                 IdbKeyval.set('user', json.member).then(() => {
                     AppStoreInstance.updateUser(json.member)
                 });
@@ -227,17 +248,11 @@ class Settings extends Component {
             }   else if (response.status === 409){
                 addNotification("Signup Failed! Try a different Email/Password");
             }else {
-                throw "Unknown Server Error"
+                this.handleSubscribeError();
             }
             this.setState({loading: false});
         } catch (e) {
-            // let description = e.name === "ServerBadResponseException" ? e.status + ": " + e.message : "Unknown Error: " + e;
-            addErrorNoti();
-            console.log(e);
-            this.setState({loading: false});
-            IdbKeyval.set('waitAuth', false).then(() => {
-                AppStoreInstance.updateWaitAuth(false);
-            });
+            this.handleSubscribeError();
         }
     };
 
@@ -283,6 +298,7 @@ class Settings extends Component {
             this.setState({loading: false});
         }
     }
+
     render() {
         return (
             <div className="App-wrapper" style={{backgroundColor: "#404040"}}>
@@ -296,7 +312,7 @@ class Settings extends Component {
                                login={this.login} signup={this.signup} group={this.state.group}/> : ""}
 
                         {AppStoreInstance.waitAuth ? <WaitAuthScreen store={AppStoreInstance}  cancelRequest={this.cancelRequest}/>: ""}
-                        {AppStoreInstance.user !== null ? <UserHome  startLoading={this.startLoading} stopLoading={this.stopLoading} store={AppStoreInstance} subscribeUser={this.subscribeUser} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
+                        {AppStoreInstance.user ? <UserHome  startLoading={this.startLoading} stopLoading={this.stopLoading} store={AppStoreInstance} subscribeUser={this.subscribeUser} reports={this.state.reports} logout={this.unsubscribeUser} fetchReports={this.fetchReports.bind(this)}  />: ""}
                     </div>
                 </div>
             </div>

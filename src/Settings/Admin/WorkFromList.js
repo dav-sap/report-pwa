@@ -86,6 +86,18 @@ class WorkFromList extends PureComponent {
                 <div className="sub-admin-title">Working From Options</div>
                 <table className="members-table">
                     <tbody>
+                    <tr key={this.state.wfOptions.length + 1} className="member-row">
+                        <th><div className="member-table-cell">
+                            <Icon type="plus-circle-o" onClick={this.addOption}/>
+                        </div></th>
+                        <th><div className="member-table-cell">
+                            <input type="text" placeholder={"Name"} value={this.state.newName} onChange={(e) => this.setState({newName: e.target.value})}/>
+                        </div></th>
+                        <th><div className="member-table-cell">
+                            <input type="text" placeholder={"Emoji"} value={this.state.newEmoji} onChange={(e) => this.setState({newEmoji: e.target.value})}/>
+                        </div></th>
+                    </tr>
+
                     {this.state.wfOptions.map((option, index) => {
                         return (
                             <tr key={index} className="member-row">
@@ -98,17 +110,6 @@ class WorkFromList extends PureComponent {
                             </tr>
                         )}
                     )}
-                    <tr key={this.state.wfOptions.length + 1} className="member-row">
-                        <th><div className="member-table-cell">
-                            <Icon type="plus-circle-o" onClick={this.addOption}/>
-                        </div></th>
-                        <th><div className="member-table-cell">
-                            <input type="text" placeholder={"Name"} value={this.state.newName} onChange={(e) => this.setState({newName: e.target.value})}/>
-                        </div></th>
-                        <th><div className="member-table-cell">
-                            <input type="text" placeholder={"Emoji"} value={this.state.newEmoji} onChange={(e) => this.setState({newEmoji: e.target.value})}/>
-                        </div></th>
-                    </tr>
                     </tbody>
                 </table>
 

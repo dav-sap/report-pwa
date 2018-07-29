@@ -18,7 +18,7 @@ const IdbKeyval = require('idb-keyval');
 
 class Home extends Component {
     
-    componentDidMount() {
+    async componentDidMount() {
         window['isUpdateAvailable']
             .then(isAvailable => {
                 if (isAvailable) {
@@ -37,39 +37,41 @@ class Home extends Component {
                     });
                 }
             });
-        IdbKeyval.get('user').then(val => {
-            if (val && val.email) {
-                let reqProps = {
-                    method: 'POST',
-                    headers: new Headers({
-                        'content-type': 'application/json'
-                    }),
-                    body: JSON.stringify({
-                        name: val.name,
-                        email: val.email,
-                    })
-                };
-                fetch("/verify_user", reqProps).then( (res) => {
-                        if (res.status === 401) {
-                            IdbKeyval.set('user', null);
-                            AppStoreInstance.updateUser(null);
-                        }
-                    }
-                )
-
-                AppStoreInstance.updateUser(val);
-            } else {
-                IdbKeyval.get('waitingUser').then((val) => {
-                    if (val && val.email) {
-                        AppStoreInstance.verifyAwaitUser(val);
-                    } else {
-                        IdbKeyval.set('user', null).then(() =>{
-                            AppStoreInstance.updateUser(null);
-                        });
-                    }
-                })
-            }
-        });
+        let user = await IdbKeyval.get('user');
+        AppStoreInstance.updateUser(user);
+        // IdbKeyval.get('user').then(val => {
+        //     if (val && val.email) {
+        //         let reqProps = {
+        //             method: 'POST',
+        //             headers: new Headers({
+        //                 'content-type': 'application/json'
+        //             }),
+        //             body: JSON.stringify({
+        //                 name: val.name,
+        //                 email: val.email,
+        //             })
+        //         };
+        //         fetch("/verify_user", reqProps).then( (res) => {
+        //                 if (res.status === 401) {
+        //                     IdbKeyval.set('user', null);
+        //                     AppStoreInstance.updateUser(null);
+        //                 }
+        //             }
+        //         )
+        //
+        //         AppStoreInstance.updateUser(val);
+        //     } else {
+        //         IdbKeyval.get('waitingUser').then((val) => {
+        //             if (val && val.email) {
+        //                 AppStoreInstance.verifyAwaitUser(val);
+        //             } else {
+        //                 IdbKeyval.set('user', null).then(() =>{
+        //                     AppStoreInstance.updateUser(null);
+        //                 });
+        //             }
+        //         })
+        //     }
+        // });
     }
 
     render() {

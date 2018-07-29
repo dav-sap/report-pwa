@@ -4,7 +4,7 @@
     margin: auto;
     padding-top: 10px;
     padding-bottom: 3px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     font-size: 25px;
     font-weight: 700;
     border-bottom: 1px solid;
@@ -124,4 +124,9 @@
 }
 .member-table-cell > input {
     text-align: left;
+}
+.close-group-button {
+    position: absolute;
+    right: 5px;
+    font-weight: 800;
 }

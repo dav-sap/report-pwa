@@ -142,6 +142,58 @@ hr {
     color: black;
     z-index: 100;
 }
+.notification-answer {
+    width: 90%;
+    /*height: 30px;*/
+    color: white;
+    padding: 5px 8px 5px 8px;;
+    /*box-shadow: 5px 10px #888888;*/
+    /*border: #404040 1px solid;*/
+    background-color: #404040;
+    margin: auto;
+    /*box-shadow: inset 0px 0px 5px #404040*/
+}
+.ant-notification-notice-btn {
+    width: 100% !important;
+    margin-top: 5px !important;
+
+}
+.notification-options-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.notification-css {
+    background-color: #31312d;
+
+    font-weight: 700;
+    color:white;
+    padding: 3px 3px 21px 10px;
+    /*margin-left: 15px;*/
+}
+.notification-css-error {
+    background-color: #31312d;
+
+    font-weight: 700;
+    color:white;
+    padding: 3px 10px 3px 10px;
+}
+.notification-text {
+    text-align: center;
+}
+.ant-notification-notice-with-icon .ant-notification-notice-description {
+    margin-left: 20px !important;
+    font-size: 12px !important;
+}
+.ant-notification {
+    /* left: 0px; */
+
+    position: absolute !important;
+    left: 50% !important;
+    transform: translate(-50%) !important;
+    margin: 0 !important;
+}
 @media only screen and (max-height : 650px) {
     .DayPicker-Day {
         padding: 0.4rem !important;

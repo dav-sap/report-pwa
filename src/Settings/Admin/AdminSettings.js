@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import {Link } from 'react-router-dom';
-import {addErrorNoti} from './../../Utils';
+import {addErrorNoti, addNotificationWithQuestion} from './../../Utils';
 import AppStoreInstance from "./../../AppStore";
 import './admin-settings.css';
 import MembersTable from "./MembersTable";
 import WorkFromList from "./WorkFromList";
+import {addNotification} from "../../Utils";
+import {SITE_URL} from "./../../Consts"
+import AwaitingMembersTable from "./AwaitingMembersTable";
 const IdbKeyval = require('idb-keyval');
 
 export default class AdminSettings extends Component {
@@ -13,18 +16,24 @@ export default class AdminSettings extends Component {
         awaitingMembers: [],
         user: undefined,
     }
+
     fetchMembers = async (url, stateMembersToChange) => {
         try {
             let reqProps = {
                 method: 'GET',
+                headers: new Headers({
+                    'content-type': 'application/json',
+                    'user': this.state.user.email + ":" + this.state.user.password
+                }),
             };
-            let res = await fetch(url + "?email=" + this.state.user.email, reqProps);
+
+            let res = await fetch(url, reqProps);
 
             if (res.status === 200) {
                 let json = await res.json();
 
                 this.setState({
-                    [stateMembersToChange]: json.members
+                    [stateMembersToChange]: JSON.parse(JSON.stringify(json.members))
                 }, () => {
                     if (stateMembersToChange === "members") {
                         let copyMembers = this.state.members;
@@ -74,74 +83,48 @@ export default class AdminSettings extends Component {
         }
     }
 
-    async removeAwaitUser(member) {
+    removeGroup = async () => {
         try {
             let reqProps = {
                 method: 'POST',
                 headers: new Headers({
-                    name: member.name,
-                    email: member.email,
+                    'content-type': 'application/json',
+                    'user': this.state.user.email + ":" + this.state.user.password
                 })
             };
-            let res = await fetch("/deny_user", reqProps);
-            if (res.status === 200) {
-                this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
-            } else {
-                throw new Error({msg:"Can't get updated user reports", status:res.status});
-
-            }
-        } catch(e) {
-            addErrorNoti();
-        }
-    };
-
-    async addAwaitUser(member){
-        try {
-            let reqProps = {
-                method: 'POST',
-                headers: new Headers({
-                    name: member.name,
-                    email: member.email,
-                })
-            };
-            let res = await fetch("/add_user", reqProps);
+            let res = await fetch("/remove_group", reqProps);
 
             if (res.status === 200) {
-                this.fetchMembers("/get_all_members", 'members');
-                this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
+                let resJson = await res.json();
+                addNotification("Group " + resJson.group + " Removed! You will now be removed");
+                setTimeout(() => this.props.history.push("/settings"), 3000)
             } else {
                 addErrorNoti();
-
             }
         } catch(e) {
             addErrorNoti();
         }
-    };
+    }
 
+    closeGroupNotification = () => {
+        addNotificationWithQuestion(
+            "This will delete the group all the members in it, are you sure you want to do this?",
+            {handlerFunc: this.removeGroup , text: "Yes"},
+            {handlerFunc:() => {} , text: "No"},
+        )
+    }
     render() {
         return (
             <div className="admin-settings">
                 <div className="contents-wrapper">
                     <Link to="/"><i className="prev-arrow"/></Link>
-                    <div className="admin-title">Admin Settings - Welcome {this.state.user ? this.state.user.name : ""}</div>
-                    {this.state.awaitingMembers.length > 0 ? <div className="sub-admin-title">Awaiting Approval</div> : ""}
-                    <table className="members-table">
-                        <tbody>
-                        {this.state.awaitingMembers.map((member, index) => {
-                            return (
-                                <tr key={index} className="member-row">
-                                    <th><div className="member-table-cell">{member.name}</div></th>
-                                    <th><div className="member-table-cell">{member.email}</div></th>
-                                    <th>
-                                        <div className="member-table-cell-images">
-                                            <img src="/images/v.png" alt="add" className="add-member-button" onClick={this.addAwaitUser.bind(this, member)}/>
-                                            <img src="/images/x.png" alt="remove" className="remove-member-button" onClick={this.removeAwaitUser.bind(this, member)}/>
-                                        </div>
-                                    </th>
-                                </tr>)
-                        })}
-                        </tbody>
-                    </table>
+                    <div className="admin-title">
+                        Admin Settings - Welcome {this.state.user ? this.state.user.name : ""}
+                    </div>
+                    <div className="member-table-cell-remove-button close-group-button" onClick={this.closeGroupNotification}>
+                        Close Group
+                    </div>
+                    <AwaitingMembersTable awaitingMembers={this.state.awaitingMembers}  store={AppStoreInstance} fetchMembers={this.fetchMembers}/>
                     <MembersTable members={this.state.members} store={AppStoreInstance} fetchMembers={this.fetchMembers}/>
                     {this.state.user ? <WorkFromList store={AppStoreInstance}/> : "" }
                 </div>

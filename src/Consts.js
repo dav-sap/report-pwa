@@ -23,12 +23,6 @@ const COLOR_MAP = {
     NO_STATUS: "linear-gradient(black, black)",
 };
 
-const CAPTION_MAP = {
-    OOO: <p className="caption">Hope you'll get back before<br/> we'll miss you</p>,
-    WF: <p className="caption">Working Hard or hardly working?</p>,
-    SICK: <p className="caption">Hope you'll feel better soon!</p>,
-    NO_STATUS: <p className="caption">You have no Status</p>,
-};
 const SUB_STATUS = {
     OOO: [{name: STATUS.FREE_STYLE, emoji: "🤘"},
         {emoji: "✈", name: STATUS.VACATION},
@@ -44,7 +38,9 @@ const SLIDER_SETTINGS = {
     speed: 400,
     variableWidth: false,
   };
+
+const SITE_URL = "https://flex-server.herokuapp.com/";
 // const SERVER_URL = "https://flex-server.herokuapp.com";
 // const SERVER_URL = "http://localhost:3141";
-export {STATUS, COLOR_MAP, CAPTION_MAP, SUB_STATUS, SLIDER_SETTINGS}
+export {STATUS, COLOR_MAP, SITE_URL, SUB_STATUS, SLIDER_SETTINGS}
 

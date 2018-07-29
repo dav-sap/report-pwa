@@ -120,12 +120,12 @@ class AppStore {
                 this.updateWaitAuth(false);
                 await IdbKeyval.set('waitingUser', {});
                 this.updateWaitingUser({});
-                res = await fetch("/verify_user", reqProps);
-                if (res.status === 200) {
-                    let json = await res.json();
-                    await IdbKeyval.set('user', JSON.parse(json.member));
-                    this.updateUser(JSON.parse(json.member));
-                }
+                // res = await fetch("/verify_user", reqProps);
+                // if (res.status === 200) {
+                //     let json = await res.json();
+                //     await IdbKeyval.set('user', JSON.parse(json.member));
+                //     this.updateUser(JSON.parse(json.member));
+                // }
             } else {
                 console.log("verify user unknown error");
                 addErrorNoti();
