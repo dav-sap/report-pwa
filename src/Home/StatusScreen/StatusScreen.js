@@ -1,25 +1,41 @@
 import React, { Component } from 'react';
 import './status-screen.css'
 import { observer } from 'mobx-react';
-import {COLOR_MAP, STATUS} from './../../Consts';
+import {COLOR_MAP, STATUS } from './../../Consts';
 import {addErrorNoti} from './../../Utils'
 import { Icon} from 'antd';
 import Power0 from 'gsap'
 import TweenMax from 'gsap/TweenMax';
 import Footer from '../Footer/Footer'
 
+const TODAY = "today";
+const TOMORROW = "tomorrow";
+
 class StatusScreen extends Component {
     state = {
         pointToLogin: false,
+        arrivingClicked: false,
     }
-    handleStatusClick = (event, statusChosen) => {
-        if (this.props.store.user === null) {
-            this.setState({pointToLogin: true});
-            return;
-        }
-        if (STATUS.ARRIVING === statusChosen) {
+
+    reportArriving = async (targetButton, otherButton, day) => {
+        let startedAnimation =  new Date();
+
+        try {
+            TweenMax.to(targetButton, 0.3, {width: '50px',
+                borderTop: "pink 3px solid", color: "transperant",
+                ease: Power0.easeOut});
+            TweenMax.to(otherButton, 0.4, {width: '0px', opacity: 0,
+                color: "transperant",
+                ease: Power0.easeOut});
+            TweenMax.to(targetButton, 0.1, {borderRadius: "25px", delay: 0.2});
+            TweenMax.to(targetButton, 0.1, {animation: "spin 1.2s linear infinite", delay: 0.3});
+
+
             let today = new Date();
-            today.setTime(today.getTime() + ((-1*today.getTimezoneOffset())*60*1000));
+            if (day === TOMORROW) {
+                today.setDate(today.getDate() + 1);
+            }
+            today.setTime(today.getTime() + ((-1 * today.getTimezoneOffset()) * 60 * 1000));
             let todayStr = today.toISOString();
             todayStr = todayStr.substr(0, todayStr.lastIndexOf(':'));
 
@@ -41,19 +57,30 @@ class StatusScreen extends Component {
                     allDay: true,
                 })
             };
-            fetch("/add_report", reqProps)
-                .then(res => {
-                    if (res.status !== 200) {
-                        throw new Error("Error Connecting");
-                    } else {
-                        this.props.history.push('/where-is-everyone');
-                    }
-                })
-                .catch(err => {
-                    addErrorNoti();
-                    console.error("Error send report")
-                    this.props.history.push('/where-is-everyone');
-                });
+            let response = await fetch("/add_report", reqProps);
+
+            if (response.status !== 200) {
+                addErrorNoti();
+            }
+            let timePassed = Math.round((new Date() - startedAnimation)/1000);
+            setTimeout(() => this.props.history.push('/where-is-everyone'), (3 - timePassed) * 1000);
+
+        } catch (e) {
+            addErrorNoti();
+            let timePassed = Math.round((new Date() - startedAnimation)/1000);
+            setTimeout(() => this.props.history.push('/where-is-everyone'), (3 - timePassed) * 1000);
+        }
+    };
+
+    handleStatusClick = (event, statusChosen) => {
+        if (this.props.store.user === null) {
+            this.setState({pointToLogin: true});
+            return;
+        }
+        if (STATUS.ARRIVING === statusChosen) {
+            setTimeout(() => {
+                this.setState({arrivingClicked: true});
+            }, 1520);
         }
         
         let el = (event.target || event.srcElement); // DOM uses 'target';
@@ -103,6 +130,14 @@ class StatusScreen extends Component {
                 <div className="status-button" style={{background: COLOR_MAP[STATUS.ARRIVING]}}
                         onClick={(e) => this.handleStatusClick(e, STATUS.ARRIVING)}/><div className="text-div">Arriving!</div>
                 </div>
+                {this.state.arrivingClicked ? <div className="center-button-container">
+                    <div className="day-button" id="today-button" onClick={(e) => this.reportArriving(e.target, document.getElementById("tomorrow-button") ,TODAY)} >
+                        Today
+                    </div>
+                    <div className="day-button" id="tomorrow-button" onClick={(e) => this.reportArriving(e.target, document.getElementById("today-button"), TOMORROW)} >
+                        Tomorrow
+                    </div>
+                </div> : "" }
                 <Footer className="status-next-button" text="Where is Everyone?" img="/images/everyone.png" nextFunc={() => this.props.history.push('/where-is-everyone')} />
             </div>
 

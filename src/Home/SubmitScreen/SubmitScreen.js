@@ -141,7 +141,7 @@ class SubmitScreen extends Component {
         return (
             <div className="submit-screen body-wrapper">
             {this.state.loading ? <LoadingCircle/>: ""}
-            {this.state.loading? <div className="cover-div"/> : ""}
+            {this.state.loading ? <div className="cover-div where-info-cover"/> : ""}
                 <div className="repeat-options">
                     {this.getRepeatStr()}
                 </div>

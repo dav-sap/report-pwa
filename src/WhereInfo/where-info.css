@@ -99,6 +99,9 @@
     font-weight: 700;
     border-radius: 10px;
 }
+.where-info-cover {
+    background-color: rgba(0,0,0, 0.5);
+}
 /*@media screen and (min-height: 700px) {*/
     /*.people-wrapper {*/
         /*max-height: 138px;*/

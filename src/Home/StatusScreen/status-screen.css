@@ -38,7 +38,6 @@
     border-radius: 0 50px 50px 0  ;
 }
 .status-div {
-    
     display: flex;
     flex-direction: column;
     font-size: 35px;
@@ -46,9 +45,16 @@
     color: white;
     font-family: 'Amatic SC', cursive;    
     z-index: 2;
-    
 }
-
+.center-button-container {
+    position: absolute;
+    top: 40%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    display: grid;
+    grid-row-gap: 50px
+}
 .status-title {
     height: 9%;
 }

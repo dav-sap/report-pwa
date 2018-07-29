@@ -6,6 +6,8 @@ import './where-info.css';
 import {Link } from 'react-router-dom';
 import AppStoreInstance from "../AppStore";
 import {addNotification} from "../Utils";
+import {COLOR_MAP} from "../Consts";
+import LoadingCircle from "../LoadingCircle";
 const TODAY = "today";
 const TOMORROW = "tomorrow";
 const IdbKeyval = require('idb-keyval');
@@ -39,20 +41,21 @@ export default class WhereInfo extends Component {
         let wfNames = [] ;
         let arriving = [];
         let arrivingNames = [];
+
         reports.forEach((report) => {
             switch (report.status) {
                 case "OOO":
                     if (oooNames.indexOf(report.name) === -1) {
                         ooo.push(report);
                         oooNames.push(report.name)
-                        break;
                     }
+                    break;
                 case "WF":
                     if (wfNames.indexOf(report.name) === -1) {
                         wf.push(report);
                         wfNames.push(report.name);
-                        break;
                     }
+                    break;
                 case STATUS.ARRIVING:
                     if (arrivingNames.indexOf(report.name) === -1) {
                         arriving.push(report);
@@ -173,12 +176,14 @@ export default class WhereInfo extends Component {
 
         return (
             <div className="where-wrapper">
+                {this.state.loading ? <LoadingCircle/>: ""}
+                {this.state.loading ? <div className="cover-div where-info-cover"/> : ""}
                 <div className="where-info">
                     <Link to="/"><i className="prev-arrow"/></Link>
                     <div className="title-where-text">Where is Everyone?</div>
-                    <Status key={0} title={STATUS.OOO} height={Math.floor(this.lineHeight * oooLength - heightToRemoveOOO)} loading={this.state.loading} reports={this.state[this.state.day].ooo}/>
-                    <Status key={1} title={STATUS.WF} height={Math.floor(this.lineHeight * wfLength - heightToRemoveWF)} loading={this.state.loading} reports={this.state[this.state.day].wf} />
-                    {this.state.day === TODAY ? <Status key={2} title={STATUS.ARRIVING} height={Math.floor(this.lineHeight * arrivingLength - heightToRemoveArriving)} loading={this.state.loading} reports={this.state[this.state.day].arriving} /> : ""}
+                    <Status key={0} title={"Out Of Office"} color={COLOR_MAP[STATUS.OOO]} height={Math.floor(this.lineHeight * oooLength - heightToRemoveOOO)} reports={this.state[this.state.day].ooo}/>
+                    <Status key={1} title={"Working From"} color={COLOR_MAP[STATUS.WF]} height={Math.floor(this.lineHeight * wfLength - heightToRemoveWF)} reports={this.state[this.state.day].wf} />
+                    <Status key={2} title={STATUS.ARRIVING} color={COLOR_MAP[STATUS.ARRIVING]} height={Math.floor(this.lineHeight * arrivingLength - heightToRemoveArriving)} reports={this.state[this.state.day].arriving} />
                     <div className="flex-row bottom-button-wrapper">
                         <div className={this.state.day === TODAY ? "day-button-clicked" : "day-button"} onClick={() => this.switchDay(TODAY)} >
                             Today

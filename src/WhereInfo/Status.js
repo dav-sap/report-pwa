@@ -39,9 +39,9 @@ export default class Status extends Component {
     render() {
         return (
             <div className="status-where">
-                <div className="status-where-title" style={{background: COLOR_MAP[this.props.title]}}>
+                <div className="status-where-title" style={{background: this.props.color}}>
                     {this.props.title + " - " + this.props.reports.length}
-                    {this.props.loading ? <div className="loader"/> : ""}
+                    {/*{this.props.loading ? <div className="loader"/> : ""}*/}
                     {/* <span className="span-img">{IMAGE_MAP(this.props.title, "status-where-img")}</span> */}
                 </div>
                 <div className="people-wrapper" id={"people-wrapper-"+this.props.title} style={this.getStyle()}>
