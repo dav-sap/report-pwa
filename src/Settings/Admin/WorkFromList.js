@@ -7,10 +7,12 @@ class WorkFromList extends PureComponent {
     state = {
         wfOptions: [],
         newName: "",
-        newEmoji:""
+        newEmoji:"",
+        loading: false
     };
 
     fetchWfOptions = async () => {
+        this.setState({loading: true});
         let reqProps = {
             method: 'GET',
             headers: new Headers({
@@ -22,7 +24,8 @@ class WorkFromList extends PureComponent {
         if (res.status === 200) {
             let resJson = await res.json();
             this.setState({
-                wfOptions: resJson.options
+                wfOptions: resJson.options,
+                loading: false
             })
         }
     }
@@ -83,8 +86,11 @@ class WorkFromList extends PureComponent {
     render() {
         return (
             <div className="work-from-list">
-                <div className="sub-admin-title">Working From Options</div>
-                <table className="members-table">
+                <div className="title-container">
+                    <div className="sub-admin-title">Working From Options</div>
+                    {this.state.loading ? <div className="admin-screen-loader"/> : ""}
+                </div>
+                <table className="members-table working-from-table">
                     <tbody>
                     <tr key={this.state.wfOptions.length + 1} className="member-row">
                         <th><div className="member-table-cell">

@@ -19,6 +19,7 @@ export default class AdminSettings extends Component {
 
     fetchMembers = async (url, stateMembersToChange) => {
         try {
+
             let reqProps = {
                 method: 'GET',
                 headers: new Headers({
@@ -37,36 +38,37 @@ export default class AdminSettings extends Component {
                 }, () => {
                     if (stateMembersToChange === "members") {
                         let copyMembers = this.state.members;
-                        this.state.members.forEach( member => {
+                        this.state.members.forEach( (member, index) => {
 
                             let reqProps = {
                                 method: 'GET',
                             };
-                            fetch("/get_admin_status?email=" + member.email, reqProps)
-                                .then((response) => {
-                                    if (response.status === 200) {
-                                        response.json()
-                                            .then((resJson) => {
-                                                copyMembers.map((newMember) => {
-                                                    if (member.email.toLowerCase() === newMember.email.toLowerCase()) {
-                                                        newMember.adminStatus = resJson.admin;
-                                                        return newMember;
-                                                    } else return newMember;
+                            fetch("/get_admin_status?email=" + member.email, reqProps).then((response) => {
+                                if (response.status === 200) {
+                                    response.json().then((resJson) => {
+                                        copyMembers.map((newMember) => {
+                                            if (member.email.toLowerCase() === newMember.email.toLowerCase()) {
+                                                newMember.adminStatus = resJson.admin;
+                                                return newMember;
+                                            } else return newMember;
 
-                                                })
-                                                this.setState({members: JSON.parse(JSON.stringify(copyMembers))})
-                                            });
-                                    }
-                                    else throw new Error("Can't fetch admin status");
-                                })
-                                .catch(() => {
-                                    addErrorNoti();
-                                })
+                                        })
+                                        if (index === this.state.members.length - 1) {
+                                            this.setState({membersLoading: false})
+                                        }
+                                        this.setState({members: JSON.parse(JSON.stringify(copyMembers))})
+                                    });
+                                }
+                                else throw new Error("Can't fetch admin status");
+                            })
+                            .catch(() => {
+                                addErrorNoti();
+                            })
                         })
                     }
                 });
             } else {
-                throw new Error("Error fetching members as admin. Server error");
+                addErrorNoti();
             }
         } catch(e) {
             console.log(e);
@@ -78,8 +80,14 @@ export default class AdminSettings extends Component {
         if (user && user.email) {
             AppStoreInstance.updateUser(user);
             await this.setState({user: user});
+            this.setState({membersLoading: true});
             this.fetchMembers("/get_all_members", 'members');
-            this.fetchMembers("/get_awaiting_members", 'awaitingMembers');
+            this.setState({awaitMembersLoading: true});
+            this.fetchMembers("/get_awaiting_members", 'awaitingMembers').then(() => {
+                this.setState({
+                    awaitMembersLoading: false,
+                })
+            })
         }
     }
 
@@ -113,6 +121,7 @@ export default class AdminSettings extends Component {
             {handlerFunc:() => {} , text: "No"},
         )
     }
+
     render() {
         return (
             <div className="admin-settings">
@@ -124,8 +133,8 @@ export default class AdminSettings extends Component {
                     <div className="member-table-cell-remove-button close-group-button" onClick={this.closeGroupNotification}>
                         Close Group
                     </div>
-                    <AwaitingMembersTable awaitingMembers={this.state.awaitingMembers}  store={AppStoreInstance} fetchMembers={this.fetchMembers}/>
-                    <MembersTable members={this.state.members} store={AppStoreInstance} fetchMembers={this.fetchMembers}/>
+                    <AwaitingMembersTable loading={this.state.awaitMembersLoading} awaitingMembers={this.state.awaitingMembers}  store={AppStoreInstance} fetchMembers={this.fetchMembers}/>
+                    <MembersTable loading={this.state.membersLoading} members={this.state.members} store={AppStoreInstance} fetchMembers={this.fetchMembers}/>
                     {this.state.user ? <WorkFromList store={AppStoreInstance}/> : "" }
                 </div>
             </div>

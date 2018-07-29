@@ -17,7 +17,42 @@ const IdbKeyval = require('idb-keyval');
 
 
 class Home extends Component {
-    
+
+    shouldUserUpdate = async (user) => {
+        if (!user) {
+            let awaitUser = await IdbKeyval.get('waitingUser');
+            if (awaitUser) {
+                this.updateUser(awaitUser)
+            }
+        }
+        return false;
+    }
+
+    updateUser = async (awaitUser) => {
+        let reqProps = {
+            method: 'POST',
+            headers: new Headers({
+                'content-type': 'application/json'
+            }),
+            body: JSON.stringify({
+                email: awaitUser.email,
+            })
+        };
+        let response = await fetch("/verify_user", reqProps);
+        if (response.status === 200) {
+            let resJson = await response.json();
+            let member = JSON.parse(resJson.member);
+            IdbKeyval.set('user', member);
+            AppStoreInstance.updateUser(member);
+            IdbKeyval.set('waitingUser', {}).then(() => {
+                AppStoreInstance.updateWaitingUser({});
+            });
+            IdbKeyval.set('waitAuth', false).then(() => {
+                AppStoreInstance.updateWaitAuth(false)
+            });
+        }
+    }
+
     async componentDidMount() {
         window['isUpdateAvailable']
             .then(isAvailable => {
@@ -39,39 +74,8 @@ class Home extends Component {
             });
         let user = await IdbKeyval.get('user');
         AppStoreInstance.updateUser(user);
-        // IdbKeyval.get('user').then(val => {
-        //     if (val && val.email) {
-        //         let reqProps = {
-        //             method: 'POST',
-        //             headers: new Headers({
-        //                 'content-type': 'application/json'
-        //             }),
-        //             body: JSON.stringify({
-        //                 name: val.name,
-        //                 email: val.email,
-        //             })
-        //         };
-        //         fetch("/verify_user", reqProps).then( (res) => {
-        //                 if (res.status === 401) {
-        //                     IdbKeyval.set('user', null);
-        //                     AppStoreInstance.updateUser(null);
-        //                 }
-        //             }
-        //         )
-        //
-        //         AppStoreInstance.updateUser(val);
-        //     } else {
-        //         IdbKeyval.get('waitingUser').then((val) => {
-        //             if (val && val.email) {
-        //                 AppStoreInstance.verifyAwaitUser(val);
-        //             } else {
-        //                 IdbKeyval.set('user', null).then(() =>{
-        //                     AppStoreInstance.updateUser(null);
-        //                 });
-        //             }
-        //         })
-        //     }
-        // });
+
+        this.shouldUserUpdate(user);
     }
 
     render() {

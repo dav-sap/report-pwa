@@ -57,7 +57,11 @@ class MembersTable extends PureComponent {
     render() {
         return (
             <div>
-                {this.props.members.length > 0 ? <div className="sub-admin-title">Members</div> : ""}
+
+                <div className="title-container">
+                    <div className="sub-admin-title">Members</div>
+                    {this.props.loading ? <div className="admin-screen-loader"/> : ""}
+                </div>
                 <table className="members-table">
                     <tbody>
                     {this.props.members.map((member, index) => {

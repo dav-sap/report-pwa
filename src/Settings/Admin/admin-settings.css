@@ -15,12 +15,12 @@
 .sub-admin-title {
     color: rgb(153, 153, 153);
     width: fit-content;
-    padding-top: 10px;
+    padding-top: 5px;
     padding-bottom: 3px;
     font-size: 20px;
     font-weight: 700;
     padding-left: 8px;
-    padding-right: 8px;
+    padding-right: 4px;
 }
 .admin-title > .admin-settings-img {
     margin-left: 0px;
@@ -119,7 +119,6 @@
     min-width: 71px;
 }
 .work-from-list {
-    max-height: 176px;
     overflow-y: auto;
 }
 .member-table-cell > input {
@@ -129,4 +128,29 @@
     position: absolute;
     right: 5px;
     font-weight: 800;
+}
+.admin-screen-loader {
+    border: 1px solid lightgrey;
+    border-top: 1px solid black;
+    border-radius: 70%;
+    width: 13px;
+    height: 13px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 13px;
+    /*position: absolute;*/
+    -webkit-animation: spin 1.2s linear infinite;
+    animation: spin 1.2s linear infinite;
+    /*top: 50%;*/
+    /*transform: translateY(-50%);*/
+    /*left: 50%;*/
+}
+.title-container {
+    position: relative;
+    width: 50%;
+    height: fit-content;
+    display: flex;
+}
+.working-from-table {
+    max-height: 190px;
 }

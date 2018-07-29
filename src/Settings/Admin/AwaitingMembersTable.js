@@ -48,7 +48,12 @@ class AwaitingMembersTable extends PureComponent {
     render() {
         return (
             <div>
-                {this.props.awaitingMembers.length > 0 ? <div className="sub-admin-title">Awaiting Approval</div> : ""}
+                {this.props.awaitingMembers.length > 0 || this.props.loading ?
+                <div className="title-container">
+                    <div className="sub-admin-title">Awaiting Approval</div>
+                {this.props.loading ? <div className="admin-screen-loader"/> : ""}
+                </div>
+                : "" }
                 <table className="members-table">
                     <tbody>
                     {this.props.awaitingMembers.map((member, index) => {
