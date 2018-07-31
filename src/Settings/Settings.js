@@ -36,20 +36,23 @@ class Settings extends Component {
             })
         })
     };
-    async fetchReports(val) {
+
+    async fetchReports(user) {
         try {
             let reqProps = {
                 method: 'GET',
                 headers: new Headers({
-                    email: val.email,
-                })
-            };
+                    'content-type': 'application/json',
+                    'user': user.email + ":" + user.password
+                }),
+            }
             let res = await fetch("/get_user_reports", reqProps);
 
             if (res.status === 200) {
-                res.json().then(json => {
-                    this.parseReports(json);
-                })
+                let reports = await res.json();
+                // this.parseReports(reports);
+                this.setState({reports})
+
             } else {
                 addErrorNoti();
             }
@@ -96,6 +99,7 @@ class Settings extends Component {
         }
         
     }
+
     startLoading = () => {
         this.setState({loading:true})
     }

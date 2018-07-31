@@ -80,6 +80,7 @@ class UserHome extends Component {
                     <th><Icon type="close" className="remove-report-button" onClick={() => this.removeReport(status, report_id)}/></th></tr>);
         }
     };
+
     fetchGroupName = async () => {
         try {
             let reqProps = {
@@ -99,6 +100,7 @@ class UserHome extends Component {
             addErrorNoti();
         }
     }
+
     fetchAdminStatus = async (email) => {
         try {
             let reqProps = {
@@ -118,6 +120,7 @@ class UserHome extends Component {
             addErrorNoti();
         }
     }
+
     async componentDidMount() {
         this.fetchAdminStatus(this.props.store.user.email);
         await this.fetchGroupName();
