@@ -6,7 +6,6 @@ import { observer } from 'mobx-react';
 import Power0 from 'gsap'
 import TweenMax from 'gsap/TweenMax';
 import { STATUS } from '../../Consts';
-import AppStoreInstance from '../../AppStore';
 
 class Header extends Component {
 

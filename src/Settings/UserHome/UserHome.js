@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import './user-home.css';
-import {Icon, notification} from 'antd'
+import {Icon} from 'antd'
 import {Link } from 'react-router-dom';
-import {addErrorNoti, emailToName, addNotification} from './../../Utils';
+import {addErrorNoti, addNotification} from './../../Utils';
 import { STATUS} from './../../Consts';
 import {applicationServerPublicKey, urlB64ToUint8Array} from "../../Utils";
 import {observer} from "mobx-react/index";
-const IdbKeyval = require('idb-keyval');
 
 class UserHome extends Component {
     constructor(props) {

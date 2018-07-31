@@ -6,7 +6,6 @@ import './admin-settings.css';
 import MembersTable from "./MembersTable";
 import WorkFromList from "./WorkFromList";
 import {addNotification} from "../../Utils";
-import {SITE_URL} from "./../../Consts"
 import AwaitingMembersTable from "./AwaitingMembersTable";
 const IdbKeyval = require('idb-keyval');
 

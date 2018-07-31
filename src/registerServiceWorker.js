@@ -34,7 +34,7 @@ export default function register() {
             if (isLocalhost) {
                 swUrl = `${process.env.PUBLIC_URL}/notification-service-worker.js`;
                 // checkValidServiceWorker(swUrl);
-                registerValidSW(swUrl);
+                checkValidServiceWorker(swUrl);
                 // This is running on localhost. Lets check if a service worker still exists or not.
 
             } else {
@@ -98,9 +98,7 @@ function checkValidServiceWorker(swUrl) {
     // Check if the service worker can be found. If it can't reload the page.
     fetch(swUrl)
         .then(response => {
-            console.log("fetching...");
             // Ensure service worker exists, and that we really are getting a JS file.
-            console.log( response.status );
             if (
                 response.status === 404 ||
                 response.headers.get('content-type').indexOf('javascript') === -1
@@ -113,8 +111,7 @@ function checkValidServiceWorker(swUrl) {
                 });
             } else {
                 // Service worker found. Proceed as normal.
-                console.log("found the server worker");
-                console.log(response.text());
+                console.log("found "+ swUrl + " server worker");
                 registerValidSW(swUrl);
             }
         })

@@ -1,4 +1,3 @@
-import React from 'react';
 
 const STATUS= {
     OOO: "OOO",
@@ -39,8 +38,7 @@ const SLIDER_SETTINGS = {
     variableWidth: false,
   };
 
-const SITE_URL = "https://flex-server.herokuapp.com/";
-// const SERVER_URL = "https://flex-server.herokuapp.com";
-// const SERVER_URL = "http://localhost:3141";
-export {STATUS, COLOR_MAP, SITE_URL, SUB_STATUS, SLIDER_SETTINGS}
+// const SITE_URL = "https://flex-server.herokuapp.com/";
+
+export {STATUS, COLOR_MAP, SUB_STATUS, SLIDER_SETTINGS}
 

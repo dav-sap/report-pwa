@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {Link } from 'react-router-dom';
-import {emailToName} from './../../Utils'
 import {observer} from "mobx-react/index";
 
 import './wait-auth.css';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {COLOR_MAP, STATUS} from './../Consts'
+import {STATUS} from './../Consts'
 
 export default class Status extends Component {
 
@@ -41,8 +41,6 @@ export default class Status extends Component {
             <div className="status-where">
                 <div className="status-where-title" style={{background: this.props.color}}>
                     {this.props.title + " - " + this.props.reports.length}
-                    {/*{this.props.loading ? <div className="loader"/> : ""}*/}
-                    {/* <span className="span-img">{IMAGE_MAP(this.props.title, "status-where-img")}</span> */}
                 </div>
                 <div className="people-wrapper" id={"people-wrapper-"+this.props.title} style={this.getStyle()}>
                     {this.props.reports.map((report, index) => {
