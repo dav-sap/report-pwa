@@ -1,4 +1,4 @@
-# Wheres My Peers
+# Reporting App
 
 The App To let your peers know what you are up to today
 
