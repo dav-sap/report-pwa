@@ -1,9 +1,6 @@
-# WheresMyPeers
+# Wheres My Peers
 
-The App is hosted on my Firebase account, at http://pwa-first-71a09.firebaseapp.com/
-
-
-The firebase server is using the `Build` folder for the `index.html` file (`.css`, `.js` etc.) it's using.
+The App To let your peers know what you are up to today
 
 ## To use the app locally, just follow these simple steps:
 ```
@@ -13,16 +10,8 @@ The firebase server is using the `Build` folder for the `index.html` file (`.css
 
 3. Run "yarn start" - the app should open on your web browser at http://localhost:4300
 ```
-
-This local webserver is listening to any changes done in the `src` folder, and will refresh automatically to show the latest changes on the web.
-
-This repo is just the Client side of the application. The requests to the server will go to the 
-`SERVER_URL` const variable in the `Consts.js` and `notification-service-worker.js`.
-
-If you wish to work on the server locally please clone the serevr repo at
+If you wish to work on the server locally you can clone the serevr repo at
 https://github.com/dav-sap/WheresMyPeers-server
-
-and in the `Consts.js` and `notification-service-worker.js`(if you made any changes to the notification system you should change `SERVER_URL` here as well) comment out the line of `SERVER_URL` and the localhost.
 
 ## Creating Release
 ```
